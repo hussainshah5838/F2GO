@@ -1,0 +1,260 @@
+import 'package:f2g/constants/app_colors.dart';
+import 'package:f2g/constants/app_fonts.dart';
+import 'package:f2g/view/widget/Custom_text_widget.dart';
+import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import '../../../constants/app_images.dart';
+import '../../../constants/app_styling.dart';
+import '../../../controller/create_plan_controller.dart';
+import '../../../model/plan_model.dart';
+import '../../widget/common_image_view_widget.dart';
+
+class CreatePlanScreen extends StatelessWidget {
+  CreatePlanScreen({super.key});
+
+  final CreatePlanController controller = Get.put(CreatePlanController());
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: kWhiteColor,
+      body: Stack(
+        children: [
+          Stack(
+            children: [
+              Positioned.fill(
+                child: Image.asset(Assets.imagesMap, fit: BoxFit.cover),
+              ),
+              Positioned(
+                bottom: 40,
+                left: 0,
+                right: 0,
+                child: Obx(
+                  () => SizedBox(
+                    height: h(context, 208),
+                    child: ListView.builder(
+                      scrollDirection: Axis.horizontal,
+                      padding: only(context, left: 20),
+                      itemCount: controller.planItems.length,
+                      itemBuilder: (context, index) {
+                        final item = controller.planItems[index];
+                        return _buildPlanItemCard(context, item, controller);
+                      },
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+
+          Container(
+            height: h(context, 100),
+            width: w(context, double.maxFinite),
+            decoration: BoxDecoration(color: kWhiteColor),
+            child: SafeArea(
+              bottom: false,
+              child: Column(
+                children: [
+                  SizedBox(height: h(context, 10)),
+                  Padding(
+                    padding: symmetric(context, horizontal: 20),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        InkWell(
+                          onTap: () {
+                            Get.back();
+                          },
+                          child: CommonImageView(
+                            imagePath: Assets.imagesGreybackicon,
+                            height: 48,
+                            width: 48,
+                            fit: BoxFit.contain,
+                          ),
+                        ),
+                        SizedBox(width: w(context, 15)),
+                        Expanded(
+                          child: CustomText(
+                            text: "Create new plan",
+                            size: 16,
+                            weight: FontWeight.w500,
+                            color: kBlackColor,
+                            fontFamily: AppFonts.HelveticaNowDisplay,
+                          ),
+                        ),
+                        CustomText(
+                          text: "Create Manually",
+                          size: 16,
+                          weight: FontWeight.w500,
+                          fontFamily: AppFonts.HelveticaNowDisplay,
+                          color: kSecondaryColor,
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildPlanItemCard(
+    BuildContext context,
+    PlanItem item,
+    CreatePlanController controller,
+  ) {
+    return Container(
+      padding: symmetric(context, vertical: 12, horizontal: 14),
+      width: w(context, 317),
+      margin: only(context, right: 10),
+      decoration: BoxDecoration(
+        color: kWhiteColor,
+        borderRadius: BorderRadius.circular(h(context, 10)),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Row(
+                children: List.generate(
+                  5,
+                  (i) => Padding(
+                    padding: only(context, right: 4),
+                    child: CommonImageView(
+                      imagePath: Assets.imagesStar,
+                      height: 10,
+                      width: 10,
+                      fit: BoxFit.contain,
+                    ),
+                  ),
+                ),
+              ),
+              CustomText(
+                text: "${item.rating} Ratings",
+                size: 12,
+                weight: FontWeight.w500,
+                color: Color(0xff2C2C2C),
+                fontFamily: AppFonts.HelveticaNowDisplay,
+              ),
+            ],
+          ),
+          SizedBox(height: h(context, 11)),
+          Row(
+            children: [
+              ClipRRect(
+                borderRadius: BorderRadius.circular(h(context, 8)),
+                child: CommonImageView(
+                  imagePath: item.imagePath,
+                  fit: BoxFit.cover,
+                  height: 46,
+                  width: 48,
+                ),
+              ),
+
+              SizedBox(width: w(context, 9)),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    CustomText(
+                      text: item.title,
+                      size: 20,
+                      weight: FontWeight.w500,
+                      color: kBlackColor,
+                      fontFamily: AppFonts.HelveticaNowDisplay,
+                    ),
+                    SizedBox(height: h(context, 4)),
+                    Row(
+                      children: [
+                        CommonImageView(
+                          imagePath: Assets.imagesLocationicon,
+                          height: 16,
+                          width: 16,
+                          fit: BoxFit.contain,
+                        ),
+                        SizedBox(width: w(context, 4)),
+                        CustomText(
+                          text: item.location,
+                          size: 14,
+                          weight: FontWeight.w500,
+                          color: kBlackColor.withValues(alpha: 0.5),
+                          fontFamily: AppFonts.HelveticaNowDisplay,
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+          SizedBox(height: h(context, 8)),
+          CustomText(
+            text: item.description,
+            size: 14,
+            weight: FontWeight.w500,
+            color: kBlackColor.withValues(alpha: 0.5),
+            fontFamily: AppFonts.HelveticaNowDisplay,
+            maxLines: 2,
+            paddingBottom: 10,
+            textOverflow: TextOverflow.ellipsis,
+          ),
+          Divider(
+            color: Color(0xffE3E3E3),
+            thickness: h(context, 1),
+            height: h(context, 1),
+          ),
+          SizedBox(height: h(context, 10)),
+          Row(
+            children: [
+              CustomText(
+                text: "${item.price}",
+                size: 18,
+                weight: FontWeight.w500,
+                color: kBlackColor,
+                fontFamily: AppFonts.HelveticaNowDisplay,
+              ),
+              Expanded(
+                child: CustomText(
+                  text: "/person",
+                  size: 14,
+                  weight: FontWeight.w500,
+                  color: kBlackColor.withValues(alpha: 0.5),
+                  fontFamily: AppFonts.HelveticaNowDisplay,
+                ),
+              ),
+              InkWell(
+                onTap: () => controller.selectPlan(item),
+                child: Container(
+                  height: h(context, 42),
+                  padding: symmetric(context, horizontal: 27),
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      colors: [Color(0xff62D5C3), Color(0xffD7FAB7)],
+                      begin: Alignment.centerLeft,
+                      end: Alignment.centerRight,
+                    ),
+
+                    borderRadius: BorderRadius.circular(h(context, 100)),
+                  ),
+                  child: Center(
+                    child: CustomText(
+                      text: "View Details",
+                      size: 16,
+                      weight: FontWeight.w500,
+                      color: kBlackColor,
+                      fontFamily: AppFonts.HelveticaNowDisplay,
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+}

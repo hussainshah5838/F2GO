@@ -1,0 +1,46 @@
+{
+  "project_info": {
+    "project_number": "377108240787",
+    "project_id": "friends2go-3df47",
+    "storage_bucket": "friends2go-3df47.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:377108240787:android:8b03cdfe0068110a05f066",
+        "android_client_info": {
+          "package_name": "com.infinity.f2go"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "377108240787-8egldbs3pphp8m5mlc5j4ola08icclbe.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAbXtp8JlXL8cSbckwXqHsiPCo6xbTb7g8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "377108240787-8egldbs3pphp8m5mlc5j4ola08icclbe.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "377108240787-jj8m6njehc4uqbddmj3ieptmldu72stc.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.f2g"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
