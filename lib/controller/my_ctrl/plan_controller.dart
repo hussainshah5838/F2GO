@@ -1,7 +1,9 @@
 import 'dart:developer';
 import 'dart:io';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:f2g/constants/firebase_const.dart';
 import 'package:f2g/controller/loading_animation.dart';
+import 'package:f2g/core/enums/categories_status.dart';
 import 'package:f2g/core/enums/plan_status.dart';
 import 'package:f2g/model/my_model/plan_model.dart';
 import 'package:f2g/services/firebase_storage/firebase_storage_service.dart';
@@ -18,7 +20,8 @@ class PlanController extends GetxController {
   TextEditingController ageController = TextEditingController();
   TextEditingController maxMemberController = TextEditingController();
   TextEditingController locationController = TextEditingController();
-  TextEditingController categoryController = TextEditingController();
+  // TextEditingController categoryController = TextEditingController();
+  CategoriesStatus? selectedCategory;
   TextEditingController descriptionController = TextEditingController();
   String? eventSelectedImage;
   Uuid uuid = Uuid();
@@ -26,6 +29,7 @@ class PlanController extends GetxController {
   final Rxn<File> selectedImage = Rxn<File>();
   // Fetch plan varibles
   RxList<PlanModel> plans = <PlanModel>[].obs;
+  RxList<PlanModel> favourites = <PlanModel>[].obs;
   RxBool isLoading = false.obs;
 
   Future<void> pickImage() async {
@@ -75,7 +79,7 @@ class PlanController extends GetxController {
         endDate: endDate.value,
         maxMembers: maxMemberController.text.trim(),
         location: locationController.text.trim(),
-        category: categoryController.text.trim(),
+        category: selectedCategory?.name.toString(),
         description: descriptionController.text.trim(),
         createdAt: DateTime.now(),
         planCreatorID: auth.currentUser?.uid.toString(),
@@ -106,22 +110,96 @@ class PlanController extends GetxController {
     ageController.clear();
     maxMemberController.clear();
     locationController.clear();
-    categoryController.clear();
+    selectedCategory = null;
     eventSelectedImage = null;
   }
 
-  // Fetch plans based on "active" or "completed"
-  Future<void> fetchPlans({String? status}) async {
+  // ---- Fetch Plans ----
+  // Future<void> fetchPlans({String? status, String? planCategories}) async {
+  //   try {
+  //     isLoading.value = true;
+
+  //     final QuerySnapshot<Map<String, dynamic>> snapShot;
+
+  //     if (planCategories != null) {
+  //       snapShot =
+  //           await plansCollection
+  //               .where("category", isEqualTo: planCategories)
+  //               .where("status", isEqualTo: status)
+  //               .get();
+  //     } else {
+  //       snapShot =
+  //           await plansCollection.where("status", isEqualTo: status).get();
+  //     }
+
+  //     if (snapShot.docs.isNotEmpty) {
+  //       plans
+  //         ..clear()
+  //         ..addAll(snapShot.docs.map((doc) => PlanModel.fromMap(doc.data())));
+  //     }
+
+  //     isLoading.value = false;
+  //     log("✅ Plans Fetched: ${plans.length}");
+  //   } catch (e) {
+  //     isLoading.value = false;
+  //     displayToast(msg: "Error while fetching plans: $e");
+  //     log("❌ Error while fetching plans: $e");
+  //   }
+  // }
+
+  Future<void> fetchPlans({String? status, String? planCategories}) async {
     try {
       isLoading.value = true;
 
-      final snapShot =
-          await plansCollection.where("status", isEqualTo: status).get();
+      final QuerySnapshot<Map<String, dynamic>> snapShot;
+
+      if (planCategories != null) {
+        snapShot =
+            await plansCollection
+                .where("category", isEqualTo: planCategories)
+                .where("status", isEqualTo: status)
+                .get();
+      } else {
+        snapShot =
+            await plansCollection.where("status", isEqualTo: status).get();
+      }
+
+      bool anyStatusUpdated = false;
 
       if (snapShot.docs.isNotEmpty) {
-        plans
-          ..clear()
-          ..addAll(snapShot.docs.map((doc) => PlanModel.fromMap(doc.data())));
+        plans.clear();
+
+        for (final doc in snapShot.docs) {
+          final data = doc.data();
+
+          final startDate = DateTime.tryParse(data["startDate"].toString());
+          final currentDate = DateTime.now();
+
+          // Compare only date (ignore time)
+          final isSameDate =
+              startDate != null &&
+              startDate.year == currentDate.year &&
+              startDate.month == currentDate.month &&
+              startDate.day == currentDate.day;
+
+          if (isSameDate && data["status"] != PlanStatus.completed.name) {
+            // 🔹 Update Firestore document to mark as completed
+            await plansCollection.doc(doc.id).update({
+              "status": PlanStatus.completed.name,
+            });
+
+            anyStatusUpdated = true; // 🔸 Flag that we made updates
+          } else {
+            plans.add(PlanModel.fromMap(data));
+          }
+        }
+      }
+
+      // 🔁 If any plan was updated, fetch fresh data again
+      if (anyStatusUpdated) {
+        log("🔄 Status updated, fetching fresh data...");
+        await fetchPlans(status: status, planCategories: planCategories);
+        return;
       }
 
       isLoading.value = false;
@@ -130,6 +208,105 @@ class PlanController extends GetxController {
       isLoading.value = false;
       displayToast(msg: "Error while fetching plans: $e");
       log("❌ Error while fetching plans: $e");
+    }
+  }
+
+  // Join Event
+  Future<void> joinPlan({required String planId}) async {
+    try {
+      showLoadingDialog();
+
+      await plansCollection.doc(planId).update({
+        "participantsIds": FieldValue.arrayUnion([auth.currentUser!.uid]),
+      });
+
+      hideLoadingDialog();
+      displayToast(msg: "You have successfully joined the plan.");
+    } catch (e) {
+      hideLoadingDialog();
+      displayToast(msg: "Failed to join plan: $e");
+      log("Error during joining plan: $e");
+    }
+  }
+
+  // Leave from Plan
+  Future<void> leavePlan({required String planId}) async {
+    try {
+      showLoadingDialog();
+
+      await plansCollection.doc(planId).update({
+        "participantsIds": FieldValue.arrayRemove([auth.currentUser!.uid]),
+      });
+
+      hideLoadingDialog();
+      displayToast(msg: "You have successfully leave plan.");
+    } catch (e) {
+      hideLoadingDialog();
+      displayToast(msg: "Failed to leave plan: $e");
+      log("Error during Leave plan: $e");
+    }
+  }
+
+  // Favorite Plan
+  Future<void> favouritePlan({required String planId}) async {
+    try {
+      showLoadingDialog();
+
+      await plansCollection.doc(planId).update({
+        "favIds": FieldValue.arrayUnion([auth.currentUser!.uid]),
+      });
+
+      hideLoadingDialog();
+      displayToast(msg: "Marked as favourite plan.");
+    } catch (e) {
+      hideLoadingDialog();
+      displayToast(msg: "Failed favourite plan: $e");
+      log("Error during favouriting plan: $e");
+    }
+  }
+
+  // Remove Favorite Plan
+  Future<void> removeFavouritePlan({required String planId}) async {
+    try {
+      showLoadingDialog();
+
+      await plansCollection.doc(planId).update({
+        "favIds": FieldValue.arrayRemove([auth.currentUser!.uid]),
+      });
+
+      hideLoadingDialog();
+      displayToast(msg: "You have successfully remove favorite plan.");
+    } catch (e) {
+      hideLoadingDialog();
+      displayToast(msg: "Failed to remove favorite: $e");
+      log("Error during remove favorite: $e");
+    }
+  }
+
+  // ---- Fetch Fav ----
+  Future<void> fetchFav() async {
+    try {
+      isLoading.value = true;
+
+      final QuerySnapshot<Map<String, dynamic>> snapShot;
+
+      snapShot =
+          await plansCollection
+              .where("favIds", arrayContains: auth.currentUser?.uid)
+              .get();
+
+      if (snapShot.docs.isNotEmpty) {
+        favourites
+          ..clear()
+          ..addAll(snapShot.docs.map((doc) => PlanModel.fromMap(doc.data())));
+      }
+
+      isLoading.value = false;
+      log("✅ Fetched favourite plan: ${favourites.length}");
+    } catch (e) {
+      isLoading.value = false;
+      displayToast(msg: "Error while fetching favourite plans: $e");
+      log("❌ Error while fetching favourite plans: $e");
     }
   }
 }

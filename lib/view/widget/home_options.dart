@@ -11,13 +11,15 @@ class HomeOptionsContainer extends StatelessWidget {
   final String? image;
   final String? text;
   final String? subtext;
+  final String? value;
   final Color? color;
-  final void Function()? onTap;
+  final VoidCallback? onTap;
   const HomeOptionsContainer({
     super.key,
     this.image,
     this.text,
     this.subtext,
+    this.value,
     this.onTap,
     this.color,
   });

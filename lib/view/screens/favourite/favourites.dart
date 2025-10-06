@@ -1,20 +1,37 @@
+import 'dart:developer';
+
 import 'package:f2g/constants/app_colors.dart';
 import 'package:f2g/constants/app_images.dart';
 import 'package:f2g/constants/app_styling.dart';
-import 'package:f2g/model/favourite_model.dart';
+import 'package:f2g/controller/loading_animation.dart';
+import 'package:f2g/controller/my_ctrl/plan_controller.dart';
+import 'package:f2g/core/common/global_instance.dart';
+import 'package:f2g/core/enums/plan_status.dart';
+import 'package:f2g/model/my_model/plan_model.dart';
+import 'package:f2g/view/screens/plans/plan_details.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:gradient_borders/gradient_borders.dart';
-
 import '../../../constants/app_fonts.dart';
-import '../../../controller/favourite_controller.dart';
 import '../../widget/Custom_text_widget.dart';
 import '../../widget/common_image_view_widget.dart';
 
-class FavouritesScreen extends StatelessWidget {
+class FavouritesScreen extends StatefulWidget {
   FavouritesScreen({super.key});
 
-  final _controller = Get.put(FavouriteController());
+  @override
+  State<FavouritesScreen> createState() => _FavouritesScreenState();
+}
+
+class _FavouritesScreenState extends State<FavouritesScreen> {
+  final _ctrl = Get.find<PlanController>();
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    _ctrl.fetchFav();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -55,19 +72,53 @@ class FavouritesScreen extends StatelessWidget {
                   SizedBox(height: h(context, 12)),
                   Expanded(
                     child: Obx(
-                      () =>
-                          _controller.favouriteList.isEmpty
-                              ? _buildEmptyWidget(context)
+                      () => Column(
+                        children: [
+                          _ctrl.isLoading.value
+                              ? Center(child: WaveLoading())
+                              : _ctrl.favourites.isEmpty
+                              ? Center(
+                                child: CustomText(
+                                  text: "No favourites plans found!",
+                                  color: kBlackColor,
+                                  size: 13,
+                                ),
+                              )
                               : ListView.builder(
-                                padding: symmetric(context, vertical: 10),
-                                itemCount: _controller.favouriteList.length,
-                                itemBuilder: (_, index) {
-                                  final item = _controller.favouriteList[index];
-                                  return _buildFavouriteCard(item, context);
+                                shrinkWrap: true,
+                                itemCount: _ctrl.favourites.length,
+                                itemBuilder: (context, index) {
+                                  final item = _ctrl.favourites[index];
+                                  return InkWell(
+                                    onTap: () {
+                                      Get.to(
+                                        () => PlansDetailScreen(),
+                                        arguments: {'data': item},
+                                      );
+                                    },
+                                    child: _buildFavouriteCard(item, context),
+                                  );
                                 },
                               ),
+                        ],
+                      ),
                     ),
                   ),
+                  // Expanded(
+                  //   child: Obx(
+                  //     () =>
+                  //         _controller.favouriteList.isEmpty
+                  //             ? _buildEmptyWidget(context)
+                  //             : ListView.builder(
+                  //               padding: symmetric(context, vertical: 10),
+                  //               itemCount: _controller.favouriteList.length,
+                  //               itemBuilder: (_, index) {
+                  //                 final item = _controller.favouriteList[index];
+                  //                 return _buildFavouriteCard(item, context);
+                  //               },
+                  //             ),
+                  //   ),
+                  // ),
                 ],
               ),
             ),
@@ -89,7 +140,7 @@ class FavouritesScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildFavouriteCard(FavouriteModel item, BuildContext context) {
+  Widget _buildFavouriteCard(PlanModel item, BuildContext context) {
     return Container(
       margin: only(context, bottom: 10),
       padding: all(context, 10),
@@ -105,7 +156,7 @@ class FavouritesScreen extends StatelessWidget {
               ClipRRect(
                 borderRadius: BorderRadius.circular(h(context, 8)),
                 child: CommonImageView(
-                  imagePath: item.image,
+                  url: item.planPhoto,
                   fit: BoxFit.cover,
                   height: 46,
                   width: 48,
@@ -118,7 +169,7 @@ class FavouritesScreen extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     CustomText(
-                      text: item.title,
+                      text: item.title.toString(),
                       size: 16,
                       weight: FontWeight.w500,
                       color: kBlackColor,
@@ -135,7 +186,7 @@ class FavouritesScreen extends StatelessWidget {
                         ),
                         SizedBox(width: w(context, 4)),
                         CustomText(
-                          text: item.location,
+                          text: item.location.toString(),
                           size: 12,
                           weight: FontWeight.w500,
                           color: kBlackColor.withValues(alpha: 0.5),
@@ -151,7 +202,7 @@ class FavouritesScreen extends StatelessWidget {
                 padding: symmetric(context, horizontal: 8),
                 decoration: BoxDecoration(
                   color:
-                      item.status == "Active"
+                      item.status == PlanStatus.active.name
                           ? const Color(0xff34A853).withValues(alpha: 0.08)
                           : kSecondaryColor.withValues(alpha: 0.08),
                   borderRadius: BorderRadius.circular(h(context, 100)),
@@ -164,18 +215,18 @@ class FavouritesScreen extends StatelessWidget {
                       decoration: BoxDecoration(
                         shape: BoxShape.circle,
                         color:
-                            item.status == "Active"
+                            item.status == PlanStatus.active.name
                                 ? Color(0xff34A853)
                                 : kSecondaryColor,
                       ),
                     ),
                     CustomText(
-                      text: item.status,
+                      text: item.status.toString(),
                       size: 14,
                       paddingLeft: 6,
                       weight: FontWeight.w500,
                       color:
-                          item.status == "Active"
+                          item.status == PlanStatus.active.name
                               ? Color(0xff34A853)
                               : kSecondaryColor,
                       fontFamily: AppFonts.HelveticaNowDisplay,
@@ -207,7 +258,7 @@ class FavouritesScreen extends StatelessWidget {
                     ),
                     SizedBox(height: h(context, 2)),
                     CustomText(
-                      text: item.dateTime,
+                      text: dT.formatEventDateTime(item.startDate!),
                       size: 14,
                       weight: FontWeight.w500,
                       color: kBlackColor,
@@ -217,26 +268,30 @@ class FavouritesScreen extends StatelessWidget {
                 ),
               ),
 
-              Stack(
-                clipBehavior: Clip.none,
-                children: List.generate(
-                  item.avatars.length,
-                  (i) => Padding(
-                    padding: only(context, left: w(context, i * 18.0)),
-                    child: CommonImageView(
-                      imagePath: item.avatars[i],
-                      height: 28,
-                      width: 28,
-                      fit: BoxFit.contain,
-                    ),
-                  ),
-                ),
-              ),
+              // Stack(
+              //   clipBehavior: Clip.none,
+              //   children: List.generate(
+              //     item.avatars.length,
+              //     (i) => Padding(
+              //       padding: only(context, left: w(context, i * 18.0)),
+              //       child: CommonImageView(
+              //         imagePath: item.avatars[i],
+              //         height: 28,
+              //         width: 28,
+              //         fit: BoxFit.contain,
+              //       ),
+              //     ),
+              //   ),
+              // ),
             ],
           ),
           SizedBox(height: h(context, 10)),
           InkWell(
-            onTap: () {},
+            onTap: () async {
+              log("Removing from fav ${item.id}");
+              await _ctrl.removeFavouritePlan(planId: item.id!);
+              Get.close(1);
+            },
             child: Container(
               height: h(context, 42),
               width: double.maxFinite,

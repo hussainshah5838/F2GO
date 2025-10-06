@@ -4,7 +4,7 @@ import 'package:f2g/constants/app_styling.dart';
 import 'package:f2g/controller/my_ctrl/auth_input_controller.dart';
 import 'package:f2g/core/bindings/bindings.dart';
 import 'package:f2g/core/common/global_instance.dart';
-import 'package:f2g/view/screens/Home/details.dart';
+import 'package:f2g/core/enums/categories_status.dart';
 import 'package:f2g/view/screens/createplan/create_new_plan.dart';
 import 'package:f2g/view/screens/favourite/favourites.dart';
 import 'package:f2g/view/screens/notifcation/notification.dart';
@@ -42,30 +42,60 @@ class _HomeScreenState extends State<HomeScreen> {
       text: "Football",
       subtext: "Maria Fernanda",
       color: Color(0xffFAEDCB).withValues(alpha: 0.5),
+      onTap: () {
+        Get.to(
+          () => PlansScreen(categorieValue: CategoriesStatus.Football.name),
+          binding: PlanBindings(),
+        );
+      },
     ),
     HomeOptionsContainer(
       image: Assets.imagesMusic,
       text: "Music",
       subtext: "Jessa Irvine",
       color: Color(0xffF2C6DF).withValues(alpha: 0.5),
+      onTap: () {
+        Get.to(
+          () => PlansScreen(categorieValue: CategoriesStatus.Music.name),
+          binding: PlanBindings(),
+        );
+      },
     ),
     HomeOptionsContainer(
       image: Assets.imagesGames,
       text: "Games & Movies",
       subtext: "Maria Fernanda",
       color: Color(0xffC9E4DF).withValues(alpha: 0.5),
+      onTap: () {
+        Get.to(
+          () => PlansScreen(categorieValue: CategoriesStatus.GamesMovies.name),
+          binding: PlanBindings(),
+        );
+      },
     ),
     HomeOptionsContainer(
       image: Assets.imagesComida,
       text: "Comida",
       subtext: "Ivan Taylor",
       color: Color(0xffFAFFBF).withValues(alpha: 0.5),
+      onTap: () {
+        Get.to(
+          () => PlansScreen(categorieValue: CategoriesStatus.Comida.name),
+          binding: PlanBindings(),
+        );
+      },
     ),
     HomeOptionsContainer(
       image: Assets.imagesGym,
       text: "Gym Training",
       subtext: "Ximena Valentine",
       color: Color(0xffC5DEF2).withValues(alpha: 0.5),
+      onTap: () {
+        Get.to(
+          () => PlansScreen(categorieValue: CategoriesStatus.GymTraining.name),
+          binding: PlanBindings(),
+        );
+      },
     ),
     HomeOptionsContainer(
       image: Assets.imagesPainting,
@@ -73,7 +103,10 @@ class _HomeScreenState extends State<HomeScreen> {
       subtext: "Andrew Hike",
       color: Color(0xffF8D9C4).withValues(alpha: 0.5),
       onTap: () {
-        Get.to(DetailsScreen());
+        Get.to(
+          () => PlansScreen(categorieValue: CategoriesStatus.PaintingFun.name),
+          binding: PlanBindings(),
+        );
       },
     ),
   ];
@@ -176,7 +209,10 @@ class _HomeScreenState extends State<HomeScreen> {
                         Assets.imagesFavourite,
                         "Favourites",
                         onTap: () {
-                          Get.to(FavouritesScreen());
+                          Get.to(
+                            () => FavouritesScreen(),
+                            binding: PlanBindings(),
+                          );
                           menuController.isMenuOpen.value = false;
                         },
                       ),

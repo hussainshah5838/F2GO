@@ -13,6 +13,7 @@ class PlanModel {
   final String? planCreatorID;
   final String? status;
   final List<String>? participantsIds;
+  final List<String>? favIds;
 
   PlanModel({
     this.id,
@@ -29,6 +30,7 @@ class PlanModel {
     this.planCreatorID,
     this.status,
     this.participantsIds,
+    this.favIds,
   });
 
   /// Factory to create model from Firebase snapshot or Map
@@ -66,6 +68,11 @@ class PlanModel {
           map.containsKey('participantsIds') && map['participantsIds'] != null
               ? List<String>.from(map['participantsIds'])
               : [],
+
+      favIds:
+          map.containsKey('favIds') && map['favIds'] != null
+              ? List<String>.from(map['favIds'])
+              : [],
     );
   }
 
@@ -86,6 +93,7 @@ class PlanModel {
       'planCreatorID': planCreatorID,
       'status': status,
       'participantsIds': participantsIds ?? [],
+      'favIds': participantsIds ?? [],
     };
   }
 }

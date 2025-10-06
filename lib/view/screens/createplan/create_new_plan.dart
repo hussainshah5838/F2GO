@@ -1,7 +1,10 @@
+import 'dart:developer';
+
 import 'package:f2g/constants/app_images.dart';
 import 'package:f2g/controller/loading_animation.dart';
 import 'package:f2g/controller/my_ctrl/plan_controller.dart';
 import 'package:f2g/core/common/global_instance.dart';
+import 'package:f2g/core/enums/categories_status.dart';
 import 'package:f2g/view/widget/custom_textfeild_widget.dart';
 import 'package:f2g/view/widget/dob_picker.dart';
 import 'package:flutter/cupertino.dart';
@@ -297,10 +300,20 @@ class CreateNewPlanScreen extends StatelessWidget {
                             controller: _ctrl.locationController,
                           ),
                           SizedBox(height: h(context, 8)),
-                          CustomLabelTextFeild(
+
+                          // CustomLabelTextFeild(
+                          //   label: "Category",
+                          //   controller: _ctrl.categoryController,
+                          // ),
+                          CustomDropdownField(
                             label: "Category",
-                            controller: _ctrl.categoryController,
+                            selectedValue: _ctrl.selectedCategory,
+                            onChanged: (value) {
+                              _ctrl.selectedCategory = value;
+                              log("Log :: ${_ctrl.selectedCategory?.name}");
+                            },
                           ),
+
                           SizedBox(height: h(context, 8)),
                           CustomLabelTextFeild(
                             label: "Description",
@@ -335,8 +348,8 @@ class CreateNewPlanScreen extends StatelessWidget {
                                 displayToast(msg: "Please add a location.");
                                 return;
                               }
-                              if (_ctrl.categoryController.text.isEmpty) {
-                                displayToast(msg: "Please add a category.");
+                              if (_ctrl.selectedCategory == null) {
+                                displayToast(msg: "Please select a category.");
                                 return;
                               }
                               if (_ctrl.descriptionController.text.isEmpty) {
@@ -382,6 +395,78 @@ class CreateNewPlanScreen extends StatelessWidget {
           ),
         ),
       ),
+    );
+  }
+}
+
+class CustomDropdownField extends StatelessWidget {
+  final String label;
+  final CategoriesStatus? selectedValue;
+  final ValueChanged<CategoriesStatus?> onChanged;
+
+  const CustomDropdownField({
+    super.key,
+    required this.label,
+    required this.selectedValue,
+    required this.onChanged,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final List<String> categoryLabels = [
+      "Football",
+      "Music",
+      "Games & Movies",
+      "Comida",
+      "Gym Training",
+      "Painting & Fun",
+    ];
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Container(
+          // height: h(context, 139),
+          padding: all(context, 6),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(h(context, 12)),
+          ),
+          child: DropdownButtonHideUnderline(
+            child: DropdownButton<CategoriesStatus>(
+              value: selectedValue,
+              hint: Text(
+                "Category",
+                style: TextStyle(
+                  fontSize: f(context, 16),
+                  fontWeight: FontWeight.w500,
+                  color: kBlackColor,
+
+                  fontFamily: AppFonts.HelveticaNowDisplay,
+                ),
+              ),
+              icon: const Icon(Icons.keyboard_arrow_down_rounded),
+              isExpanded: true,
+              items:
+                  CategoriesStatus.values.map((status) {
+                    final index = CategoriesStatus.values.indexOf(status);
+                    return DropdownMenuItem<CategoriesStatus>(
+                      value: status,
+                      child: Text(
+                        categoryLabels[index],
+                        style: TextStyle(
+                          fontFamily: AppFonts.HelveticaNowDisplay,
+                          color: kBlackColor,
+                          fontSize: 14,
+                        ),
+                      ),
+                    );
+                  }).toList(),
+              onChanged: onChanged,
+            ),
+          ),
+        ),
+      ],
     );
   }
 }

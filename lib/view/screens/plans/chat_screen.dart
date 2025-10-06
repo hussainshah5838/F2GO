@@ -7,7 +7,6 @@ import 'package:f2g/view/widget/Custom_text_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../../controller/chat_contorller.dart';
-import '../../../model/favourite_model.dart';
 import '../../../model/message_model.dart';
 
 class ChatScreen extends StatelessWidget {
@@ -25,7 +24,7 @@ class ChatScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final FavouriteModel data = args['data'];
+    // final FavouriteModel data = args['data'];
     return GestureDetector(
       onTap: () {
         FocusScope.of(context).unfocus();
@@ -69,19 +68,20 @@ class ChatScreen extends StatelessWidget {
 
                             child: Row(
                               children: [
-                                ClipRRect(
-                                  // borderRadius: BorderRadiusGeometry.circular(
-                                  //   h(context, 100),
-                                  // ),
-                                  child: CommonImageView(
-                                    imagePath: data.image,
-                                    height: 36,
-                                    width: 36,
-                                    fit: BoxFit.cover,
-                                  ),
-                                ),
+                                // ClipRRect(
+                                //   // borderRadius: BorderRadiusGeometry.circular(
+                                //   //   h(context, 100),
+                                //   // ),
+                                //   child: CommonImageView(
+                                //     imagePath: data.image,
+                                //     height: 36,
+                                //     width: 36,
+                                //     fit: BoxFit.cover,
+                                //   ),
+                                // ),
                                 CustomText(
-                                  text: data.title,
+                                  // text: data.title,
+                                  text: " UP Image data.title",
                                   maxLines: 1,
                                   textOverflow: TextOverflow.ellipsis,
                                   size: 16,

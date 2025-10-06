@@ -1,5 +1,4 @@
 import 'dart:developer';
-
 import 'package:f2g/constants/app_colors.dart';
 import 'package:f2g/constants/app_fonts.dart';
 import 'package:f2g/constants/app_images.dart';
@@ -14,10 +13,10 @@ import 'package:f2g/view/widget/Custom_text_widget.dart';
 import 'package:f2g/view/widget/common_image_view_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import '../../../model/favourite_model.dart';
 
 class PlansScreen extends StatefulWidget {
-  PlansScreen({super.key});
+  String? categorieValue;
+  PlansScreen({super.key, this.categorieValue});
 
   @override
   State<PlansScreen> createState() => _PlansScreenState();
@@ -29,7 +28,14 @@ class _PlansScreenState extends State<PlansScreen> {
   @override
   void initState() {
     super.initState();
-    _ctrl.fetchPlans(status: PlanStatus.active.name);
+    if (widget.categorieValue != null) {
+      _ctrl.fetchPlans(
+        status: PlanStatus.active.name,
+        planCategories: widget.categorieValue,
+      );
+    } else {
+      _ctrl.fetchPlans(status: PlanStatus.active.name);
+    }
   }
 
   //
@@ -104,19 +110,26 @@ class _PlansScreenState extends State<PlansScreen> {
                           log("$value");
 
                           if (value == 0) {
-                            await _ctrl.fetchPlans(
-                              status: PlanStatus.active.name,
-                            );
+                            if (widget.categorieValue != null) {
+                              _ctrl.fetchPlans(
+                                status: PlanStatus.active.name,
+                                planCategories: widget.categorieValue,
+                              );
+                            } else {
+                              _ctrl.fetchPlans(status: PlanStatus.active.name);
+                            }
                           } else {
-                            await _ctrl.fetchPlans(
-                              status: PlanStatus.completed.name,
-                            );
+                            if (widget.categorieValue != null) {
+                              _ctrl.fetchPlans(
+                                status: PlanStatus.completed.name,
+                                planCategories: widget.categorieValue,
+                              );
+                            } else {
+                              _ctrl.fetchPlans(
+                                status: PlanStatus.completed.name,
+                              );
+                            }
                           }
-                          //
-                          //
-                          //else {
-                          //   _ctrl.fetchPlans(status: PlanStatus.completed.name);
-                          // }
                         },
                         tabs: [Tab(text: 'Active'), Tab(text: 'Expired')],
                       ),
@@ -132,7 +145,11 @@ class _PlansScreenState extends State<PlansScreen> {
                                 ? Center(child: WaveLoading())
                                 : _ctrl.plans.isEmpty
                                 ? Center(
-                                  child: CustomText(text: "No Plans Found."),
+                                  child: CustomText(
+                                    text: "No Plans Found!",
+                                    color: kBlackColor,
+                                    size: 13,
+                                  ),
                                 )
                                 : ListView.builder(
                                   shrinkWrap: true,
@@ -159,7 +176,11 @@ class _PlansScreenState extends State<PlansScreen> {
                                 ? Center(child: WaveLoading())
                                 : _ctrl.plans.isEmpty
                                 ? Center(
-                                  child: CustomText(text: "No Plans Found."),
+                                  child: CustomText(
+                                    text: "No Plans Found!",
+                                    color: kBlackColor,
+                                    size: 13,
+                                  ),
                                 )
                                 : ListView.builder(
                                   shrinkWrap: true,

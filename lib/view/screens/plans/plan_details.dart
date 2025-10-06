@@ -1,12 +1,14 @@
 import 'dart:developer';
-
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:f2g/constants/app_colors.dart';
 import 'package:f2g/constants/app_fonts.dart';
 import 'package:f2g/constants/app_images.dart';
 import 'package:f2g/constants/app_styling.dart';
+import 'package:f2g/constants/firebase_const.dart';
 import 'package:f2g/core/common/global_instance.dart';
 import 'package:f2g/core/enums/plan_status.dart';
 import 'package:f2g/model/my_model/plan_model.dart';
+import 'package:f2g/view/screens/Home/details.dart';
 import 'package:f2g/view/screens/plans/chat_screen.dart';
 import 'package:f2g/view/widget/Custom_text_widget.dart';
 import 'package:f2g/view/widget/common_image_view_widget.dart';
@@ -96,7 +98,12 @@ class _PlansDetailScreenState extends State<PlansDetailScreen> {
                     child: SingleChildScrollView(
                       child: Column(
                         children: [
-                          _buildActiveCompletedDetailsCard(data, context),
+                          _buildActiveCompletedDetailsCard(data, context, () {
+                            Get.to(
+                              () => DetailsScreen(),
+                              arguments: {'data': data},
+                            );
+                          }),
                           // ...peoples.map(
                           //   (e) => Padding(
                           //     padding: only(context, bottom: 8),
@@ -120,6 +127,7 @@ class _PlansDetailScreenState extends State<PlansDetailScreen> {
   Widget _buildActiveCompletedDetailsCard(
     PlanModel item,
     BuildContext context,
+    VoidCallback onDetailPage,
   ) {
     return Container(
       margin: only(context, bottom: 10),
@@ -131,90 +139,93 @@ class _PlansDetailScreenState extends State<PlansDetailScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Row(
-            children: [
-              ClipRRect(
-                borderRadius: BorderRadius.circular(h(context, 8)),
-                child: CommonImageView(
-                  url: item.planPhoto,
-                  fit: BoxFit.cover,
-                  height: 46,
-                  width: 48,
+          InkWell(
+            onTap: onDetailPage,
+            child: Row(
+              children: [
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(h(context, 8)),
+                  child: CommonImageView(
+                    url: item.planPhoto,
+                    fit: BoxFit.cover,
+                    height: 46,
+                    width: 48,
+                  ),
                 ),
-              ),
 
-              SizedBox(width: w(context, 9)),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    CustomText(
-                      text: item.title.toString(),
-                      size: 16,
-                      weight: FontWeight.w500,
-                      color: kBlackColor,
-                      fontFamily: AppFonts.HelveticaNowDisplay,
-                    ),
-                    SizedBox(height: h(context, 4)),
-                    Row(
-                      children: [
-                        CommonImageView(
-                          imagePath: Assets.imagesLocationicon,
-                          height: 16,
-                          width: 16,
-                          fit: BoxFit.contain,
-                        ),
-                        SizedBox(width: w(context, 4)),
-                        CustomText(
-                          text: item.location.toString(),
-                          size: 12,
-                          weight: FontWeight.w500,
-                          color: kBlackColor.withValues(alpha: 0.5),
-                          fontFamily: AppFonts.HelveticaNowDisplay,
-                        ),
-                      ],
-                    ),
-                  ],
+                SizedBox(width: w(context, 9)),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      CustomText(
+                        text: item.title.toString(),
+                        size: 16,
+                        weight: FontWeight.w500,
+                        color: kBlackColor,
+                        fontFamily: AppFonts.HelveticaNowDisplay,
+                      ),
+                      SizedBox(height: h(context, 4)),
+                      Row(
+                        children: [
+                          CommonImageView(
+                            imagePath: Assets.imagesLocationicon,
+                            height: 16,
+                            width: 16,
+                            fit: BoxFit.contain,
+                          ),
+                          SizedBox(width: w(context, 4)),
+                          CustomText(
+                            text: item.location.toString(),
+                            size: 12,
+                            weight: FontWeight.w500,
+                            color: kBlackColor.withValues(alpha: 0.5),
+                            fontFamily: AppFonts.HelveticaNowDisplay,
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
                 ),
-              ),
-              Container(
-                height: h(context, 26),
-                padding: symmetric(context, horizontal: 8),
-                decoration: BoxDecoration(
-                  color:
-                      (item.status == PlanStatus.active.name)
-                          ? const Color(0xff34A853).withValues(alpha: 0.08)
-                          : kSecondaryColor.withValues(alpha: 0.08),
-                  borderRadius: BorderRadius.circular(h(context, 100)),
-                ),
-                child: Row(
-                  children: [
-                    Container(
-                      height: h(context, 4),
-                      width: w(context, 4),
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
+                Container(
+                  height: h(context, 26),
+                  padding: symmetric(context, horizontal: 8),
+                  decoration: BoxDecoration(
+                    color:
+                        (item.status == PlanStatus.active.name)
+                            ? const Color(0xff34A853).withValues(alpha: 0.08)
+                            : kSecondaryColor.withValues(alpha: 0.08),
+                    borderRadius: BorderRadius.circular(h(context, 100)),
+                  ),
+                  child: Row(
+                    children: [
+                      Container(
+                        height: h(context, 4),
+                        width: w(context, 4),
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          color:
+                              (item.status == PlanStatus.active.name)
+                                  ? Color(0xff34A853)
+                                  : kSecondaryColor,
+                        ),
+                      ),
+                      CustomText(
+                        text: item.status!.capitalizeFirst.toString(),
+                        size: 14,
+                        paddingLeft: 6,
+                        weight: FontWeight.w500,
                         color:
                             (item.status == PlanStatus.active.name)
                                 ? Color(0xff34A853)
                                 : kSecondaryColor,
+                        fontFamily: AppFonts.HelveticaNowDisplay,
                       ),
-                    ),
-                    CustomText(
-                      text: item.status!.capitalizeFirst.toString(),
-                      size: 14,
-                      paddingLeft: 6,
-                      weight: FontWeight.w500,
-                      color:
-                          (item.status == PlanStatus.active.name)
-                              ? Color(0xff34A853)
-                              : kSecondaryColor,
-                      fontFamily: AppFonts.HelveticaNowDisplay,
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
           SizedBox(height: h(context, 10)),
           Divider(
@@ -257,13 +268,34 @@ class _PlansDetailScreenState extends State<PlansDetailScreen> {
                   fontFamily: AppFonts.HelveticaNowDisplay,
                 ),
               ),
-              CustomText(
-                text: "${item.participantsIds?.length}",
-                size: 14,
-                weight: FontWeight.w500,
-                color: kBlackColor,
-                fontFamily: AppFonts.HelveticaNowDisplay,
+              StreamBuilder<DocumentSnapshot>(
+                stream: plansCollection.doc(item.id).snapshots(),
+                builder: (context, snapshot) {
+                  if (!snapshot.hasData) {
+                    return CircularProgressIndicator();
+                  }
+
+                  final data = snapshot.data!.data() as Map<String, dynamic>?;
+                  final participants = List<String>.from(
+                    data?['participantsIds'] ?? [],
+                  );
+
+                  return CustomText(
+                    text: "${participants.length}",
+                    size: 14,
+                    weight: FontWeight.w500,
+                    color: kBlackColor,
+                    fontFamily: AppFonts.HelveticaNowDisplay,
+                  );
+                },
               ),
+              // CustomText(
+              //   text: "${item.participantsIds?.length}",
+              //   size: 14,
+              //   weight: FontWeight.w500,
+              //   color: kBlackColor,
+              //   fontFamily: AppFonts.HelveticaNowDisplay,
+              // ),
             ],
           ),
           item.status == "Active"
