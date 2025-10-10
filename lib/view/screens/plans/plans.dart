@@ -1,13 +1,16 @@
 import 'dart:developer';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:f2g/constants/app_colors.dart';
 import 'package:f2g/constants/app_fonts.dart';
 import 'package:f2g/constants/app_images.dart';
 import 'package:f2g/constants/app_styling.dart';
+import 'package:f2g/constants/firebase_const.dart';
 import 'package:f2g/constants/loading_animation.dart';
 import 'package:f2g/controller/my_ctrl/plan_controller.dart';
 import 'package:f2g/core/common/global_instance.dart';
 import 'package:f2g/core/enums/plan_status.dart';
 import 'package:f2g/model/my_model/plan_model.dart';
+import 'package:f2g/model/my_model/user_model.dart';
 import 'package:f2g/view/screens/plans/plan_details.dart';
 import 'package:f2g/view/widget/Custom_text_widget.dart';
 import 'package:f2g/view/widget/common_image_view_widget.dart';
@@ -341,6 +344,69 @@ class _PlansScreenState extends State<PlansScreen> {
                     ),
                   ],
                 ),
+              ),
+
+              StreamBuilder<DocumentSnapshot>(
+                stream: plansCollection.doc(item.id).snapshots(),
+                builder: (context, snapshot) {
+                  if (!snapshot.hasData) {
+                    return const Center(child: CircularProgressIndicator());
+                  }
+
+                  final data = snapshot.data!.data() as Map<String, dynamic>?;
+
+                  // List of participant IDs
+                  final participantIds = List<String>.from(
+                    data?['participantsIds'] ?? [],
+                  );
+
+                  // If no participants, show nothing
+                  if (participantIds.isEmpty) {
+                    return const SizedBox.shrink();
+                  }
+
+                  // Get only first 3 participant IDs
+                  final limitedIds = participantIds.take(3).toList();
+
+                  return FutureBuilder<List<DocumentSnapshot>>(
+                    future: Future.wait(
+                      limitedIds.map(
+                        (uid) =>
+                            FirebaseFirestore.instance
+                                .collection('Users')
+                                .doc(uid)
+                                .get(),
+                      ),
+                    ),
+                    builder: (context, userSnapshots) {
+                      if (!userSnapshots.hasData) {
+                        return const Center(child: CircularProgressIndicator());
+                      }
+
+                      final userDocs =
+                          userSnapshots
+                              .data!; // List<DocumentSnapshot<Map<String, dynamic>>?>
+
+                      final validUsers =
+                          userDocs
+                              .where(
+                                (doc) =>
+                                    (doc as DocumentSnapshot).exists &&
+                                    doc.data() != null,
+                              )
+                              .map((doc) => UserModel.fromMap(doc))
+                              .toList();
+
+                      if (validUsers.isEmpty) {
+                        return const SizedBox.shrink();
+                      }
+
+                      log("Valid Users: ${validUsers.length}");
+
+                      return SizedBox();
+                    },
+                  );
+                },
               ),
 
               // Stack(

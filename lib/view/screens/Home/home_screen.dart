@@ -6,6 +6,7 @@ import 'package:f2g/core/bindings/bindings.dart';
 import 'package:f2g/core/common/global_instance.dart';
 import 'package:f2g/core/enums/categories_status.dart';
 import 'package:f2g/view/screens/createplan/create_new_plan.dart';
+import 'package:f2g/view/screens/createplan/create_plan_and_map_screen.dart';
 import 'package:f2g/view/screens/favourite/favourites.dart';
 import 'package:f2g/view/screens/notifcation/notification.dart';
 import 'package:f2g/view/screens/plans/plans.dart';
@@ -247,6 +248,29 @@ class _HomeScreenState extends State<HomeScreen> {
                       SizedBox(height: h(context, 13.5)),
                       sideOptions(
                         context,
+                        Assets.imagesLocationicon,
+                        haveLocationIcon: true,
+                        "Discover Plans",
+                        onTap: () {
+                          menuController.isMenuOpen.value = false;
+                          Get.to(
+                            CreatePlanAndMapScreen(),
+                            binding: PlanBindings(),
+                          );
+                        },
+                      ),
+                      SizedBox(height: h(context, 13.5)),
+                      SizedBox(
+                        width: w(context, 158),
+                        child: Divider(
+                          color: kWhiteColor.withValues(alpha: 0.67),
+                          height: h(context, 0.5),
+                          thickness: h(context, 0.5),
+                        ),
+                      ),
+                      SizedBox(height: h(context, 13.5)),
+                      sideOptions(
+                        context,
                         Assets.imagesNotification,
                         "Notifications",
                         arenotification: true,
@@ -374,7 +398,9 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget sideOptions(
     BuildContext context,
     String image,
+
     String title, {
+    bool haveLocationIcon = false,
     bool arenotification = false,
     void Function()? onTap,
   }) {
@@ -383,12 +409,14 @@ class _HomeScreenState extends State<HomeScreen> {
       child: Container(
         child: Row(
           children: [
-            CommonImageView(
-              imagePath: image,
-              height: 20,
-              width: 20,
-              fit: BoxFit.contain,
-            ),
+            (haveLocationIcon)
+                ? Icon(Icons.location_on_outlined, size: 20)
+                : CommonImageView(
+                  imagePath: image,
+                  height: 20,
+                  width: 20,
+                  fit: BoxFit.contain,
+                ),
             SizedBox(width: w(context, 6)),
             CustomText(
               text: title,

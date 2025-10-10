@@ -1,5 +1,4 @@
 import 'dart:developer';
-
 import 'package:f2g/constants/app_colors.dart';
 import 'package:f2g/constants/app_images.dart';
 import 'package:f2g/constants/app_styling.dart';
@@ -75,13 +74,15 @@ class _FavouritesScreenState extends State<FavouritesScreen> {
                       () => Column(
                         children: [
                           _ctrl.isLoading.value
-                              ? Center(child: WaveLoading())
+                              ? Expanded(child: Center(child: WaveLoading()))
                               : _ctrl.favourites.isEmpty
-                              ? Center(
-                                child: CustomText(
-                                  text: "No favourites plans found!",
-                                  color: kBlackColor,
-                                  size: 13,
+                              ? Expanded(
+                                child: Center(
+                                  child: CustomText(
+                                    text: "No favourites plans found!",
+                                    color: kBlackColor,
+                                    size: 13,
+                                  ),
                                 ),
                               )
                               : ListView.builder(

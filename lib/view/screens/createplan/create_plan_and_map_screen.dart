@@ -2,102 +2,170 @@ import 'package:f2g/constants/app_colors.dart';
 import 'package:f2g/constants/app_fonts.dart';
 import 'package:f2g/view/widget/Custom_text_widget.dart';
 import 'package:flutter/material.dart';
+import 'package:geocoding/geocoding.dart';
 import 'package:get/get.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 import '../../../constants/app_images.dart';
 import '../../../constants/app_styling.dart';
 import '../../../controller/create_plan_controller.dart';
 import '../../../model/plan_model.dart';
 import '../../widget/common_image_view_widget.dart';
 
-class CreatePlanScreen extends StatelessWidget {
-  CreatePlanScreen({super.key});
+class CreatePlanAndMapScreen extends StatefulWidget {
+  CreatePlanAndMapScreen({super.key});
 
+  @override
+  State<CreatePlanAndMapScreen> createState() => _CreatePlanAndMapScreenState();
+}
+
+class _CreatePlanAndMapScreenState extends State<CreatePlanAndMapScreen> {
   final CreatePlanController controller = Get.put(CreatePlanController());
+
+  late GoogleMapController mapController;
+
+  final List<String> eventAddresses = [
+    'Islamabad, Pakistan',
+    'Karachi, Pakistan',
+    'Peshawar, Pakistan',
+  ];
+
+  final Set<Marker> markers = {};
+
+  LatLng initialPosition = const LatLng(17.517362, -0.806597);
+  // Default: Islamabad
+  @override
+  void initState() {
+    super.initState();
+    _setEventMarkers();
+  }
+
+  Future<void> _setEventMarkers() async {
+    for (var address in eventAddresses) {
+      try {
+        List<Location> locations = await locationFromAddress(address);
+        if (locations.isNotEmpty) {
+          final loc = locations.first;
+          setState(() {
+            markers.add(
+              Marker(
+                markerId: MarkerId(address),
+                position: LatLng(loc.latitude, loc.longitude),
+                infoWindow: InfoWindow(title: address),
+              ),
+            );
+          });
+        }
+      } catch (e) {
+        debugPrint("Error finding location for $address: $e");
+      }
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: kWhiteColor,
-      body: Stack(
-        children: [
-          Stack(
-            children: [
-              Positioned.fill(
-                child: Image.asset(Assets.imagesMap, fit: BoxFit.cover),
-              ),
-              Positioned(
-                bottom: 40,
-                left: 0,
-                right: 0,
-                child: Obx(
-                  () => SizedBox(
-                    height: h(context, 208),
-                    child: ListView.builder(
-                      scrollDirection: Axis.horizontal,
-                      padding: only(context, left: 20),
-                      itemCount: controller.planItems.length,
-                      itemBuilder: (context, index) {
-                        final item = controller.planItems[index];
-                        return _buildPlanItemCard(context, item, controller);
-                      },
-                    ),
-                  ),
-                ),
-              ),
-            ],
-          ),
-
-          Container(
-            height: h(context, 100),
-            width: w(context, double.maxFinite),
-            decoration: BoxDecoration(color: kWhiteColor),
-            child: SafeArea(
-              bottom: false,
-              child: Column(
-                children: [
-                  SizedBox(height: h(context, 10)),
-                  Padding(
-                    padding: symmetric(context, horizontal: 20),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        InkWell(
-                          onTap: () {
-                            Get.back();
-                          },
-                          child: CommonImageView(
-                            imagePath: Assets.imagesGreybackicon,
-                            height: 48,
-                            width: 48,
-                            fit: BoxFit.contain,
-                          ),
-                        ),
-                        SizedBox(width: w(context, 15)),
-                        Expanded(
-                          child: CustomText(
-                            text: "Create new plan",
-                            size: 16,
-                            weight: FontWeight.w500,
-                            color: kBlackColor,
-                            fontFamily: AppFonts.HelveticaNowDisplay,
-                          ),
-                        ),
-                        CustomText(
-                          text: "Create Manually",
-                          size: 16,
-                          weight: FontWeight.w500,
-                          fontFamily: AppFonts.HelveticaNowDisplay,
-                          color: kSecondaryColor,
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
-        ],
+      body: GoogleMap(
+        onMapCreated: (controller) => mapController = controller,
+        initialCameraPosition: CameraPosition(
+          target: initialPosition,
+          zoom: 10.5,
+        ),
+        // markers: markers,
       ),
+
+      //  Stack(
+      //   children: [
+      //     Stack(
+      //       children: [
+      //         Positioned.fill(
+      //           child: GoogleMap(
+      //             onMapCreated: (controller) => mapController = controller,
+      //             initialCameraPosition: CameraPosition(
+      //               target: initialPosition,
+      //               zoom: 5.5,
+      //             ),
+      //             markers: markers,
+      //           ),
+      //         ),
+      //         //
+      //         //
+      //         // Positioned.fill(
+      //         //   child: Image.asset(Assets.imagesMap, fit: BoxFit.cover),
+      //         // ),
+      //         Positioned(
+      //           bottom: 40,
+      //           left: 0,
+      //           right: 0,
+      //           child: Obx(
+      //             () => SizedBox(
+      //               height: h(context, 208),
+      //               child: ListView.builder(
+      //                 scrollDirection: Axis.horizontal,
+      //                 padding: only(context, left: 20),
+      //                 itemCount: controller.planItems.length,
+      //                 itemBuilder: (context, index) {
+      //                   final item = controller.planItems[index];
+      //                   return _buildPlanItemCard(context, item, controller);
+      //                 },
+      //               ),
+      //             ),
+      //           ),
+      //         ),
+      //       ],
+      //     ),
+
+      //     Container(
+      //       height: h(context, 100),
+      //       width: w(context, double.maxFinite),
+      //       decoration: BoxDecoration(color: kWhiteColor),
+      //       child: SafeArea(
+      //         bottom: false,
+      //         child: Column(
+      //           children: [
+      //             SizedBox(height: h(context, 10)),
+      //             Padding(
+      //               padding: symmetric(context, horizontal: 20),
+      //               child: Row(
+      //                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      //                 children: [
+      //                   InkWell(
+      //                     onTap: () {
+      //                       Get.back();
+      //                     },
+      //                     child: CommonImageView(
+      //                       imagePath: Assets.imagesGreybackicon,
+      //                       height: 48,
+      //                       width: 48,
+      //                       fit: BoxFit.contain,
+      //                     ),
+      //                   ),
+      //                   SizedBox(width: w(context, 15)),
+      //                   Expanded(
+      //                     child: CustomText(
+      //                       text: "Create new plan",
+      //                       size: 16,
+      //                       weight: FontWeight.w500,
+      //                       color: kBlackColor,
+      //                       fontFamily: AppFonts.HelveticaNowDisplay,
+      //                     ),
+      //                   ),
+      //                   CustomText(
+      //                     text: "Create Manually",
+      //                     size: 16,
+      //                     weight: FontWeight.w500,
+      //                     fontFamily: AppFonts.HelveticaNowDisplay,
+      //                     color: kSecondaryColor,
+      //                   ),
+      //                 ],
+      //               ),
+      //             ),
+      //           ],
+      //         ),
+      //       ),
+      //     ),
+      //   ],
+      // ),
     );
   }
 

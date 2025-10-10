@@ -5,6 +5,7 @@ import 'package:f2g/constants/app_fonts.dart';
 import 'package:f2g/constants/app_images.dart';
 import 'package:f2g/constants/app_styling.dart';
 import 'package:f2g/constants/firebase_const.dart';
+import 'package:f2g/core/bindings/bindings.dart';
 import 'package:f2g/core/common/global_instance.dart';
 import 'package:f2g/core/enums/plan_status.dart';
 import 'package:f2g/model/my_model/plan_model.dart';
@@ -326,44 +327,72 @@ class _PlansDetailScreenState extends State<PlansDetailScreen> {
               : SizedBox.shrink(),
 
           SizedBox(height: h(context, 10)),
-          InkWell(
-            onTap: () {
-              Get.to(ChatScreen(), arguments: {'data': item});
-            },
-            child: Container(
-              height: h(context, 42),
-              width: double.maxFinite,
-              decoration: BoxDecoration(
-                border: GradientBoxBorder(
-                  gradient: LinearGradient(
-                    colors: [Color(0xff28E4D3), Color(0xffAFF888)],
-                    begin: Alignment.centerLeft,
-                    end: Alignment.centerRight,
-                  ),
-                ),
 
-                borderRadius: BorderRadius.circular(h(context, 8)),
-              ),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  CommonImageView(
-                    imagePath: Assets.imagesChaticon,
-                    height: 20,
-                    width: 20,
-                    fit: BoxFit.contain,
-                  ),
-                  CustomText(
-                    text: "Open group chat",
-                    size: 14,
-                    paddingLeft: 6,
-                    weight: FontWeight.w500,
-                    color: kSecondaryColor,
-                    fontFamily: AppFonts.HelveticaNowDisplay,
-                  ),
-                ],
-              ),
-            ),
+          StreamBuilder<DocumentSnapshot>(
+            stream: chatCollection.doc(item.id).snapshots(),
+            builder: (context, snapshot) {
+              if (!snapshot.hasData) {
+                return CircularProgressIndicator();
+              }
+
+              final data = snapshot.data!.data() as Map<String, dynamic>?;
+              final participants = List<String>.from(
+                data?['participants'] ?? [],
+              );
+
+              final isParticipant = participants.contains(
+                auth.currentUser!.uid,
+              );
+              log(auth.currentUser!.uid);
+
+              return isParticipant
+                  ? InkWell(
+                    onTap: () {
+                      Get.to(
+                        () => ChatScreen(chatHeadID: item.id!),
+                        binding: ChatBindings(),
+                        arguments: {'data': item},
+                      );
+                    },
+                    child: Container(
+                      height: h(context, 42),
+                      width: double.maxFinite,
+                      decoration: BoxDecoration(
+                        border: GradientBoxBorder(
+                          gradient: LinearGradient(
+                            colors: [Color(0xff28E4D3), Color(0xffAFF888)],
+                            begin: Alignment.centerLeft,
+                            end: Alignment.centerRight,
+                          ),
+                        ),
+
+                        borderRadius: BorderRadius.circular(h(context, 8)),
+                      ),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          CommonImageView(
+                            imagePath: Assets.imagesChaticon,
+                            height: 20,
+                            width: 20,
+                            fit: BoxFit.contain,
+                          ),
+
+                          // Checking if participantsIds is contains my ID then display group chat button
+                          CustomText(
+                            text: "Open group chat",
+                            size: 14,
+                            paddingLeft: 6,
+                            weight: FontWeight.w500,
+                            color: kSecondaryColor,
+                            fontFamily: AppFonts.HelveticaNowDisplay,
+                          ),
+                        ],
+                      ),
+                    ),
+                  )
+                  : SizedBox();
+            },
           ),
         ],
       ),

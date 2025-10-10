@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:f2g/constants/firebase_const.dart';
 import 'package:f2g/controller/loading_animation.dart';
+import 'package:f2g/controller/my_ctrl/chat_controller.dart';
 import 'package:f2g/core/enums/categories_status.dart';
 import 'package:f2g/core/enums/plan_status.dart';
 import 'package:f2g/model/my_model/plan_model.dart';
@@ -88,6 +89,12 @@ class PlanController extends GetxController {
       );
 
       plansCollection.doc(id).set(model.toMap());
+
+      // createChatThread
+
+      final ctrl = Get.find<ChatController>();
+
+      await ctrl.creatingChatThread(myID: auth.currentUser!.uid, chatID: id);
 
       hideLoadingDialog();
       clearFields();
@@ -219,6 +226,9 @@ class PlanController extends GetxController {
       await plansCollection.doc(planId).update({
         "participantsIds": FieldValue.arrayUnion([auth.currentUser!.uid]),
       });
+      await chatCollection.doc(planId).update({
+        "participants": FieldValue.arrayUnion([auth.currentUser!.uid]),
+      });
 
       hideLoadingDialog();
       displayToast(msg: "You have successfully joined the plan.");
@@ -238,8 +248,12 @@ class PlanController extends GetxController {
         "participantsIds": FieldValue.arrayRemove([auth.currentUser!.uid]),
       });
 
+      await chatCollection.doc(planId).update({
+        "participants": FieldValue.arrayRemove([auth.currentUser!.uid]),
+      });
+
       hideLoadingDialog();
-      displayToast(msg: "You have successfully leave plan.");
+      displayToast(msg: "You have successfully left the plan.");
     } catch (e) {
       hideLoadingDialog();
       displayToast(msg: "Failed to leave plan: $e");

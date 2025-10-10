@@ -14,6 +14,9 @@ Future<void> main() async {
 }
 
 //DO NOT REMOVE Unless you find their usage.
+
+const dummyimage =
+    'https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=634&q=80';
 String profileDefaultImage =
     "https://firebasestorage.googleapis.com/v0/b/friends2go-3df47.firebasestorage.app/o/profile_default_image%2Fprofile_default_image.jpg?alt=media&token=792eff9e-805d-4f30-ab1f-c811fd812574";
 String dummyImg =
