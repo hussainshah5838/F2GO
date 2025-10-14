@@ -5,9 +5,11 @@ import 'package:f2g/constants/app_styling.dart';
 import 'package:f2g/constants/firebase_const.dart';
 import 'package:f2g/view/screens/Home/home_screen.dart';
 import 'package:f2g/view/screens/auth/login/login.dart';
+import 'package:f2g/view/screens/launch/onboarding.dart';
 import 'package:f2g/view/widget/Custom_text_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../../../constants/app_images.dart';
 import '../../widget/common_image_view_widget.dart';
 
@@ -30,11 +32,18 @@ class _SplashScreenState extends State<SplashScreen> {
   // }
 
   void splashScreenHandler() async {
+    final prefs = await SharedPreferences.getInstance();
+    bool key = prefs.getBool('key') ?? false;
+
     Timer(Duration(seconds: 3), () {
       if (auth.currentUser != null) {
         Get.offAll(() => HomeScreen());
       } else {
-        Get.offAll(() => LoginScreen());
+        if (key == true) {
+          Get.offAll(() => LoginScreen());
+        } else {
+          Get.offAll(() => Onboarding());
+        }
       }
     });
   }

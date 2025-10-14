@@ -1,5 +1,7 @@
+import 'package:f2g/view/screens/auth/login/login.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../../../constants/app_colors.dart';
 import '../../../constants/app_fonts.dart';
 import '../../../constants/app_styling.dart';
@@ -8,9 +10,14 @@ import '../../widget/Custom_text_widget.dart';
 import '../../widget/custom_button_widget.dart';
 import 'image_slider.dart';
 
-class Onboarding extends StatelessWidget {
+class Onboarding extends StatefulWidget {
   Onboarding({super.key});
 
+  @override
+  State<Onboarding> createState() => _OnboardingState();
+}
+
+class _OnboardingState extends State<Onboarding> {
   final controller = Get.put(Onboardingcontroller());
 
   @override
@@ -103,7 +110,12 @@ class Onboarding extends StatelessWidget {
                       children: [
                         Expanded(
                           child: CustomButton(
-                            onPressed: () {},
+                            onPressed: () async {
+                              final prefs =
+                                  await SharedPreferences.getInstance();
+                              await prefs.setBool('key', true);
+                              Get.offAll(() => LoginScreen());
+                            },
                             text: "Skip",
                             backgroundcolor: kWhiteColor.withValues(
                               alpha: 0.12,

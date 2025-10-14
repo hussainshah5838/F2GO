@@ -1,3 +1,5 @@
+import 'package:f2g/core/bindings/bindings.dart';
+import 'package:f2g/view/screens/createplan/filter_plan.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../../constants/app_colors.dart';
@@ -7,6 +9,7 @@ import '../../widget/Custom_text_widget.dart';
 import '../../widget/custom_button_widget.dart';
 
 class FilterController extends GetxController {
+  Rx<RangeValues> peopleRange = const RangeValues(18, 45).obs;
   Rx<RangeValues> ageRange = const RangeValues(18, 45).obs;
   Rx<RangeValues> distanceRange = const RangeValues(5, 15).obs;
 }
@@ -55,27 +58,101 @@ class FilterBottomSheet extends StatelessWidget {
             color: Color(0xff0E0E0C),
           ),
           SizedBox(height: h(context, 18)),
+
+          // Container(
+          //   height: h(context, 46),
+          //   padding: symmetric(context, horizontal: 12),
+          //   decoration: BoxDecoration(
+          //     color: kWhiteColor,
+          //     borderRadius: BorderRadius.circular(h(context, 100)),
+          //   ),
+          //   child: Row(
+          //     children: [
+          //       Expanded(
+          //         child: CustomText(
+          //           text: "Select number of peoples",
+          //           size: 14,
+          //           weight: FontWeight.w500,
+          //           color: kBlackColor,
+          //           fontFamily: AppFonts.HelveticaNowDisplay,
+          //         ),
+          //       ),
+          //       Icon(Icons.keyboard_arrow_down, color: kBlackColor),
+          //     ],
+          //   ),
+          // ),
+          CustomText(
+            text: "Select People",
+            size: 14,
+            weight: FontWeight.w500,
+            color: kBlackColor,
+            paddingBottom: 8,
+            fontFamily: AppFonts.HelveticaNowDisplay,
+          ),
           Container(
-            height: h(context, 46),
-            padding: symmetric(context, horizontal: 12),
+            padding: only(context, bottom: 10),
+            width: w(context, double.maxFinite),
             decoration: BoxDecoration(
               color: kWhiteColor,
-              borderRadius: BorderRadius.circular(h(context, 100)),
+              borderRadius: BorderRadius.circular(h(context, 8)),
             ),
-            child: Row(
-              children: [
-                Expanded(
-                  child: CustomText(
-                    text: "Select number of peoples",
-                    size: 14,
-                    weight: FontWeight.w500,
-                    color: kBlackColor,
-                    fontFamily: AppFonts.HelveticaNowDisplay,
+            child: Obx(() {
+              final val = controller.peopleRange.value;
+              return Stack(
+                clipBehavior: Clip.none,
+                children: [
+                  SliderTheme(
+                    data: SliderTheme.of(context).copyWith(
+                      padding: all(context, 0),
+                      trackHeight: h(context, 8),
+                      rangeTrackShape: RoundedRectRangeSliderTrackShape(),
+                      activeTrackColor: kSecondaryColor,
+                      inactiveTrackColor: kPrimaryColor,
+                      thumbColor: kSecondaryColor,
+                      rangeThumbShape: WhiteBorderThumbShape(
+                        radius: h(context, 8),
+                        thumbColor: kSecondaryColor,
+                        borderColor: Colors.white,
+                        borderWidth: 1,
+                      ),
+                    ),
+                    child: RangeSlider(
+                      values: val,
+                      min: 0,
+                      max: 60,
+                      onChanged: (v) => controller.peopleRange.value = v,
+                    ),
                   ),
-                ),
-                Icon(Icons.keyboard_arrow_down, color: kBlackColor),
-              ],
-            ),
+
+                  Positioned(
+                    left:
+                        (val.start / 60) *
+                        (MediaQuery.of(context).size.width - w(context, 50)),
+                    bottom: h(context, -4),
+                    child: CustomText(
+                      text: "${val.start.toInt()} people to",
+                      size: 10,
+                      weight: FontWeight.w500,
+                      fontFamily: AppFonts.HelveticaNowDisplay,
+                      color: kBlackColor,
+                    ),
+                  ),
+                  Positioned(
+                    right:
+                        ((60 - val.end) / 60) *
+                        (MediaQuery.of(context).size.width - w(context, 50)),
+                    bottom: h(context, -4),
+                    child: CustomText(
+                      text: "${val.end.toInt()} people",
+                      size: 10,
+                      weight: FontWeight.w500,
+                      fontFamily: AppFonts.HelveticaNowDisplay,
+                      color: kBlackColor,
+                    ),
+                  ),
+                ],
+              );
+            }),
           ),
           SizedBox(height: h(context, 16)),
           CustomText(
@@ -127,7 +204,7 @@ class FilterBottomSheet extends StatelessWidget {
                         (MediaQuery.of(context).size.width - w(context, 50)),
                     bottom: h(context, -4),
                     child: CustomText(
-                      text: "${val.start.toInt()} yrs",
+                      text: "${val.start.toInt()} yrs to",
                       size: 10,
                       weight: FontWeight.w500,
                       fontFamily: AppFonts.HelveticaNowDisplay,
@@ -215,7 +292,7 @@ class FilterBottomSheet extends StatelessWidget {
                         (MediaQuery.of(context).size.width - w(context, 50)),
                     bottom: h(context, -4),
                     child: CustomText(
-                      text: "${val.end.toInt()} yrs",
+                      text: "${val.end.toInt()} km",
                       size: 10,
                       weight: FontWeight.w500,
                       fontFamily: AppFonts.HelveticaNowDisplay,
@@ -232,6 +309,7 @@ class FilterBottomSheet extends StatelessWidget {
               Expanded(
                 child: CustomButton(
                   onPressed: () {
+                    controller.peopleRange.value = const RangeValues(18, 45);
                     controller.ageRange.value = const RangeValues(18, 45);
                     controller.distanceRange.value = const RangeValues(5, 15);
                   },
@@ -250,7 +328,7 @@ class FilterBottomSheet extends StatelessWidget {
               Expanded(
                 child: CustomButton(
                   onPressed: () {
-                    Get.back();
+                    Get.to(() => FilterScreenPage(), binding: PlanBindings());
                   },
                   text: "Apply Filters",
                   iscustomgradient: true,
@@ -313,10 +391,11 @@ class WhiteBorderThumbShape extends RangeSliderThumbShape {
     final Paint fillPaint = Paint()..color = thumbColor;
     canvas.drawCircle(center, radius, fillPaint);
 
-    final Paint borderPaint = Paint()
-      ..color = borderColor
-      ..style = PaintingStyle.stroke
-      ..strokeWidth = borderWidth;
+    final Paint borderPaint =
+        Paint()
+          ..color = borderColor
+          ..style = PaintingStyle.stroke
+          ..strokeWidth = borderWidth;
     canvas.drawCircle(center, radius, borderPaint);
   }
 }

@@ -61,34 +61,36 @@ class CustomButton extends StatelessWidget {
       width: w(context, width),
       height: h(context, height),
       decoration: BoxDecoration(
-        gradient: iscustomgradient
-            ? gradient
-            : LinearGradient(
-                colors: kButtonGradientColors,
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-                stops: [0, 1],
-              ),
+        gradient:
+            iscustomgradient
+                ? gradient
+                : LinearGradient(
+                  colors: kButtonGradientColors,
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                  stops: [0, 1],
+                ),
 
         color: backgroundcolor ?? null,
 
-        border: isborder
-            ? Border.all(
-                color: bordercolor ?? Colors.transparent,
-                width: borderwidth ?? 1.0,
-              )
-            : null,
+        border:
+            isborder
+                ? Border.all(
+                  color: bordercolor ?? Colors.transparent,
+                  width: borderwidth ?? 1.0,
+                )
+                : null,
         borderRadius: BorderRadius.circular(h(context, borderradius ?? 42)),
         boxShadow:
             boxShadow ??
             [
               isboxshadow
                   ? BoxShadow(
-                      color: Color(0xff532FAA).withValues(alpha: 0.2),
-                      offset: Offset(0, 6),
-                      blurRadius: 10,
-                      spreadRadius: 0,
-                    )
+                    color: Color(0xff532FAA).withValues(alpha: 0.2),
+                    offset: Offset(0, 6),
+                    blurRadius: 10,
+                    spreadRadius: 0,
+                  )
                   : BoxShadow(color: Colors.transparent),
             ],
       ),

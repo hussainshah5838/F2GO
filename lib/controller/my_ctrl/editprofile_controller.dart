@@ -5,6 +5,7 @@ import 'package:f2g/controller/loading_animation.dart';
 import 'package:f2g/core/common/global_instance.dart';
 import 'package:f2g/services/firebase_storage/firebase_storage_service.dart';
 import 'package:f2g/services/user/user_services.dart';
+import 'package:f2g/view/screens/auth/login/login.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -23,6 +24,8 @@ class ProfileController extends GetxController {
   TextEditingController currentPasswordController = TextEditingController();
   TextEditingController newPasswordController = TextEditingController();
   TextEditingController confirmPasswordController = TextEditingController();
+  TextEditingController accountDeletionPasswordController =
+      TextEditingController();
 
   final ImagePicker _picker = ImagePicker();
 
@@ -147,6 +150,81 @@ class ProfileController extends GetxController {
     } catch (e) {
       hideLoadingDialog();
       log('Unexpected Error: $e');
+    }
+  }
+
+  // Delete current user account
+
+  Future<void> _reauthenticateUser(
+    BuildContext context,
+    User user,
+    String password,
+  ) async {
+    try {
+      // Prompt user for reauthentication (assuming email/password login)
+      String email = user.email ?? "";
+      password; // Show a dialog to get the password
+
+      // Create email/password credentials
+      AuthCredential credential = EmailAuthProvider.credential(
+        email: email,
+        password: password,
+      );
+      // Reauthenticate the user
+      await user.reauthenticateWithCredential(credential);
+      log('User reauthenticated successfully.');
+    } catch (e) {
+      log("Reauthentication failed: $e");
+      throw e; // Rethrow the exception to stop further actions
+    }
+  }
+
+  Future<void> deleteCurrentUserAccount(contex) async {
+    try {
+      showLoadingDialog();
+      // Delete current all data stored in firestore
+
+      await userCollection.doc(auth.currentUser?.uid).delete();
+      final querySnapshot =
+          await plansCollection
+              .where('planCreatorID', isEqualTo: auth.currentUser?.uid)
+              .get();
+
+      for (var doc in querySnapshot.docs) {
+        await plansCollection.doc(doc.id).delete();
+        await chatCollection.doc(doc.id).delete();
+        log("Delete Document Collection Called --------------- ${doc.id}");
+      }
+
+      User? user = FirebaseAuth.instance.currentUser;
+      if (user != null) {
+        try {
+          // Reauthenticate the user before deleting
+          await _reauthenticateUser(
+            contex,
+            user,
+            accountDeletionPasswordController.text,
+          );
+          // If reauthentication is successful, proceed to delete the account
+          await user.delete();
+          log("User account deleted successfully.");
+          hideLoadingDialog();
+          // Navigate to a login or home screen after deletion
+          Get.offAll(() => LoginScreen());
+        } catch (e) {
+          hideLoadingDialog();
+          log("Failed to delete user: $e");
+        }
+      } else {
+        hideLoadingDialog();
+        log("Error, No user is currently signed in.");
+      }
+      hideLoadingDialog();
+      log("Current user delete");
+      accountDeletionPasswordController.clear();
+    } catch (e) {
+      hideLoadingDialog();
+      log("Error occures while current user account deletion: $e");
     }
   }
 

@@ -253,45 +253,53 @@ class EditProfileScreen extends StatelessWidget {
                     ),
                   ),
 
-                  Spacer(),
-
-                  CustomButton(
-                    text: "Update",
-                    iscustomgradient: true,
-                    gradient: const LinearGradient(
-                      colors: [Color(0xff21E3D7), Color(0xffB5F985)],
-                      begin: Alignment.centerLeft,
-                      end: Alignment.centerRight,
-                    ),
-                    borderradius: 100,
-                    size: 18,
-                    weight: FontWeight.w500,
-                    fontFamily: AppFonts.HelveticaNowDisplay,
-                    color: kBlackColor,
-                    height: 50,
-                    width: double.maxFinite,
-                    // onPressed: controller.updateProfile,
-                    onPressed: () {
-                      if (controller.nameController.text.isEmpty) {
-                        displayToast(msg: "Name can't be empty");
-                        return;
-                      }
-                      if (controller.biographyController.text.isEmpty) {
-                        displayToast(msg: "Biography can't be empty");
-                        return;
-                      }
-
-                      controller.updateUserInfo(
-                        name: controller.nameController.text.trim(),
-                        bio: controller.biographyController.text.trim(),
-                        profileImage: controller.profileImageUrl,
-                      );
-                    },
-                  ),
-                  SizedBox(height: h(context, 18)),
+                  // Spacer(),
                 ],
               ),
             ),
+          ),
+        ),
+        bottomNavigationBar: Padding(
+          padding: EdgeInsets.symmetric(horizontal: 20),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              CustomButton(
+                text: "Update",
+                iscustomgradient: true,
+                gradient: const LinearGradient(
+                  colors: [Color(0xff21E3D7), Color(0xffB5F985)],
+                  begin: Alignment.centerLeft,
+                  end: Alignment.centerRight,
+                ),
+                borderradius: 100,
+                size: 18,
+                weight: FontWeight.w500,
+                fontFamily: AppFonts.HelveticaNowDisplay,
+                color: kBlackColor,
+                height: 50,
+                width: double.maxFinite,
+                // onPressed: controller.updateProfile,
+                onPressed: () {
+                  if (controller.nameController.text.isEmpty) {
+                    displayToast(msg: "Name can't be empty");
+                    return;
+                  }
+                  if (controller.biographyController.text.isEmpty) {
+                    displayToast(msg: "Biography can't be empty");
+                    return;
+                  }
+
+                  controller.updateUserInfo(
+                    name: controller.nameController.text.trim(),
+                    bio: controller.biographyController.text.trim(),
+                    profileImage: controller.profileImageUrl,
+                  );
+                },
+              ),
+
+              SizedBox(height: h(context, 28)),
+            ],
           ),
         ),
       ),

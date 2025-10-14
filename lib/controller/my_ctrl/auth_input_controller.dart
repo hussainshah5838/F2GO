@@ -214,6 +214,87 @@ class AuthInputController extends GetxController {
     return userCredential;
   }
 
+  //  -------------- Google Authentication ------------------
+
+  // Future<void> googleAuth({String? userType}) async {
+  //   try {
+  //     showLoadingDialog();
+  //     final GoogleSignInAccount? googleUser = await GoogleSignIn(scopes: ['email', 'profile']).signIn();
+
+  //         // await GoogleSignIn(scopes: ['email', 'profile']).signIn();
+
+  //     if (googleUser == null) {
+  //       hideLoadingDialog();
+  //       log('User canceled the Google sign-in process');
+  //       return;
+  //     }
+
+  //     final GoogleSignInAuthentication? googleAuth =
+  //         await googleUser.authentication;
+
+  //     if (googleAuth?.idToken == null) {
+  //       // isGoogleAuthLoading.value = false;
+  //       hideLoadingDialog();
+  //       log('Google authentication id token is null');
+  //       return;
+  //     }
+
+  //     // var auth = googleUser.id;
+
+  //     final credential = await GoogleAuthProvider.credential(
+  //       accessToken: googleAuth?.idToken,
+  //       idToken: googleAuth?.idToken,
+  //     );
+
+  //     // auth =
+  //     // await FirebaseAuth.instance.signInWithCredential(credential);
+  //     await auth.signInWithCredential(credential);
+
+  //     log(
+  //       'User signed in: ${auth.currentUser?.displayName}, ${auth.currentUser?.email}',
+  //     );
+  //     log('Google Auth Id: ${auth.currentUser?.uid}');
+
+  //     //  TODO: IsEmailExist
+
+  //     bool isEmailExist = await isUserExistWithEmail(
+  //       email: auth.currentUser!.email.toString(),
+  //     );
+
+  //     if (isEmailExist) {
+  //       await socialLoginMethod(email: auth.currentUser!.email.toString());
+  //       hideLoadingDialog();
+
+  //       log("if: Is email exist: $isEmailExist");
+  //     } else {
+  //       await socialSignUpMethod(
+  //         fullName: '${auth.currentUser?.displayName}',
+  //         email: '${auth.currentUser?.email}',
+  //         userType: userType!,
+  //         authId: auth.currentUser!.uid,
+  //       );
+
+  //       await UserTypeService.instance.initUserType();
+  //       if (UserTypeService.instance.userType == UserType.client.name) {
+  //         log('Go To Client Nav Bar');
+  //         Get.to(() => ClientNavBar());
+  //       } else {
+  //         log('Go To Therapist Nav Bar');
+  //         Get.to(() => TherapistNavBar());
+  //       }
+
+  //       hideLoadingDialog();
+
+  //       log("else: Is email exist: $isEmailExist");
+  //     }
+
+  //     hideLoadingDialog();
+  //   } catch (e) {
+  //     hideLoadingDialog();
+  //     log('An error occurred during Google sign-in: $e');
+  //   }
+  // }
+
   // -------------- Save User Data to Firestore ------------------
 
   Future<void> saveUserToFirestore({required model}) async {

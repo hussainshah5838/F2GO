@@ -366,16 +366,17 @@ class _PlansScreenState extends State<PlansScreen> {
                   }
 
                   // Get only first 3 participant IDs
-                  final limitedIds = participantIds.take(3).toList();
+                  List<String> limitedIds = participantIds.take(3).toList();
 
                   return FutureBuilder<List<DocumentSnapshot>>(
                     future: Future.wait(
                       limitedIds.map(
-                        (uid) =>
-                            FirebaseFirestore.instance
-                                .collection('Users')
-                                .doc(uid)
-                                .get(),
+                        (uid) => userCollection.doc(uid).get(),
+                        // If you want to fetch all participants, use the below line instead
+                        // FirebaseFirestore.instance
+                        //     .collection('users')
+                        //     .doc(uid)
+                        //     .get(),
                       ),
                     ),
                     builder: (context, userSnapshots) {
@@ -387,7 +388,7 @@ class _PlansScreenState extends State<PlansScreen> {
                           userSnapshots
                               .data!; // List<DocumentSnapshot<Map<String, dynamic>>?>
 
-                      final validUsers =
+                      List<UserModel> validUsers =
                           userDocs
                               .where(
                                 (doc) =>
@@ -403,7 +404,22 @@ class _PlansScreenState extends State<PlansScreen> {
 
                       log("Valid Users: ${validUsers.length}");
 
-                      return SizedBox();
+                      return Stack(
+                        clipBehavior: Clip.none,
+                        children: List.generate(
+                          validUsers.length,
+                          (i) => Padding(
+                            padding: only(context, left: w(context, i * 18.0)),
+                            child: CommonImageView(
+                              radius: 100,
+                              url: validUsers[i].profileImage,
+                              height: 28,
+                              width: 28,
+                              fit: BoxFit.cover,
+                            ),
+                          ),
+                        ),
+                      );
                     },
                   );
                 },

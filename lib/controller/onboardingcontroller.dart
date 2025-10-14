@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../view/screens/auth/login/login.dart';
 
@@ -23,7 +24,7 @@ class Onboardingcontroller extends GetxController {
     currentSlide.value = index;
   }
 
-  void nextSlide() {
+  void nextSlide() async {
     if (currentSlide.value < title.length - 1) {
       pageController.animateToPage(
         currentSlide.value + 1,
@@ -32,6 +33,8 @@ class Onboardingcontroller extends GetxController {
       );
       currentSlide.value++;
     } else {
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setBool('key', true);
       Get.offAll(LoginScreen());
     }
   }

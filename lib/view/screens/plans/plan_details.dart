@@ -83,15 +83,15 @@ class _PlansDetailScreenState extends State<PlansDetailScreen> {
                           fontFamily: AppFonts.HelveticaNowDisplay,
                         ),
                       ),
-                      InkWell(
-                        onTap: () {},
-                        child: CommonImageView(
-                          imagePath: Assets.images3dotscontainer,
-                          height: 48,
-                          width: 48,
-                          fit: BoxFit.contain,
-                        ),
-                      ),
+                      // InkWell(
+                      //   onTap: () {},
+                      //   child: CommonImageView(
+                      //     imagePath: Assets.images3dotscontainer,
+                      //     height: 48,
+                      //     width: 48,
+                      //     fit: BoxFit.contain,
+                      //   ),
+                      // ),
                     ],
                   ),
                   SizedBox(height: h(context, 20)),

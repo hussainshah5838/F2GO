@@ -1,3 +1,4 @@
+import 'dart:developer';
 import 'package:f2g/constants/app_colors.dart';
 import 'package:f2g/constants/app_fonts.dart';
 import 'package:f2g/constants/app_styling.dart';
@@ -30,12 +31,6 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   final HomeMenuController menuController = Get.put(HomeMenuController());
-
-  @override
-  void initState() {
-    super.initState();
-    userService.getCurrentUserInformation();
-  }
 
   final List<HomeOptionsContainer> homeoptions = [
     HomeOptionsContainer(
@@ -111,6 +106,41 @@ class _HomeScreenState extends State<HomeScreen> {
       },
     ),
   ];
+
+  // ✅ Controller for search input
+  final TextEditingController _searchController = TextEditingController();
+  // ✅ List to store filtered categories
+  late List<HomeOptionsContainer> filteredOptions;
+
+  @override
+  void initState() {
+    super.initState();
+    userService.getCurrentUserInformation();
+
+    // initially show all options
+    filteredOptions = homeoptions;
+
+    // listen for search changes (optional, or can use onChanged directly)
+    _searchController.addListener(() {
+      filterCategories(_searchController.text);
+    });
+  }
+
+  // ✅ Function to filter categories
+  void filterCategories(String query) {
+    final results =
+        homeoptions.where((option) {
+          final title = option.text?.toLowerCase();
+          final subtitle = option.subtext?.toLowerCase();
+          final search = query.toLowerCase();
+          return title!.contains(search) || subtitle!.contains(search);
+        }).toList();
+
+    setState(() {
+      filteredOptions = results;
+      log("Filter Options: ${filteredOptions.length}");
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -472,7 +502,8 @@ class _HomeScreenState extends State<HomeScreen> {
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
                           CustomText(
-                            text: "Good Morning!",
+                            // text: "Good Morning!",
+                            text: menuController.getGreetingMessage().value,
                             size: 12,
                             paddingBottom: 2,
                             weight: FontWeight.w500,
@@ -533,6 +564,10 @@ class _HomeScreenState extends State<HomeScreen> {
                               SizedBox(width: w(context, 4)),
                               Expanded(
                                 child: TextFormField(
+                                  controller: _searchController, // ✅ Added
+                                  onChanged:
+                                      (value) =>
+                                          filterCategories(value), // ✅ Added
                                   cursorColor: kBlackColor,
                                   style: TextStyle(
                                     fontSize: f(context, 14),
@@ -587,58 +622,123 @@ class _HomeScreenState extends State<HomeScreen> {
                     ],
                   ),
                   SizedBox(height: h(context, 16)),
-                  Expanded(
-                    child: SingleChildScrollView(
-                      child: Column(
-                        children: [
-                          GridView.builder(
-                            physics: NeverScrollableScrollPhysics(parent: null),
-                            shrinkWrap: true,
-                            padding: EdgeInsets.zero,
-                            gridDelegate:
-                                SliverGridDelegateWithFixedCrossAxisCount(
-                                  crossAxisCount: 2,
-                                  crossAxisSpacing: w(context, 8),
-                                  mainAxisSpacing: h(context, 8),
-                                  mainAxisExtent: h(context, 170),
+
+                  // Search Results
+                  (filteredOptions.isNotEmpty)
+                      ? Expanded(
+                        child: SingleChildScrollView(
+                          child: Column(
+                            children: [
+                              GridView.builder(
+                                physics: NeverScrollableScrollPhysics(
+                                  parent: null,
                                 ),
-                            itemCount: homeoptions.length,
-                            itemBuilder: (context, index) {
-                              return homeoptions[index];
-                            },
+                                shrinkWrap: true,
+                                padding: EdgeInsets.zero,
+                                gridDelegate:
+                                    SliverGridDelegateWithFixedCrossAxisCount(
+                                      crossAxisCount: 2,
+                                      crossAxisSpacing: w(context, 8),
+                                      mainAxisSpacing: h(context, 8),
+                                      mainAxisExtent: h(context, 170),
+                                    ),
+                                itemCount: filteredOptions.length,
+                                itemBuilder: (context, index) {
+                                  return filteredOptions[index];
+                                },
+                              ),
+                              SizedBox(height: h(context, 12)),
+                              CustomButton(
+                                onPressed: () {
+                                  // Get.to(CreatePlanScreen());
+                                  // Get.to(CreatePlanScreen());
+                                  Get.to(
+                                    () => CreateNewPlanScreen(),
+                                    binding: PlanBindings(),
+                                  );
+                                },
+                                text: "Create new Plan",
+                                iscustomgradient: true,
+                                gradient: LinearGradient(
+                                  colors: [
+                                    Color(0xff62D5C3),
+                                    Color(0xffB5F985),
+                                  ],
+                                  begin: Alignment.centerLeft,
+                                  end: Alignment.centerRight,
+                                ),
+                                borderradius: 100,
+                                isimage: true,
+                                imagePath: Assets.imagesAddicon,
+                                size: 18,
+                                weight: FontWeight.w500,
+                                fontFamily: AppFonts.HelveticaNowDisplay,
+                                color: kBlackColor,
+                                height: 50,
+                                width: 235,
+                              ),
+                              SizedBox(height: h(context, 15)),
+                            ],
                           ),
-                          SizedBox(height: h(context, 12)),
-                          CustomButton(
-                            onPressed: () {
-                              // Get.to(CreatePlanScreen());
-                              // Get.to(CreatePlanScreen());
-                              Get.to(
-                                () => CreateNewPlanScreen(),
-                                binding: PlanBindings(),
-                              );
-                            },
-                            text: "Create new Plan",
-                            iscustomgradient: true,
-                            gradient: LinearGradient(
-                              colors: [Color(0xff62D5C3), Color(0xffB5F985)],
-                              begin: Alignment.centerLeft,
-                              end: Alignment.centerRight,
-                            ),
-                            borderradius: 100,
-                            isimage: true,
-                            imagePath: Assets.imagesAddicon,
-                            size: 18,
-                            weight: FontWeight.w500,
-                            fontFamily: AppFonts.HelveticaNowDisplay,
-                            color: kBlackColor,
-                            height: 50,
-                            width: 235,
+                        ),
+                      )
+                      : Expanded(
+                        child: SingleChildScrollView(
+                          child: Column(
+                            children: [
+                              GridView.builder(
+                                physics: NeverScrollableScrollPhysics(
+                                  parent: null,
+                                ),
+                                shrinkWrap: true,
+                                padding: EdgeInsets.zero,
+                                gridDelegate:
+                                    SliverGridDelegateWithFixedCrossAxisCount(
+                                      crossAxisCount: 2,
+                                      crossAxisSpacing: w(context, 8),
+                                      mainAxisSpacing: h(context, 8),
+                                      mainAxisExtent: h(context, 170),
+                                    ),
+                                itemCount: homeoptions.length,
+                                itemBuilder: (context, index) {
+                                  return homeoptions[index];
+                                },
+                              ),
+                              SizedBox(height: h(context, 12)),
+                              CustomButton(
+                                onPressed: () {
+                                  // Get.to(CreatePlanScreen());
+                                  // Get.to(CreatePlanScreen());
+                                  Get.to(
+                                    () => CreateNewPlanScreen(),
+                                    binding: PlanBindings(),
+                                  );
+                                },
+                                text: "Create new Plan",
+                                iscustomgradient: true,
+                                gradient: LinearGradient(
+                                  colors: [
+                                    Color(0xff62D5C3),
+                                    Color(0xffB5F985),
+                                  ],
+                                  begin: Alignment.centerLeft,
+                                  end: Alignment.centerRight,
+                                ),
+                                borderradius: 100,
+                                isimage: true,
+                                imagePath: Assets.imagesAddicon,
+                                size: 18,
+                                weight: FontWeight.w500,
+                                fontFamily: AppFonts.HelveticaNowDisplay,
+                                color: kBlackColor,
+                                height: 50,
+                                width: 235,
+                              ),
+                              SizedBox(height: h(context, 15)),
+                            ],
                           ),
-                          SizedBox(height: h(context, 15)),
-                        ],
+                        ),
                       ),
-                    ),
-                  ),
                 ],
               ),
             ),

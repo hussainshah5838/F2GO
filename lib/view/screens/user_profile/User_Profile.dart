@@ -1,6 +1,10 @@
+import 'dart:developer';
 import 'package:f2g/constants/app_images.dart';
+import 'package:f2g/constants/loading_animation.dart';
+import 'package:f2g/controller/my_ctrl/editprofile_controller.dart';
 import 'package:f2g/core/common/global_instance.dart';
 import 'package:f2g/view/widget/custom_switch.dart';
+import 'package:f2g/view/widget/custom_textfeild_widget.dart';
 import 'package:flutter/material.dart';
 import '../../widget/Custom_text_widget.dart';
 import '../../widget/Common_image_view_widget.dart';
@@ -15,7 +19,7 @@ import 'feedback.dart';
 import 'privacypolicy.dart';
 
 class UserProfileScreen extends StatelessWidget {
-  const UserProfileScreen({super.key});
+  UserProfileScreen({super.key});
 
   void _show_deleteAccountSheet(BuildContext context) {
     showModalBottomSheet(
@@ -73,7 +77,27 @@ class UserProfileScreen extends StatelessWidget {
                 padding: symmetric(context, horizontal: 29),
                 child: CustomButton(
                   onPressed: () {
-                    Navigator.pop(context);
+                    log("Delete Account Tapped");
+                    showDeleteConfirmationDialog(
+                      onDeleteTap: () {
+                        if (Get.find<ProfileController>()
+                            .accountDeletionPasswordController
+                            .text
+                            .isEmpty) {
+                          displayToast(msg: "Please enter your password");
+                          return;
+                        }
+
+                        Get.find<ProfileController>().deleteCurrentUserAccount(
+                          context,
+                        );
+                      },
+                      onCancelTap: () {
+                        Get.back();
+                      },
+                    );
+
+                    // Navigator.pop(context);
                   },
                   text: "Yes, Delete",
                   iscustomgradient: true,
@@ -177,6 +201,8 @@ class UserProfileScreen extends StatelessWidget {
       },
     );
   }
+
+  ProfileController _ctrl = Get.put(ProfileController());
 
   @override
   Widget build(BuildContext context) {
@@ -509,4 +535,55 @@ class UserProfileScreen extends StatelessWidget {
       ),
     );
   }
+}
+
+void showDeleteConfirmationDialog({
+  required VoidCallback onDeleteTap,
+  required VoidCallback onCancelTap,
+}) {
+  Get.dialog(
+    AlertDialog(
+      backgroundColor: kPrimaryColor,
+      title: CustomText(
+        text: 'Delete Account',
+        weight: FontWeight.w700,
+        size: 19,
+        color: kSecondaryColor,
+      ),
+      content: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          CustomText(
+            paddingBottom: 10,
+            text:
+                'Are you sure you want to delete your account? This action cannot be undone.',
+            color: kBlackColor,
+          ),
+          CustomTextfeildWidget(
+            index: 1,
+            controller:
+                Get.find<ProfileController>().accountDeletionPasswordController,
+            hintText: 'Enter password...',
+          ),
+        ],
+      ),
+      actions: <Widget>[
+        CustomText(
+          onTap: onDeleteTap,
+          text: 'Delete Account',
+          color: kSecondaryColor,
+        ),
+        const SizedBox(height: 10),
+        CustomText(
+          color: kBlackColor,
+          onTap: () {
+            Get.back();
+            onCancelTap();
+          },
+          text: 'Cancel',
+        ),
+      ],
+    ),
+  );
 }
