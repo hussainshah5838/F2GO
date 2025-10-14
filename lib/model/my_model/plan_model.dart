@@ -4,6 +4,10 @@ class PlanModel {
   final String? title;
   final DateTime? startDate;
   final DateTime? endDate;
+
+  final DateTime? startTime;
+  final DateTime? endTime;
+
   final String? maxMembers;
   final String? location;
   final String? category;
@@ -19,8 +23,13 @@ class PlanModel {
     this.id,
     this.planPhoto,
     this.title,
+
     this.startDate,
     this.endDate,
+
+    this.startTime,
+    this.endTime,
+
     this.maxMembers,
     this.location,
     this.category,
@@ -40,6 +49,7 @@ class PlanModel {
       planPhoto:
           map.containsKey('planPhoto') ? map['planPhoto'] as String? : null,
       title: map.containsKey('title') ? map['title'] as String? : null,
+
       startDate:
           map.containsKey('startDate') && map['startDate'] != null
               ? DateTime.tryParse(map['startDate'].toString())
@@ -48,6 +58,16 @@ class PlanModel {
           map.containsKey('endDate') && map['endDate'] != null
               ? DateTime.tryParse(map['endDate'].toString())
               : null,
+
+      startTime:
+          map.containsKey('startTime') && map['startTime'] != null
+              ? DateTime.tryParse(map['startTime'].toString())
+              : null,
+      endTime:
+          map.containsKey('endTime') && map['endTime'] != null
+              ? DateTime.tryParse(map['endTime'].toString())
+              : null,
+
       maxMembers:
           map.containsKey('maxMembers') ? map['maxMembers'] as String? : null,
       location: map.containsKey('location') ? map['location'] as String? : null,
@@ -82,8 +102,13 @@ class PlanModel {
       'id': id,
       'planPhoto': planPhoto,
       'title': title,
+
       'startDate': startDate?.toIso8601String(),
       'endDate': endDate?.toIso8601String(),
+
+      'startTime': startTime?.toIso8601String(),
+      'endTime': endTime?.toIso8601String(),
+
       'maxMembers': maxMembers,
       'location': location,
       'category': category,

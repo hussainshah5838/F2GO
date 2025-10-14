@@ -249,86 +249,175 @@ class _DetailsScreenState extends State<DetailsScreen> {
                               lineHeight: h(context, 1.2),
                               paddingBottom: 20,
                             ),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+
+                            // ------- Start Date & Time -------
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    CustomText(
-                                      text: "Date & Time",
-                                      size: 14,
-                                      weight: FontWeight.w500,
-                                      color: kBlackColor.withValues(alpha: 0.5),
-                                      fontFamily: AppFonts.HelveticaNowDisplay,
-                                      lineHeight: h(context, 1),
-                                      paddingBottom: 4,
-                                    ),
-                                    CustomText(
-                                      text: dT.formatEventDateTime(
-                                        model.startDate!,
-                                      ),
+                                CustomText(
+                                  text: "Start Date & Time",
+                                  size: 14,
+                                  weight: FontWeight.w500,
+                                  color: kBlackColor.withValues(alpha: 0.5),
+                                  fontFamily: AppFonts.HelveticaNowDisplay,
+                                  lineHeight: h(context, 1),
+                                  paddingBottom: 4,
+                                ),
+                                CustomText(
+                                  text: dT.formatEventDateTime(
+                                    // model.startDate!,
+                                    dTime: model.startTime!,
+                                    onlyDate: model.startDate!,
+                                  ),
+                                  size: 14,
+                                  weight: FontWeight.w500,
+                                  color: kBlackColor,
+                                  fontFamily: AppFonts.HelveticaNowDisplay,
+                                  lineHeight: h(context, 1),
+                                ),
+                                SizedBox(height: 12),
+
+                                CustomText(
+                                  text: "End Date & Time",
+                                  size: 14,
+                                  weight: FontWeight.w500,
+                                  color: kBlackColor.withValues(alpha: 0.5),
+                                  fontFamily: AppFonts.HelveticaNowDisplay,
+                                  lineHeight: h(context, 1),
+                                  paddingBottom: 4,
+                                ),
+                                CustomText(
+                                  text: dT.formatEventDateTime(
+                                    // model.startDate!,
+                                    dTime: model.endTime!,
+                                    onlyDate: model.endDate!,
+                                  ),
+                                  size: 14,
+                                  weight: FontWeight.w500,
+                                  color: kBlackColor,
+                                  fontFamily: AppFonts.HelveticaNowDisplay,
+                                  lineHeight: h(context, 1),
+                                ),
+                                SizedBox(height: 12),
+
+                                CustomText(
+                                  text: "Participants",
+                                  size: 14,
+                                  weight: FontWeight.w500,
+                                  color: kBlackColor.withValues(alpha: 0.5),
+                                  fontFamily: AppFonts.HelveticaNowDisplay,
+                                  lineHeight: h(context, 1),
+                                  paddingBottom: 4,
+                                ),
+                                StreamBuilder<DocumentSnapshot>(
+                                  stream:
+                                      plansCollection.doc(model.id).snapshots(),
+                                  builder: (context, snapshot) {
+                                    if (!snapshot.hasData) {
+                                      return CircularProgressIndicator();
+                                    }
+
+                                    final data =
+                                        snapshot.data!.data()
+                                            as Map<String, dynamic>?;
+                                    final participants = List<String>.from(
+                                      data?['participantsIds'] ?? [],
+                                    );
+
+                                    return CustomText(
+                                      text:
+                                          "${participants.length}/${model.maxMembers} members joined",
                                       size: 14,
                                       weight: FontWeight.w500,
                                       color: kBlackColor,
                                       fontFamily: AppFonts.HelveticaNowDisplay,
                                       lineHeight: h(context, 1),
-                                    ),
-                                  ],
-                                ),
-                                SizedBox(
-                                  height: h(context, 36),
-                                  child: VerticalDivider(
-                                    color: Color(0xffE3E3E3),
-                                    width: w(context, 1),
-                                  ),
-                                ),
-
-                                Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    CustomText(
-                                      text: "Participants",
-                                      size: 14,
-                                      weight: FontWeight.w500,
-                                      color: kBlackColor.withValues(alpha: 0.5),
-                                      fontFamily: AppFonts.HelveticaNowDisplay,
-                                      lineHeight: h(context, 1),
-                                      paddingBottom: 4,
-                                    ),
-                                    StreamBuilder<DocumentSnapshot>(
-                                      stream:
-                                          plansCollection
-                                              .doc(model.id)
-                                              .snapshots(),
-                                      builder: (context, snapshot) {
-                                        if (!snapshot.hasData) {
-                                          return CircularProgressIndicator();
-                                        }
-
-                                        final data =
-                                            snapshot.data!.data()
-                                                as Map<String, dynamic>?;
-                                        final participants = List<String>.from(
-                                          data?['participantsIds'] ?? [],
-                                        );
-
-                                        return CustomText(
-                                          text:
-                                              "${participants.length}/${model.maxMembers} members joined",
-                                          size: 14,
-                                          weight: FontWeight.w500,
-                                          color: kBlackColor,
-                                          fontFamily:
-                                              AppFonts.HelveticaNowDisplay,
-                                          lineHeight: h(context, 1),
-                                        );
-                                      },
-                                    ),
-                                  ],
+                                    );
+                                  },
                                 ),
                               ],
                             ),
+                            // Row(
+                            //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            //   children: [
+                            //     // Column(
+                            //     //   crossAxisAlignment: CrossAxisAlignment.start,
+                            //     //   children: [
+                            //     //     CustomText(
+                            //     //       text: "Date & Time",
+                            //     //       size: 14,
+                            //     //       weight: FontWeight.w500,
+                            //     //       color: kBlackColor.withValues(alpha: 0.5),
+                            //     //       fontFamily: AppFonts.HelveticaNowDisplay,
+                            //     //       lineHeight: h(context, 1),
+                            //     //       paddingBottom: 4,
+                            //     //     ),
+                            //     //     CustomText(
+                            //     //       text: dT.formatEventDateTime(
+                            //     //         // model.startDate!,
+                            //     //         dTime: model.startTime!,
+                            //     //         onlyDate: model.startDate!,
+                            //     //       ),
+                            //     //       size: 14,
+                            //     //       weight: FontWeight.w500,
+                            //     //       color: kBlackColor,
+                            //     //       fontFamily: AppFonts.HelveticaNowDisplay,
+                            //     //       lineHeight: h(context, 1),
+                            //     //     ),
+                            //     //   ],
+                            //     // ),
+                            //     // SizedBox(
+                            //     //   height: h(context, 36),
+                            //     //   child: VerticalDivider(
+                            //     //     color: Color(0xffE3E3E3),
+                            //     //     width: w(context, 1),
+                            //     //   ),
+                            //     // ),
+                            //     Column(
+                            //       crossAxisAlignment: CrossAxisAlignment.start,
+                            //       children: [
+                            //         CustomText(
+                            //           text: "Participants",
+                            //           size: 14,
+                            //           weight: FontWeight.w500,
+                            //           color: kBlackColor.withValues(alpha: 0.5),
+                            //           fontFamily: AppFonts.HelveticaNowDisplay,
+                            //           lineHeight: h(context, 1),
+                            //           paddingBottom: 4,
+                            //         ),
+                            //         StreamBuilder<DocumentSnapshot>(
+                            //           stream:
+                            //               plansCollection
+                            //                   .doc(model.id)
+                            //                   .snapshots(),
+                            //           builder: (context, snapshot) {
+                            //             if (!snapshot.hasData) {
+                            //               return CircularProgressIndicator();
+                            //             }
+
+                            //             final data =
+                            //                 snapshot.data!.data()
+                            //                     as Map<String, dynamic>?;
+                            //             final participants = List<String>.from(
+                            //               data?['participantsIds'] ?? [],
+                            //             );
+
+                            //             return CustomText(
+                            //               text:
+                            //                   "${participants.length}/${model.maxMembers} members joined",
+                            //               size: 14,
+                            //               weight: FontWeight.w500,
+                            //               color: kBlackColor,
+                            //               fontFamily:
+                            //                   AppFonts.HelveticaNowDisplay,
+                            //               lineHeight: h(context, 1),
+                            //             );
+                            //           },
+                            //         ),
+                            //       ],
+                            //     ),
+                            //   ],
+                            // ),
                             SizedBox(height: h(context, 50)),
 
                             (model.planCreatorID == auth.currentUser?.uid)

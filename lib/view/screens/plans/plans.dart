@@ -32,6 +32,7 @@ class _PlansScreenState extends State<PlansScreen> {
   void initState() {
     super.initState();
     if (widget.categorieValue != null) {
+      log("Init Category Value: ${widget.categorieValue}");
       _ctrl.fetchPlans(
         status: PlanStatus.active.name,
         planCategories: widget.categorieValue,
@@ -114,21 +115,27 @@ class _PlansScreenState extends State<PlansScreen> {
 
                           if (value == 0) {
                             if (widget.categorieValue != null) {
-                              _ctrl.fetchPlans(
+                              log("0-IF C-Value: ${widget.categorieValue}");
+                              await _ctrl.fetchPlans(
                                 status: PlanStatus.active.name,
                                 planCategories: widget.categorieValue,
                               );
                             } else {
-                              _ctrl.fetchPlans(status: PlanStatus.active.name);
+                              log("0-else C-Value: ${widget.categorieValue}");
+                              await _ctrl.fetchPlans(
+                                status: PlanStatus.active.name,
+                              );
                             }
                           } else {
                             if (widget.categorieValue != null) {
-                              _ctrl.fetchPlans(
+                              log("1-if C-Value: ${widget.categorieValue}");
+                              await _ctrl.fetchPlans(
                                 status: PlanStatus.completed.name,
                                 planCategories: widget.categorieValue,
                               );
                             } else {
-                              _ctrl.fetchPlans(
+                              log("1-else C-Value: ${widget.categorieValue}");
+                              await _ctrl.fetchPlans(
                                 status: PlanStatus.completed.name,
                               );
                             }
@@ -154,24 +161,26 @@ class _PlansScreenState extends State<PlansScreen> {
                                     size: 13,
                                   ),
                                 )
-                                : ListView.builder(
-                                  shrinkWrap: true,
-                                  itemCount: _ctrl.plans.length,
-                                  itemBuilder: (context, index) {
-                                    final item = _ctrl.plans[index];
-                                    return InkWell(
-                                      onTap: () {
-                                        Get.to(
-                                          () => PlansDetailScreen(),
-                                          arguments: {'data': item},
-                                        );
-                                      },
-                                      child: _buildActiveCompletedCard(
-                                        item,
-                                        context,
-                                      ),
-                                    );
-                                  },
+                                : Obx(
+                                  () => ListView.builder(
+                                    shrinkWrap: true,
+                                    itemCount: _ctrl.plans.length,
+                                    itemBuilder: (context, index) {
+                                      final item = _ctrl.plans[index];
+                                      return InkWell(
+                                        onTap: () {
+                                          Get.to(
+                                            () => PlansDetailScreen(),
+                                            arguments: {'data': item},
+                                          );
+                                        },
+                                        child: _buildActiveCompletedCard(
+                                          item,
+                                          context,
+                                        ),
+                                      );
+                                    },
+                                  ),
                                 ),
 
                             // EXPIRED PLANS TAB
@@ -336,7 +345,10 @@ class _PlansScreenState extends State<PlansScreen> {
                     ),
                     SizedBox(height: h(context, 2)),
                     CustomText(
-                      text: dT.formatEventDateTime(item.startDate!),
+                      text: dT.formatEventDateTime(
+                        dTime: item.startTime!,
+                        onlyDate: item.startDate!,
+                      ),
                       size: 14,
                       weight: FontWeight.w500,
                       color: kBlackColor,

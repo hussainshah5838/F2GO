@@ -18,6 +18,7 @@ import '../../../constants/app_fonts.dart';
 import '../../../constants/app_styling.dart';
 import '../../widget/custom_button_widget.dart';
 
+// ignore: must_be_immutable
 class CreateNewPlanScreen extends StatelessWidget {
   CreateNewPlanScreen({super.key});
 
@@ -26,6 +27,8 @@ class CreateNewPlanScreen extends StatelessWidget {
   final _ctrl = Get.find<PlanController>();
   DateTime? _startDate;
   DateTime? _endDate;
+  DateTime? _startTime;
+  DateTime? _endTime;
 
   @override
   Widget build(BuildContext context) {
@@ -253,6 +256,45 @@ class CreateNewPlanScreen extends StatelessWidget {
                                 SizedBox(width: w(context, 8)),
                                 Expanded(
                                   child: CustomLabelTextFeild(
+                                    label: "Start Time",
+                                    readOnly: true,
+                                    controller: TextEditingController(
+                                      text:
+                                          (_ctrl.startTime.value != null)
+                                              ? dT.formatTimeToAMPMTakingAsDateTime(
+                                                _ctrl.startTime.value!,
+                                              )
+                                              : '-',
+                                    ),
+
+                                    onTap: () {
+                                      Get.bottomSheet(
+                                        DateTimePicker(
+                                          title: "Start Time",
+                                          mode: CupertinoDatePickerMode.time,
+                                          onDateTimeChanged: (v) {
+                                            _startTime = v;
+                                          },
+                                          onTap: () {
+                                            _ctrl.startTime.value = _startTime;
+                                            Get.back();
+                                          },
+                                        ),
+                                      );
+                                    },
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+
+                          SizedBox(height: h(context, 8)),
+
+                          Obx(
+                            () => Row(
+                              children: [
+                                Expanded(
+                                  child: CustomLabelTextFeild(
                                     label: "End Date",
                                     readOnly: true,
                                     controller: TextEditingController(
@@ -274,6 +316,37 @@ class CreateNewPlanScreen extends StatelessWidget {
                                           },
                                           onTap: () {
                                             _ctrl.endDate.value = _endDate;
+                                            Get.back();
+                                          },
+                                        ),
+                                      );
+                                    },
+                                  ),
+                                ),
+                                SizedBox(width: w(context, 8)),
+                                Expanded(
+                                  child: CustomLabelTextFeild(
+                                    label: "End Time",
+                                    readOnly: true,
+                                    controller: TextEditingController(
+                                      text:
+                                          (_ctrl.endTime.value != null)
+                                              ? dT.formatTimeToAMPMTakingAsDateTime(
+                                                _ctrl.endTime.value!,
+                                              )
+                                              : '-',
+                                    ),
+
+                                    onTap: () {
+                                      Get.bottomSheet(
+                                        DateTimePicker(
+                                          title: "End Time",
+                                          mode: CupertinoDatePickerMode.time,
+                                          onDateTimeChanged: (v) {
+                                            _endTime = v;
+                                          },
+                                          onTap: () {
+                                            _ctrl.endTime.value = _endTime;
                                             Get.back();
                                           },
                                         ),
@@ -340,10 +413,19 @@ class CreateNewPlanScreen extends StatelessWidget {
                                 displayToast(msg: "Please add a start date.");
                                 return;
                               }
+                              if (_ctrl.startTime.value == null) {
+                                displayToast(msg: "Please add a start time.");
+                                return;
+                              }
                               if (_ctrl.endDate.value == null) {
                                 displayToast(msg: "Please add a end date.");
                                 return;
                               }
+                              if (_ctrl.endTime.value == null) {
+                                displayToast(msg: "Please add a end time.");
+                                return;
+                              }
+
                               if (_ctrl.locationController.text.isEmpty) {
                                 displayToast(msg: "Please add a location.");
                                 return;
@@ -414,12 +496,13 @@ class CustomDropdownField extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final List<String> categoryLabels = [
-      "Football",
-      "Music",
-      "Games & Movies",
-      "Comida",
-      "Gym Training",
-      "Painting & Fun",
+      "Culture and Leisure",
+      "Nature and Outdoors",
+      "Sports and Wellness",
+      "Social and Lifestyle",
+      "Creativity and Learning",
+      "Travel and Getaways",
+      "Gaming and Geek",
     ];
 
     return Column(

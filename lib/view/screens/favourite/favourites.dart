@@ -259,7 +259,10 @@ class _FavouritesScreenState extends State<FavouritesScreen> {
                     ),
                     SizedBox(height: h(context, 2)),
                     CustomText(
-                      text: dT.formatEventDateTime(item.startDate!),
+                      text: dT.formatEventDateTime(
+                        dTime: item.startTime!,
+                        onlyDate: item.startDate!,
+                      ),
                       size: 14,
                       weight: FontWeight.w500,
                       color: kBlackColor,

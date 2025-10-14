@@ -17,6 +17,8 @@ class PlanController extends GetxController {
   // Create plan variables
   Rxn<DateTime> startDate = Rxn<DateTime>(null);
   Rxn<DateTime> endDate = Rxn<DateTime>(null);
+  Rxn<DateTime> startTime = Rxn<DateTime>(null);
+  Rxn<DateTime> endTime = Rxn<DateTime>(null);
   TextEditingController titleController = TextEditingController();
   TextEditingController ageController = TextEditingController();
   TextEditingController maxMemberController = TextEditingController();
@@ -76,8 +78,12 @@ class PlanController extends GetxController {
         planPhoto: downloadUrl,
         title: titleController.text.trim(),
         age: ageController.text.trim(),
+
         startDate: startDate.value,
         endDate: endDate.value,
+        startTime: startTime.value,
+        endTime: endTime.value,
+
         maxMembers: maxMemberController.text.trim(),
         location: locationController.text.trim(),
         category: selectedCategory?.name.toString(),
@@ -112,6 +118,10 @@ class PlanController extends GetxController {
   void clearFields() {
     startDate.value = null;
     endDate.value = null;
+
+    startTime.value = null;
+    endTime.value = null;
+
     titleController.clear();
     descriptionController.clear();
     ageController.clear();
@@ -157,6 +167,11 @@ class PlanController extends GetxController {
   Future<void> fetchPlans({String? status, String? planCategories}) async {
     try {
       isLoading.value = true;
+
+      await Future.delayed(Duration(milliseconds: 50));
+
+      plans.value = [];
+      update();
 
       final QuerySnapshot<Map<String, dynamic>> snapShot;
 
@@ -208,6 +223,8 @@ class PlanController extends GetxController {
         await fetchPlans(status: status, planCategories: planCategories);
         return;
       }
+
+      update();
 
       isLoading.value = false;
       log("✅ Plans Fetched: ${plans.length}");

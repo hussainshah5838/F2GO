@@ -19,6 +19,7 @@ import 'package:f2g/view/widget/Custom_text_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
+// ignore: must_be_immutable
 class ChatScreen extends StatefulWidget {
   String chatHeadID;
   ChatScreen({super.key, required this.chatHeadID});

@@ -35,72 +35,111 @@ class _HomeScreenState extends State<HomeScreen> {
   final List<HomeOptionsContainer> homeoptions = [
     HomeOptionsContainer(
       image: Assets.imagesFootball,
-      text: "Football",
-      subtext: "Maria Fernanda",
+      // text: "Football",
+      // subtext: "Maria Fernanda",
+      text: "Culture and Leisure",
+      subtext: "",
       color: Color(0xffFAEDCB).withValues(alpha: 0.5),
       onTap: () {
         Get.to(
-          () => PlansScreen(categorieValue: CategoriesStatus.Football.name),
+          () => PlansScreen(
+            categorieValue: CategoriesStatus.culture_and_leisure.name,
+          ),
           binding: PlanBindings(),
         );
       },
     ),
     HomeOptionsContainer(
       image: Assets.imagesMusic,
-      text: "Music",
-      subtext: "Jessa Irvine",
+      // text: "Music",
+      // subtext: "Jessa Irvine",
+      text: "Nature and Outdoors",
+      subtext: "",
       color: Color(0xffF2C6DF).withValues(alpha: 0.5),
       onTap: () {
         Get.to(
-          () => PlansScreen(categorieValue: CategoriesStatus.Music.name),
+          () => PlansScreen(
+            categorieValue: CategoriesStatus.nature_and_outdoors.name,
+          ),
           binding: PlanBindings(),
         );
       },
     ),
     HomeOptionsContainer(
       image: Assets.imagesGames,
-      text: "Games & Movies",
-      subtext: "Maria Fernanda",
+      text: "Sports and Wellness",
+      subtext: "",
       color: Color(0xffC9E4DF).withValues(alpha: 0.5),
       onTap: () {
         Get.to(
-          () => PlansScreen(categorieValue: CategoriesStatus.GamesMovies.name),
+          () => PlansScreen(
+            categorieValue: CategoriesStatus.sport_and_wellness.name,
+          ),
           binding: PlanBindings(),
         );
       },
     ),
     HomeOptionsContainer(
       image: Assets.imagesComida,
-      text: "Comida",
-      subtext: "Ivan Taylor",
+      // text: "Comida",
+      // subtext: "Ivan Taylor",
+      text: "Social and Lifestyle",
+      subtext: "",
       color: Color(0xffFAFFBF).withValues(alpha: 0.5),
       onTap: () {
         Get.to(
-          () => PlansScreen(categorieValue: CategoriesStatus.Comida.name),
+          () => PlansScreen(
+            categorieValue: CategoriesStatus.social_and_lifestyle.name,
+          ),
           binding: PlanBindings(),
         );
       },
     ),
     HomeOptionsContainer(
       image: Assets.imagesGym,
-      text: "Gym Training",
-      subtext: "Ximena Valentine",
+      // text: "Gym Training",
+      // subtext: "Ximena Valentine",
+      text: "Creativity and Learning",
+      subtext: "",
       color: Color(0xffC5DEF2).withValues(alpha: 0.5),
       onTap: () {
         Get.to(
-          () => PlansScreen(categorieValue: CategoriesStatus.GymTraining.name),
+          () => PlansScreen(
+            categorieValue: CategoriesStatus.creativity_and_learning.name,
+          ),
           binding: PlanBindings(),
         );
       },
     ),
     HomeOptionsContainer(
       image: Assets.imagesPainting,
-      text: "Painting & Fun",
-      subtext: "Andrew Hike",
+      // text: "Painting & Fun",
+      // subtext: "Andrew Hike",
+      text: "Travel and Getaways",
+      subtext: "",
       color: Color(0xffF8D9C4).withValues(alpha: 0.5),
       onTap: () {
         Get.to(
-          () => PlansScreen(categorieValue: CategoriesStatus.PaintingFun.name),
+          () => PlansScreen(
+            categorieValue: CategoriesStatus.travel_and_getaways.name,
+          ),
+          binding: PlanBindings(),
+        );
+      },
+    ),
+
+    HomeOptionsContainer(
+      image: Assets.imagesGamingIcon,
+      // text: "Painting & Fun",
+      // subtext: "Andrew Hike",
+      text: "Gaming and Geek",
+      subtext: "",
+      color: Color(0xffF8D9C4).withValues(alpha: 0.5),
+      onTap: () {
+        Get.to(
+          () => PlansScreen(
+            categorieValue: CategoriesStatus.gaming_and_geek.name,
+          ),
           binding: PlanBindings(),
         );
       },

@@ -148,9 +148,12 @@ class DateTimeService {
   "12:00 am | June 23, 2025"
    */
 
-  String formatEventDateTime(DateTime dateTime) {
-    final time = DateFormat('h:mm a').format(dateTime); // e.g. 12:00 AM
-    final date = DateFormat('MMMM d, y').format(dateTime); // e.g. June 23, 2025
+  String formatEventDateTime({
+    required DateTime dTime,
+    required DateTime onlyDate,
+  }) {
+    final time = DateFormat('h:mm a').format(dTime); // e.g. 12:00 AM
+    final date = DateFormat('MMMM d, y').format(onlyDate); // e.g. June 23, 2025
     return '$time | $date';
   }
 }

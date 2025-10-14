@@ -86,6 +86,10 @@ class Assets {
   /// assets/images/games.png
   static const String imagesGames = "assets/images/games.png";
 
+  /// Assets for imagesGamingIcon
+  /// assets/images/gaming_icon.png
+  static const String imagesGamingIcon = "assets/images/gaming_icon.png";
+
   /// Assets for imagesGili
   /// assets/images/gili.png
   static const String imagesGili = "assets/images/gili.png";

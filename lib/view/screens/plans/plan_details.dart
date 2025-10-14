@@ -248,7 +248,10 @@ class _PlansDetailScreenState extends State<PlansDetailScreen> {
                 ),
               ),
               CustomText(
-                text: dT.formatEventDateTime(item.startDate!),
+                text: dT.formatEventDateTime(
+                  dTime: item.startTime!,
+                  onlyDate: item.startDate!,
+                ),
                 size: 14,
                 weight: FontWeight.w500,
                 color: kBlackColor,
