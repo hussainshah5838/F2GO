@@ -37,7 +37,10 @@ class _SplashScreenState extends State<SplashScreen> {
 
     Timer(Duration(seconds: 3), () {
       if (auth.currentUser != null) {
-        Get.offAll(() => HomeScreen());
+        Get.offAll(
+          () => HomeScreen(),
+          // EventLocation(),
+        );
       } else {
         if (key == true) {
           Get.offAll(() => LoginScreen());

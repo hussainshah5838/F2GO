@@ -1,6 +1,7 @@
 import 'dart:developer';
 import 'package:f2g/constants/app_images.dart';
 import 'package:f2g/constants/loading_animation.dart';
+import 'package:f2g/controller/my_ctrl/auth_input_controller.dart';
 import 'package:f2g/controller/my_ctrl/editprofile_controller.dart';
 import 'package:f2g/core/common/global_instance.dart';
 import 'package:f2g/view/widget/custom_switch.dart';
@@ -100,86 +101,6 @@ class UserProfileScreen extends StatelessWidget {
                     // Navigator.pop(context);
                   },
                   text: "Yes, Delete",
-                  iscustomgradient: true,
-                  gradient: const LinearGradient(
-                    colors: [Color(0xff21E3D7), Color(0xffB5F985)],
-                    begin: Alignment.centerLeft,
-                    end: Alignment.centerRight,
-                  ),
-                  borderradius: 100,
-                  size: 18,
-                  weight: FontWeight.w500,
-                  fontFamily: AppFonts.HelveticaNowDisplay,
-                  color: kBlackColor,
-                  height: 50,
-                  width: double.maxFinite,
-                ),
-              ),
-            ],
-          ),
-        );
-      },
-    );
-  }
-
-  void _showLogoutSheet(BuildContext context) {
-    showModalBottomSheet(
-      context: context,
-      backgroundColor: Colors.transparent,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(
-          top: Radius.circular(h(context, 25)),
-        ),
-      ),
-      builder: (BuildContext context) {
-        return Container(
-          margin: EdgeInsets.only(
-            bottom: h(context, 20),
-            left: w(context, 13),
-            right: w(context, 13),
-          ),
-          padding: only(context, top: 29, bottom: 29),
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.all(Radius.circular(h(context, 25))),
-          ),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              Center(
-                child: CommonImageView(
-                  imagePath: Assets.imagesLogoutpop,
-                  height: 120,
-                  width: 170,
-                  fit: BoxFit.contain,
-                ),
-              ),
-              SizedBox(height: h(context, 19.33)),
-
-              CustomText(
-                text: "Logout",
-                size: 24,
-                weight: FontWeight.w700,
-                color: kBlackColor,
-                fontFamily: AppFonts.HelveticaNowDisplay,
-              ),
-              SizedBox(height: h(context, 8)),
-              CustomText(
-                text: "Are you sure you want to logout from\nthis app?",
-                size: 16,
-                color: ktextcolor,
-                fontFamily: AppFonts.HelveticaNowDisplay,
-                textAlign: TextAlign.center,
-              ),
-              SizedBox(height: h(context, 19.33)),
-              Padding(
-                padding: symmetric(context, horizontal: 29),
-                child: CustomButton(
-                  onPressed: () {
-                    Navigator.pop(context);
-                  },
-                  text: "Yes, Logout",
                   iscustomgradient: true,
                   gradient: const LinearGradient(
                     colors: [Color(0xff21E3D7), Color(0xffB5F985)],
@@ -414,7 +335,7 @@ class UserProfileScreen extends StatelessWidget {
                           iconPath: Assets.imagesLogout,
                           title: "Logout",
                           onTap: () {
-                            _showLogoutSheet(context);
+                            showLogoutSheet(context);
                           },
                         ),
                         SizedBox(height: h(context, 8)),
@@ -585,5 +506,85 @@ void showDeleteConfirmationDialog({
         ),
       ],
     ),
+  );
+}
+
+void showLogoutSheet(BuildContext context) {
+  showModalBottomSheet(
+    context: context,
+    backgroundColor: Colors.transparent,
+    shape: RoundedRectangleBorder(
+      borderRadius: BorderRadius.vertical(top: Radius.circular(h(context, 25))),
+    ),
+    builder: (BuildContext context) {
+      return Container(
+        margin: EdgeInsets.only(
+          bottom: h(context, 20),
+          left: w(context, 13),
+          right: w(context, 13),
+        ),
+        padding: only(context, top: 29, bottom: 29),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.all(Radius.circular(h(context, 25))),
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Center(
+              child: CommonImageView(
+                imagePath: Assets.imagesLogoutpop,
+                height: 120,
+                width: 170,
+                fit: BoxFit.contain,
+              ),
+            ),
+            SizedBox(height: h(context, 19.33)),
+
+            CustomText(
+              text: "Logout",
+              size: 24,
+              weight: FontWeight.w700,
+              color: kBlackColor,
+              fontFamily: AppFonts.HelveticaNowDisplay,
+            ),
+            SizedBox(height: h(context, 8)),
+            CustomText(
+              text: "Are you sure you want to logout from\nthis app?",
+              size: 16,
+              color: ktextcolor,
+              fontFamily: AppFonts.HelveticaNowDisplay,
+              textAlign: TextAlign.center,
+            ),
+            SizedBox(height: h(context, 19.33)),
+            Padding(
+              padding: symmetric(context, horizontal: 29),
+              child: CustomButton(
+                onPressed: () async {
+                  await Get.find<AuthInputController>().logOutCurrentUser();
+                  log("Works------");
+                  // Navigator.pop(context);
+                },
+                text: "Yes, Logout",
+                iscustomgradient: true,
+                gradient: const LinearGradient(
+                  colors: [Color(0xff21E3D7), Color(0xffB5F985)],
+                  begin: Alignment.centerLeft,
+                  end: Alignment.centerRight,
+                ),
+                borderradius: 100,
+                size: 18,
+                weight: FontWeight.w500,
+                fontFamily: AppFonts.HelveticaNowDisplay,
+                color: kBlackColor,
+                height: 50,
+                width: double.maxFinite,
+              ),
+            ),
+          ],
+        ),
+      );
+    },
   );
 }

@@ -9,6 +9,7 @@ import 'package:f2g/core/enums/categories_status.dart';
 import 'package:f2g/view/screens/createplan/create_new_plan.dart';
 import 'package:f2g/view/screens/createplan/create_plan_and_map_screen.dart';
 import 'package:f2g/view/screens/favourite/favourites.dart';
+import 'package:f2g/view/screens/my_plans/my_plans.dart';
 import 'package:f2g/view/screens/notifcation/notification.dart';
 import 'package:f2g/view/screens/plans/plans.dart';
 import 'package:f2g/view/screens/user_profile/User_Profile.dart';
@@ -337,6 +338,28 @@ class _HomeScreenState extends State<HomeScreen> {
                           thickness: h(context, 0.5),
                         ),
                       ),
+
+                      SizedBox(height: h(context, 13.5)),
+                      sideOptions(
+                        context,
+                        Assets.imagesPlans,
+                        "My Plans",
+                        arenotification: false,
+                        onTap: () {
+                          menuController.isMenuOpen.value = false;
+                          Get.to(MyPlansScreen(), binding: PlanBindings());
+                        },
+                      ),
+                      SizedBox(height: h(context, 13.5)),
+                      SizedBox(
+                        width: w(context, 158),
+                        child: Divider(
+                          color: kWhiteColor.withValues(alpha: 0.67),
+                          height: h(context, 0.5),
+                          thickness: h(context, 0.5),
+                        ),
+                      ),
+
                       SizedBox(height: h(context, 13.5)),
                       sideOptions(
                         context,
@@ -388,9 +411,10 @@ class _HomeScreenState extends State<HomeScreen> {
                               weight: FontWeight.w500,
                               color: kSecondaryColor,
                               fontFamily: AppFonts.HelveticaNowDisplay,
-                              onTap: () {
-                                Get.find<AuthInputController>()
-                                    .logOutCurrentUser();
+                              onTap: () async {
+                                // await Get.find<AuthInputController>()
+                                //     .logOutCurrentUser();
+                                showLogoutSheet(context);
                               },
                             ),
                           ],

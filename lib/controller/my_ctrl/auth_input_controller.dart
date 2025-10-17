@@ -313,7 +313,7 @@ class AuthInputController extends GetxController {
       showLoadingDialog();
       await auth.signOut();
       hideLoadingDialog();
-      Get.offAll(LoginScreen());
+      Get.offAll(() => LoginScreen());
     } catch (e) {
       hideLoadingDialog();
     }

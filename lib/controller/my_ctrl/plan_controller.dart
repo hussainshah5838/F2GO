@@ -32,8 +32,11 @@ class PlanController extends GetxController {
   final Rxn<File> selectedImage = Rxn<File>();
   // Fetch plan varibles
   RxList<PlanModel> plans = <PlanModel>[].obs;
+  RxList<PlanModel> myPlans = <PlanModel>[].obs;
   RxList<PlanModel> favourites = <PlanModel>[].obs;
   RxBool isLoading = false.obs;
+
+  RxInt buttonStatusIndex = 100.obs;
 
   Future<void> pickImage() async {
     try {
@@ -164,11 +167,47 @@ class PlanController extends GetxController {
   //   }
   // }
 
-  Future<void> fetchPlans({String? status, String? planCategories}) async {
+  Future<void> fetchMyPlan() async {
     try {
       isLoading.value = true;
 
       await Future.delayed(Duration(milliseconds: 50));
+
+      myPlans.value = [];
+      update();
+
+      final QuerySnapshot<Map<String, dynamic>> snapShot;
+
+      snapShot =
+          await plansCollection
+              .where("planCreatorID", isEqualTo: auth.currentUser?.uid)
+              .get();
+
+      if (snapShot.docs.isNotEmpty) {
+        myPlans.clear();
+
+        for (final doc in snapShot.docs) {
+          final data = doc.data();
+          myPlans.add(PlanModel.fromMap(data));
+        }
+      }
+
+      update();
+
+      isLoading.value = false;
+      log("✅ My-Plans Fetched: ${myPlans.length}");
+    } catch (e) {
+      isLoading.value = false;
+      displayToast(msg: "Error while fetching My-Plans: $e");
+      log("❌ Error while fetching My-Plans: $e");
+    }
+  }
+
+  Future<void> fetchPlans({String? status, String? planCategories}) async {
+    try {
+      isLoading.value = true;
+
+      await Future.delayed(const Duration(milliseconds: 50));
 
       plans.value = [];
       update();
@@ -186,46 +225,17 @@ class PlanController extends GetxController {
             await plansCollection.where("status", isEqualTo: status).get();
       }
 
-      bool anyStatusUpdated = false;
-
       if (snapShot.docs.isNotEmpty) {
         plans.clear();
 
         for (final doc in snapShot.docs) {
           final data = doc.data();
-
-          final startDate = DateTime.tryParse(data["startDate"].toString());
-          final currentDate = DateTime.now();
-
-          // Compare only date (ignore time)
-          final isSameDate =
-              startDate != null &&
-              startDate.year == currentDate.year &&
-              startDate.month == currentDate.month &&
-              startDate.day == currentDate.day;
-
-          if (isSameDate && data["status"] != PlanStatus.completed.name) {
-            // 🔹 Update Firestore document to mark as completed
-            await plansCollection.doc(doc.id).update({
-              "status": PlanStatus.completed.name,
-            });
-
-            anyStatusUpdated = true; // 🔸 Flag that we made updates
-          } else {
-            plans.add(PlanModel.fromMap(data));
-          }
+          // ✅ Simply add all fetched plans (no status update)
+          plans.add(PlanModel.fromMap(data));
         }
       }
 
-      // 🔁 If any plan was updated, fetch fresh data again
-      if (anyStatusUpdated) {
-        log("🔄 Status updated, fetching fresh data...");
-        await fetchPlans(status: status, planCategories: planCategories);
-        return;
-      }
-
       update();
-
       isLoading.value = false;
       log("✅ Plans Fetched: ${plans.length}");
     } catch (e) {
@@ -234,6 +244,77 @@ class PlanController extends GetxController {
       log("❌ Error while fetching plans: $e");
     }
   }
+
+  // Future<void> fetchPlans({String? status, String? planCategories}) async {
+  //   try {
+  //     isLoading.value = true;
+
+  //     await Future.delayed(Duration(milliseconds: 50));
+
+  //     plans.value = [];
+  //     update();
+
+  //     final QuerySnapshot<Map<String, dynamic>> snapShot;
+
+  //     if (planCategories != null) {
+  //       snapShot =
+  //           await plansCollection
+  //               .where("category", isEqualTo: planCategories)
+  //               .where("status", isEqualTo: status)
+  //               .get();
+  //     } else {
+  //       snapShot =
+  //           await plansCollection.where("status", isEqualTo: status).get();
+  //     }
+
+  //     bool anyStatusUpdated = false;
+
+  //     if (snapShot.docs.isNotEmpty) {
+  //       plans.clear();
+
+  //       for (final doc in snapShot.docs) {
+  //         final data = doc.data();
+
+  //         final startDate = DateTime.tryParse(data["startDate"].toString());
+  //         final currentDate = DateTime.now();
+
+  //         // Compare only date (ignore time)
+  //         final isSameDate =
+  //             startDate != null &&
+  //             startDate.year == currentDate.year &&
+  //             startDate.month == currentDate.month &&
+  //             startDate.day == currentDate.day;
+
+  //         if (isSameDate && data["status"] != PlanStatus.completed.name) {
+  //           // 🔹 Update Firestore document to mark as completed
+  //           await plansCollection.doc(doc.id).update({
+  //             "status": PlanStatus.completed.name,
+  //           });
+
+  //           anyStatusUpdated = true; // 🔸 Flag that we made updates
+  //         } else {
+  //           plans.add(PlanModel.fromMap(data));
+  //         }
+  //       }
+  //     }
+
+  //     // 🔁 If any plan was updated, fetch fresh data again
+  //     if (anyStatusUpdated) {
+  //       log("🔄 Status updated, fetching fresh data...");
+  //       await fetchPlans(status: status, planCategories: planCategories);
+  //       return;
+  //     }
+
+  //     update();
+
+  //     isLoading.value = false;
+  //     log("✅ Plans Fetched: ${plans.length}");
+  //   } catch (e) {
+  //     isLoading.value = false;
+  //     displayToast(msg: "Error while fetching plans: $e");
+  //     log("❌ Error while fetching plans: $e");
+  //   }
+  // }
 
   // Join Event
   Future<void> joinPlan({required String planId}) async {
@@ -338,6 +419,29 @@ class PlanController extends GetxController {
       isLoading.value = false;
       displayToast(msg: "Error while fetching favourite plans: $e");
       log("❌ Error while fetching favourite plans: $e");
+    }
+  }
+
+  // Join Event
+  Future<void> planStatusToggel({
+    required String docID,
+    required String status,
+  }) async {
+    try {
+      showLoadingDialog();
+
+      await plansCollection.doc(docID).update({"status": status});
+
+      await fetchMyPlan();
+      buttonStatusIndex.value = 100;
+      Get.close(2);
+
+      hideLoadingDialog();
+      displayToast(msg: "You have successfully updated plan status.");
+    } catch (e) {
+      hideLoadingDialog();
+      displayToast(msg: "Failed to update plan status: $e");
+      log("Error during plan status plan: $e");
     }
   }
 }

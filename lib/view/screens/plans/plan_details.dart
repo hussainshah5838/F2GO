@@ -5,11 +5,13 @@ import 'package:f2g/constants/app_fonts.dart';
 import 'package:f2g/constants/app_images.dart';
 import 'package:f2g/constants/app_styling.dart';
 import 'package:f2g/constants/firebase_const.dart';
+import 'package:f2g/controller/my_ctrl/plan_controller.dart';
 import 'package:f2g/core/bindings/bindings.dart';
 import 'package:f2g/core/common/global_instance.dart';
 import 'package:f2g/core/enums/plan_status.dart';
 import 'package:f2g/model/my_model/plan_model.dart';
 import 'package:f2g/view/screens/Home/details.dart';
+import 'package:f2g/view/screens/my_plans/my_plans.dart';
 import 'package:f2g/view/screens/plans/chat_screen.dart';
 import 'package:f2g/view/widget/Custom_text_widget.dart';
 import 'package:f2g/view/widget/common_image_view_widget.dart';
@@ -18,7 +20,8 @@ import 'package:get/get.dart';
 import 'package:gradient_borders/gradient_borders.dart';
 
 class PlansDetailScreen extends StatefulWidget {
-  PlansDetailScreen({super.key});
+  bool isStatusChange;
+  PlansDetailScreen({super.key, this.isStatusChange = false});
 
   @override
   State<PlansDetailScreen> createState() => _PlansDetailScreenState();
@@ -34,6 +37,8 @@ class _PlansDetailScreenState extends State<PlansDetailScreen> {
     super.initState();
     data = args['data'];
   }
+
+  var _ctrl = Get.find<PlanController>();
 
   @override
   Widget build(BuildContext context) {
@@ -397,6 +402,53 @@ class _PlansDetailScreenState extends State<PlansDetailScreen> {
                   : SizedBox();
             },
           ),
+
+          (widget.isStatusChange)
+              ? Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  CustomText(
+                    paddingTop: 20,
+                    paddingBottom: 10,
+                    text: "Change Plan Status:",
+                    color: kBlackColor,
+                    size: 12,
+                    weight: FontWeight.w600,
+                  ),
+
+                  Row(
+                    children: List.generate(
+                      2,
+                      (index) => Expanded(
+                        child: Obx(
+                          () => StatusButton(
+                            onTap: () async {
+                              _ctrl.buttonStatusIndex.value = index;
+                              if (index == 0) {
+                                _ctrl.planStatusToggel(
+                                  docID: item.id!,
+                                  status: PlanStatus.active.name,
+                                );
+                              } else {
+                                _ctrl.planStatusToggel(
+                                  docID: item.id!,
+                                  status: PlanStatus.completed.name,
+                                );
+                              }
+                            },
+                            text: (index == 0) ? "Active" : "Completed",
+                            isStatusActive:
+                                (_ctrl.buttonStatusIndex.value == index)
+                                    ? true
+                                    : false,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              )
+              : SizedBox(),
         ],
       ),
     );
