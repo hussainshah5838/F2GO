@@ -9,7 +9,7 @@ import '../../widget/Custom_text_widget.dart';
 import '../../widget/custom_button_widget.dart';
 
 class FilterController extends GetxController {
-  Rx<RangeValues> peopleRange = const RangeValues(1, 45).obs;
+  Rx<RangeValues> peopleRange = const RangeValues(3, 45).obs;
   Rx<RangeValues> ageRange = const RangeValues(18, 45).obs;
   Rx<RangeValues> distanceRange = const RangeValues(5, 15).obs;
 }
@@ -118,7 +118,7 @@ class FilterBottomSheet extends StatelessWidget {
                     ),
                     child: RangeSlider(
                       values: val,
-                      min: 1,
+                      min: 3,
                       max: 60,
                       onChanged: (v) => controller.peopleRange.value = v,
                     ),
@@ -309,7 +309,7 @@ class FilterBottomSheet extends StatelessWidget {
               Expanded(
                 child: CustomButton(
                   onPressed: () {
-                    controller.peopleRange.value = const RangeValues(1, 45);
+                    controller.peopleRange.value = const RangeValues(3, 45);
                     controller.ageRange.value = const RangeValues(18, 45);
                     controller.distanceRange.value = const RangeValues(5, 15);
                   },

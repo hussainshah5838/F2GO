@@ -358,14 +358,38 @@ class CreateNewPlanScreen extends StatelessWidget {
                             ),
                           ),
                           SizedBox(height: h(context, 8)),
-                          CustomLabelTextFeild(
-                            label: "Maximum Members Allowed",
-                            controller: _ctrl.maxMemberController,
+
+                          // CustomLabelTextFeild(
+                          //   label: "Maximum Members Allowed",
+                          //   controller: _ctrl.maxMemberController,
+                          // ),
+                          Obx(
+                            () => CustomDropdownFieldMember(
+                              label: "Maximum Members Allowed",
+                              selectedValue: _ctrl.maxMemberValue.value,
+                              onChanged: (value) {
+                                _ctrl.maxMemberValue.value = value;
+
+                                log("Selected: ${_ctrl.maxMemberValue.value}");
+                              },
+                            ),
                           ),
                           SizedBox(height: h(context, 8)),
-                          CustomLabelTextFeild(
-                            label: "Age",
-                            controller: _ctrl.ageController,
+
+                          // CustomLabelTextFeild(
+                          //   label: "Age",
+                          //   controller: _ctrl.ageController,
+                          // ),
+                          Obx(
+                            () => CustomDropdownFieldAgeLimit(
+                              label: "Age",
+                              selectedValue: _ctrl.ageValue.value,
+                              onChanged: (value) {
+                                _ctrl.ageValue.value = value;
+
+                                log("Selected Age: ${_ctrl.ageValue.value}");
+                              },
+                            ),
                           ),
                           SizedBox(height: h(context, 8)),
                           CustomLabelTextFeild(
@@ -378,13 +402,17 @@ class CreateNewPlanScreen extends StatelessWidget {
                           //   label: "Category",
                           //   controller: _ctrl.categoryController,
                           // ),
-                          CustomDropdownField(
-                            label: "Category",
-                            selectedValue: _ctrl.selectedCategory,
-                            onChanged: (value) {
-                              _ctrl.selectedCategory = value;
-                              log("Log :: ${_ctrl.selectedCategory?.name}");
-                            },
+                          Obx(
+                            () => CustomDropdownField(
+                              label: "Category",
+                              selectedValue: _ctrl.selectedCategory.value,
+                              onChanged: (value) {
+                                _ctrl.selectedCategory.value = value;
+                                log(
+                                  "Log :: ${_ctrl.selectedCategory.value?.name}",
+                                );
+                              },
+                            ),
                           ),
 
                           SizedBox(height: h(context, 8)),
@@ -426,11 +454,28 @@ class CreateNewPlanScreen extends StatelessWidget {
                                 return;
                               }
 
+                              if (_ctrl.maxMemberValue.value == null) {
+                                displayToast(
+                                  msg: "Please select a maximum members.",
+                                );
+                                return;
+                              }
+
+                              // if (_ctrl.ageController.text.isEmpty) {
+                              //   displayToast(msg: "Please add a age.");
+                              //   return;
+                              // }
+
+                              if (_ctrl.ageValue.value == null) {
+                                displayToast(msg: "Please select a age.");
+                                return;
+                              }
+
                               if (_ctrl.locationController.text.isEmpty) {
                                 displayToast(msg: "Please add a location.");
                                 return;
                               }
-                              if (_ctrl.selectedCategory == null) {
+                              if (_ctrl.selectedCategory.value == null) {
                                 displayToast(msg: "Please select a category.");
                                 return;
                               }
@@ -438,14 +483,10 @@ class CreateNewPlanScreen extends StatelessWidget {
                                 displayToast(msg: "Please add a description.");
                                 return;
                               }
-                              if (_ctrl.maxMemberController.text.isEmpty) {
-                                displayToast(msg: "Please add a max members.");
-                                return;
-                              }
-                              if (_ctrl.ageController.text.isEmpty) {
-                                displayToast(msg: "Please add a age.");
-                                return;
-                              }
+                              // if (_ctrl.maxMemberController.text.isEmpty) {
+                              //   displayToast(msg: "Please add a max members.");
+                              //   return;
+                              // }
 
                               _ctrl.createPlan(
                                 eventImage: _ctrl.eventSelectedImage,
@@ -521,9 +562,12 @@ class CustomDropdownField extends StatelessWidget {
               hint: Text(
                 "Category",
                 style: TextStyle(
-                  fontSize: f(context, 16),
-                  fontWeight: FontWeight.w500,
-                  color: kBlackColor,
+                  fontSize: f(context, 15),
+                  fontWeight: FontWeight.w400,
+                  color:
+                      (selectedValue != null)
+                          ? kBlackColor.withValues(alpha: 0.5)
+                          : kBlackColor,
 
                   fontFamily: AppFonts.HelveticaNowDisplay,
                 ),
@@ -541,6 +585,190 @@ class CustomDropdownField extends StatelessWidget {
                           fontFamily: AppFonts.HelveticaNowDisplay,
                           color: kBlackColor,
                           fontSize: 14,
+                        ),
+                      ),
+                    );
+                  }).toList(),
+              onChanged: onChanged,
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+// Max Mumber Code
+
+class CustomDropdownFieldMember extends StatelessWidget {
+  final String label;
+  final String? selectedValue;
+  final ValueChanged<String?> onChanged;
+
+  const CustomDropdownFieldMember({
+    super.key,
+    required this.label,
+    required this.selectedValue,
+    required this.onChanged,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    // List of member options (3, 10, 20, 30... 100)
+    final List<String> memberOptions = [
+      '3',
+      ' 10',
+      '20',
+      '30',
+      '40',
+      '50',
+      '60',
+      '70',
+      '80',
+      '90',
+      '100',
+    ];
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        // Text(
+        //   label,
+        //   style: TextStyle(
+        //     fontSize: 16,
+        //     fontWeight: FontWeight.w600,
+        //     color: Colors.black87,
+        //   ),
+        // ),
+        // const SizedBox(height: 8),
+        Container(
+          padding: all(context, 6),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(h(context, 12)),
+          ),
+          child: DropdownButtonHideUnderline(
+            child: DropdownButton<String>(
+              value: selectedValue,
+              hint: Text(
+                "Select Maximum Members",
+                style: TextStyle(
+                  fontSize: f(context, 15),
+                  fontWeight: FontWeight.w400,
+                  color:
+                      (selectedValue != null)
+                          ? kBlackColor.withValues(alpha: 0.5)
+                          : kBlackColor,
+
+                  fontFamily: AppFonts.HelveticaNowDisplay,
+                ),
+              ),
+              icon: const Icon(Icons.keyboard_arrow_down_rounded),
+              isExpanded: true,
+              items:
+                  memberOptions.map((value) {
+                    return DropdownMenuItem<String>(
+                      value: value,
+                      child: Text(
+                        value == 10 ? "10+" : "$value Members",
+                        style: const TextStyle(
+                          fontSize: 14,
+                          color: Colors.black87,
+                        ),
+                      ),
+                    );
+                  }).toList(),
+              onChanged: onChanged,
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+// Age Limit
+
+class CustomDropdownFieldAgeLimit extends StatelessWidget {
+  final String label;
+  final String? selectedValue;
+  final ValueChanged<String?> onChanged;
+
+  const CustomDropdownFieldAgeLimit({
+    super.key,
+    required this.label,
+    required this.selectedValue,
+    required this.onChanged,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    // List of member options (3, 10, 20, 30... 100)
+    final List<String> ageOptions = [
+      '18-22',
+      '23-27',
+      '28-32',
+      '33-37',
+      '38-42',
+      '43-47',
+      '48-52',
+      '53-57',
+      '58-62',
+      '63-67',
+      '68-72',
+      '73-77',
+      // '78-82',
+      // '83-87',
+      // '88-92',
+      // '93-97',
+      // '98-100',
+    ];
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        // Text(
+        //   label,
+        //   style: TextStyle(
+        //     fontSize: 16,
+        //     fontWeight: FontWeight.w600,
+        //     color: Colors.black87,
+        //   ),
+        // ),
+        // const SizedBox(height: 8),
+        Container(
+          padding: all(context, 6),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(h(context, 12)),
+          ),
+          child: DropdownButtonHideUnderline(
+            child: DropdownButton<String>(
+              value: selectedValue,
+              hint: Text(
+                "Select Age",
+                style: TextStyle(
+                  fontSize: f(context, 15),
+                  fontWeight: FontWeight.w400,
+                  color:
+                      (selectedValue != null)
+                          ? kBlackColor.withValues(alpha: 0.5)
+                          : kBlackColor,
+
+                  fontFamily: AppFonts.HelveticaNowDisplay,
+                ),
+              ),
+              icon: const Icon(Icons.keyboard_arrow_down_rounded),
+              isExpanded: true,
+              items:
+                  ageOptions.map((value) {
+                    return DropdownMenuItem<String>(
+                      value: value,
+                      child: Text(
+                        value == 10 ? "10+" : "$value",
+                        style: const TextStyle(
+                          fontSize: 14,
+                          color: Colors.black87,
                         ),
                       ),
                     );

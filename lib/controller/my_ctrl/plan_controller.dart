@@ -20,11 +20,15 @@ class PlanController extends GetxController {
   Rxn<DateTime> startTime = Rxn<DateTime>(null);
   Rxn<DateTime> endTime = Rxn<DateTime>(null);
   TextEditingController titleController = TextEditingController();
-  TextEditingController ageController = TextEditingController();
-  TextEditingController maxMemberController = TextEditingController();
+  // TextEditingController ageController = TextEditingController();
+  Rxn<String> ageValue = Rxn<String>();
+  // TextEditingController maxMemberController = TextEditingController();
+  Rxn<String> maxMemberValue = Rxn();
   TextEditingController locationController = TextEditingController();
   // TextEditingController categoryController = TextEditingController();
-  CategoriesStatus? selectedCategory;
+  // CategoriesStatus? selectedCategory;
+  Rxn<CategoriesStatus> selectedCategory = Rxn<CategoriesStatus>();
+
   TextEditingController descriptionController = TextEditingController();
   String? eventSelectedImage;
   Uuid uuid = Uuid();
@@ -80,16 +84,19 @@ class PlanController extends GetxController {
         id: id,
         planPhoto: downloadUrl,
         title: titleController.text.trim(),
-        age: ageController.text.trim(),
+        // age: ageController.text.trim(),
+        age: ageValue.value,
 
         startDate: startDate.value,
         endDate: endDate.value,
         startTime: startTime.value,
         endTime: endTime.value,
 
-        maxMembers: maxMemberController.text.trim(),
+        // maxMembers: maxMemberController.text.trim(),
+        maxMembers: maxMemberValue.value,
         location: locationController.text.trim(),
-        category: selectedCategory?.name.toString(),
+        // category: selectedCategory?.name.toString(),
+        category: selectedCategory.value?.name.toString(),
         description: descriptionController.text.trim(),
         createdAt: DateTime.now(),
         planCreatorID: auth.currentUser?.uid.toString(),
@@ -127,10 +134,12 @@ class PlanController extends GetxController {
 
     titleController.clear();
     descriptionController.clear();
-    ageController.clear();
-    maxMemberController.clear();
+    // ageController.clear();
+    ageValue.value = null;
+    // maxMemberController.clear();
+    maxMemberValue.value = null;
     locationController.clear();
-    selectedCategory = null;
+    selectedCategory.value = null;
     eventSelectedImage = null;
   }
 

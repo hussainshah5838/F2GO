@@ -35,6 +35,15 @@ class MyApp extends StatelessWidget {
       initialBinding: AuthBindings(),
       initialRoute: AppLinks.splash_screen,
       getPages: AppRoutes.pages,
+      builder: (context, child) {
+        final mediaQuery = MediaQuery.of(context);
+        return MediaQuery(
+          data: mediaQuery.copyWith(
+            textScaler: const TextScaler.linear(1.0), // Lock font scaling
+          ),
+          child: child!,
+        );
+      },
     );
   }
 }
