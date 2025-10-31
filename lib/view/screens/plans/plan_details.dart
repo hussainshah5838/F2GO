@@ -172,7 +172,9 @@ class _PlansDetailScreenState extends State<PlansDetailScreen> {
                         fontFamily: AppFonts.HelveticaNowDisplay,
                       ),
                       SizedBox(height: h(context, 4)),
+                      SizedBox(height: h(context, 4)),
                       Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           CommonImageView(
                             imagePath: Assets.imagesLocationicon,
@@ -181,12 +183,16 @@ class _PlansDetailScreenState extends State<PlansDetailScreen> {
                             fit: BoxFit.contain,
                           ),
                           SizedBox(width: w(context, 4)),
-                          CustomText(
-                            text: item.location.toString(),
-                            size: 12,
-                            weight: FontWeight.w500,
-                            color: kBlackColor.withValues(alpha: 0.5),
-                            fontFamily: AppFonts.HelveticaNowDisplay,
+                          Expanded(
+                            child: CustomText(
+                              text: item.location.toString(),
+                              size: 13,
+                              weight: FontWeight.w500,
+                              color: kBlackColor.withValues(alpha: 0.5),
+                              fontFamily: AppFonts.HelveticaNowDisplay,
+                              textOverflow: TextOverflow.ellipsis,
+                              maxLines: 1,
+                            ),
                           ),
                         ],
                       ),

@@ -930,7 +930,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                                         crossAxisCount: 2,
                                                         mainAxisSpacing: 10,
                                                         crossAxisSpacing: 10,
-                                                        mainAxisExtent: 180,
+                                                        mainAxisExtent: 200,
                                                       ),
                                                   itemBuilder: (
                                                     context,
@@ -1255,7 +1255,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                                                   crossAxisSpacing:
                                                                       10,
                                                                   mainAxisExtent:
-                                                                      180,
+                                                                      200,
                                                                 ),
                                                             itemBuilder: (
                                                               context,
@@ -1502,7 +1502,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                                                 crossAxisSpacing:
                                                                     10,
                                                                 mainAxisExtent:
-                                                                    180,
+                                                                    200,
                                                               ),
                                                           itemBuilder: (
                                                             context,
@@ -1895,36 +1895,40 @@ class _HomeScreenState extends State<HomeScreen> {
                       //   child: Icon(Icons.add),
                       // ),
                     )
-                    : Container(
-                      height: 40,
-                      child: Center(
-                        child: CustomButton(
-                          onPressed: () {
-                            // Get.to(CreatePlanScreen());
-                            // Get.to(CreatePlanScreen());
-                            Get.to(
-                              () => CreateNewPlanScreen(),
-                              binding: PlanBindings(),
-                            );
-                          },
-                          text: "Create new Plan",
-                          iscustomgradient: true,
-                          gradient: LinearGradient(
-                            colors: [Color(0xff62D5C3), Color(0xffB5F985)],
-                            begin: Alignment.centerLeft,
-                            end: Alignment.centerRight,
+                    : Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        SizedBox(width: 30),
+                        Container(
+                          height: 50,
+                          child: CustomButton(
+                            onPressed: () {
+                              // Get.to(CreatePlanScreen());
+                              // Get.to(CreatePlanScreen());
+                              Get.to(
+                                () => CreateNewPlanScreen(),
+                                binding: PlanBindings(),
+                              );
+                            },
+                            text: "Create new Plan",
+                            iscustomgradient: true,
+                            gradient: LinearGradient(
+                              colors: [Color(0xff62D5C3), Color(0xffB5F985)],
+                              begin: Alignment.centerLeft,
+                              end: Alignment.centerRight,
+                            ),
+                            borderradius: 100,
+                            isimage: true,
+                            imagePath: Assets.imagesAddicon,
+                            size: 15,
+                            weight: FontWeight.w500,
+                            fontFamily: AppFonts.HelveticaNowDisplay,
+                            color: kBlackColor,
+                            height: 40,
+                            width: 170,
                           ),
-                          borderradius: 100,
-                          isimage: true,
-                          imagePath: Assets.imagesAddicon,
-                          size: 12,
-                          weight: FontWeight.w500,
-                          fontFamily: AppFonts.HelveticaNowDisplay,
-                          color: kBlackColor,
-                          height: 40,
-                          width: 170,
                         ),
-                      ),
+                      ],
                     ),
           ),
         ),
@@ -1961,9 +1965,17 @@ class _HomeScreenState extends State<HomeScreen> {
             CustomText(
               paddingTop: 5,
               text: item.title.toString(),
-              size: 16,
+              size: 15,
               weight: FontWeight.w500,
               color: kBlackColor,
+              fontFamily: AppFonts.HelveticaNowDisplay,
+              maxLines: 1,
+            ),
+            CustomText(
+              text: item.creatorName.toString(),
+              size: 12,
+              weight: FontWeight.w500,
+              color: kBlackColor.withValues(alpha: 0.7),
               fontFamily: AppFonts.HelveticaNowDisplay,
               maxLines: 1,
             ),

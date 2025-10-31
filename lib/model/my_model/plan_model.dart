@@ -1,5 +1,6 @@
 class PlanModel {
   final String? id;
+  final String? creatorName;
   final String? planPhoto;
   final String? title;
   final DateTime? startDate;
@@ -21,6 +22,7 @@ class PlanModel {
 
   PlanModel({
     this.id,
+    this.creatorName,
     this.planPhoto,
     this.title,
 
@@ -46,6 +48,9 @@ class PlanModel {
   factory PlanModel.fromMap(Map<String, dynamic> map) {
     return PlanModel(
       id: map.containsKey('id') ? map['id'] as String? : null,
+      creatorName:
+          map.containsKey('creatorName') ? map['creatorName'] as String? : null,
+
       planPhoto:
           map.containsKey('planPhoto') ? map['planPhoto'] as String? : null,
       title: map.containsKey('title') ? map['title'] as String? : null,
@@ -100,6 +105,7 @@ class PlanModel {
   Map<String, dynamic> toMap() {
     return {
       'id': id,
+      'creatorName': creatorName,
       'planPhoto': planPhoto,
       'title': title,
 

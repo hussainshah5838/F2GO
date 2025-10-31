@@ -160,6 +160,7 @@ class _MyPlansScreenState extends State<MyPlansScreen> {
                     ),
                     SizedBox(height: h(context, 4)),
                     Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         CommonImageView(
                           imagePath: Assets.imagesLocationicon,
@@ -168,12 +169,14 @@ class _MyPlansScreenState extends State<MyPlansScreen> {
                           fit: BoxFit.contain,
                         ),
                         SizedBox(width: w(context, 4)),
-                        CustomText(
-                          text: item.location ?? '',
-                          size: 12,
-                          weight: FontWeight.w500,
-                          color: kBlackColor.withValues(alpha: 0.5),
-                          fontFamily: AppFonts.HelveticaNowDisplay,
+                        Expanded(
+                          child: CustomText(
+                            text: item.location ?? '',
+                            size: 14,
+                            weight: FontWeight.w500,
+                            color: kBlackColor.withValues(alpha: 0.5),
+                            fontFamily: AppFonts.HelveticaNowDisplay,
+                          ),
                         ),
                       ],
                     ),

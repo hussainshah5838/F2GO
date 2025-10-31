@@ -10,6 +10,7 @@ import 'package:f2g/core/enums/categories_status.dart';
 import 'package:f2g/core/enums/plan_status.dart';
 import 'package:f2g/model/my_model/plan_model.dart';
 import 'package:f2g/services/firebase_storage/firebase_storage_service.dart';
+import 'package:f2g/services/user/user_services.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
@@ -105,6 +106,8 @@ class PlanController extends GetxController {
 
       PlanModel model = PlanModel(
         id: id,
+        creatorName: UserService.instance.userModel.value.fullName,
+
         planPhoto: downloadUrl,
         title: titleController.text.trim(),
         // age: ageController.text.trim(),
