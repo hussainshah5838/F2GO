@@ -23,7 +23,13 @@ class AppFeedbackScreen extends StatelessWidget {
       colorText: Colors.white,
       duration: Duration(seconds: 2),
     );
+    nameCtrl.clear();
+    descriptionCtrl.clear();
+    Get.close(1);
   }
+
+  TextEditingController nameCtrl = TextEditingController();
+  TextEditingController descriptionCtrl = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -82,7 +88,7 @@ class AppFeedbackScreen extends StatelessWidget {
                   buildPasswordField(
                     context,
                     label: "Full name",
-                    controller: TextEditingController(),
+                    controller: nameCtrl,
                     // controller: controllers.feedbackNameController.value,
                   ),
 
@@ -108,7 +114,7 @@ class AppFeedbackScreen extends StatelessWidget {
                         ),
                         SizedBox(height: h(context, 6)),
                         TextFormField(
-                          controller: TextEditingController(),
+                          controller: descriptionCtrl,
                           // controller: controllers.feedbackController.value,
                           maxLines: 5,
                           style: TextStyle(

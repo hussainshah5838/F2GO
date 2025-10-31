@@ -290,7 +290,7 @@ class _PlansDetailScreenState extends State<PlansDetailScreen> {
                   );
 
                   return CustomText(
-                    text: "${participants.length}",
+                    text: "${participants.length}/${item.maxMembers}",
                     size: 14,
                     weight: FontWeight.w500,
                     color: kBlackColor,

@@ -3,6 +3,7 @@ import 'package:f2g/constants/app_colors.dart';
 import 'package:f2g/constants/app_fonts.dart';
 import 'package:f2g/constants/app_styling.dart';
 import 'package:f2g/constants/firebase_const.dart';
+import 'package:f2g/core/bindings/bindings.dart';
 import 'package:f2g/view/screens/Home/home_screen.dart';
 import 'package:f2g/view/screens/auth/login/login.dart';
 import 'package:f2g/view/screens/launch/onboarding.dart';
@@ -39,6 +40,7 @@ class _SplashScreenState extends State<SplashScreen> {
       if (auth.currentUser != null) {
         Get.offAll(
           () => HomeScreen(),
+          binding: PlanBindings(),
           // EventLocation(),
         );
       } else {

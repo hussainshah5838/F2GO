@@ -1,5 +1,4 @@
 import 'dart:developer';
-
 import 'package:f2g/constants/app_images.dart';
 import 'package:f2g/controller/loading_animation.dart';
 import 'package:f2g/controller/my_ctrl/plan_controller.dart';
@@ -19,22 +18,53 @@ import '../../../constants/app_styling.dart';
 import '../../widget/custom_button_widget.dart';
 
 // ignore: must_be_immutable
-class CreateNewPlanScreen extends StatelessWidget {
+class CreateNewPlanScreen extends StatefulWidget {
   CreateNewPlanScreen({super.key});
 
+  @override
+  State<CreateNewPlanScreen> createState() => _CreateNewPlanScreenState();
+}
+
+class _CreateNewPlanScreenState extends State<CreateNewPlanScreen> {
+  final ScrollController scrollController = ScrollController();
+
+  /// Scroll to bottom smoothly when marker tapped
+  void _scrollToBottom() {
+    log("function scorll called");
+    if (scrollController.hasClients) {
+      scrollController.animateTo(
+        scrollController.position.maxScrollExtent,
+        duration: const Duration(milliseconds: 500),
+        curve: Curves.easeInOut,
+      );
+    }
+  }
+
+  @override
+  void dispose() {
+    scrollController.dispose(); // ✅ Dispose it
+    super.dispose();
+  }
+
   // final CreateNewPlanController controller = Get.put(CreateNewPlanController());
-  // final TextControllers textControllers = Get.find<TextControllers>();
   final _ctrl = Get.find<PlanController>();
+
   DateTime? _startDate;
+
   DateTime? _endDate;
+
   DateTime? _startTime;
+
   DateTime? _endTime;
+
+  String? _maximumMembersAllowed;
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
         FocusScope.of(context).unfocus();
+        _ctrl.isOpened.value = false;
       },
       child: Scaffold(
         body: Container(
@@ -82,6 +112,7 @@ class CreateNewPlanScreen extends StatelessWidget {
                   SizedBox(height: h(context, 22)),
                   Expanded(
                     child: SingleChildScrollView(
+                      controller: scrollController,
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
@@ -359,43 +390,236 @@ class CreateNewPlanScreen extends StatelessWidget {
                           ),
                           SizedBox(height: h(context, 8)),
 
-                          // CustomLabelTextFeild(
-                          //   label: "Maximum Members Allowed",
-                          //   controller: _ctrl.maxMemberController,
-                          // ),
-                          Obx(
-                            () => CustomDropdownFieldMember(
-                              label: "Maximum Members Allowed",
-                              selectedValue: _ctrl.maxMemberValue.value,
-                              onChanged: (value) {
-                                _ctrl.maxMemberValue.value = value;
-
-                                log("Selected: ${_ctrl.maxMemberValue.value}");
-                              },
+                          CustomLabelTextFeild(
+                            readOnly:
+                                (_ctrl.maxMemberValue.value != null)
+                                    ? true
+                                    : false,
+                            label: "Maximum Members Allowed",
+                            controller: TextEditingController(
+                              text: _ctrl.maxMemberValue.value,
                             ),
+                            // _ctrl.maxMemberController,
+                            onTap: () {
+                              Get.bottomSheet(
+                                NumberSelector(
+                                  title: "Maximum Members Allowed",
+                                  onTap: () {
+                                    // _ctrl.startDate.value = _startDate;
+                                    _ctrl.maxMemberValue.value =
+                                        _maximumMembersAllowed;
+                                    Get.back();
+                                    log("Close --");
+                                  },
+                                  onNumberSelected: (v) {
+                                    _maximumMembersAllowed = v;
+
+                                    log("On-Number-Selected: $v");
+                                  },
+                                ),
+                              );
+                            },
                           ),
+                          // Obx(
+                          //   () => CustomDropdownFieldMember(
+                          //     label: "Maximum Members Allowed",
+                          //     selectedValue: _ctrl.maxMemberValue.value,
+                          //     onChanged: (value) {
+                          //       _ctrl.maxMemberValue.value = value;
+
+                          //       log("Selected: ${_ctrl.maxMemberValue.value}");
+                          //     },
+                          //   ),
+                          // ),
                           SizedBox(height: h(context, 8)),
 
                           // CustomLabelTextFeild(
                           //   label: "Age",
                           //   controller: _ctrl.ageController,
                           // ),
-                          Obx(
-                            () => CustomDropdownFieldAgeLimit(
-                              label: "Age",
-                              selectedValue: _ctrl.ageValue.value,
-                              onChanged: (value) {
-                                _ctrl.ageValue.value = value;
+                          // Obx(
+                          //   () => CustomDropdownFieldAgeLimit(
+                          //     label: "Age",
+                          //     selectedValue: _ctrl.ageValue.value,
+                          //     onChanged: (value) {
+                          //       _ctrl.ageValue.value = value;
 
-                                log("Selected Age: ${_ctrl.ageValue.value}");
-                              },
+                          //       log("Selected Age: ${_ctrl.ageValue.value}");
+                          //     },
+                          //   ),
+                          // ),
+
+                          // ----------------- Age From To ----------------------
+                          Container(
+                            padding: EdgeInsets.all(3),
+                            decoration: BoxDecoration(
+                              color: kSecondaryColor.withValues(alpha: 0.1),
+                            ),
+                            child: Row(
+                              children: [
+                                CustomText(
+                                  paddingLeft: 5,
+                                  paddingRight: 15,
+                                  text: "Age",
+                                  color: kBlackColor,
+                                ),
+                                Expanded(
+                                  child: CustomLabelTextFeild(
+                                    keyboardType: TextInputType.number,
+                                    label: "Min",
+                                    controller: _ctrl.ageFromController,
+                                  ),
+                                ),
+                                CustomText(
+                                  paddingLeft: 15,
+                                  paddingRight: 15,
+                                  text: "To",
+                                  color: kBlackColor,
+                                ),
+                                Expanded(
+                                  child: CustomLabelTextFeild(
+                                    keyboardType: TextInputType.number,
+                                    label: "Max",
+
+                                    controller: _ctrl.ageToController,
+                                  ),
+                                ),
+                              ],
                             ),
                           ),
                           SizedBox(height: h(context, 8)),
                           CustomLabelTextFeild(
                             label: "Location",
                             controller: _ctrl.locationController,
+                            onChanged: (v) {
+                              _scrollToBottom();
+                              _ctrl.searchPlaces(_ctrl.locationController.text);
+                            },
+                            onTap: () {
+                              // _scrollToBottom();
+                            },
                           ),
+                          SizedBox(height: h(context, 8)),
+
+                          Obx(() {
+                            // 1. Show loading when search is opened but no predictions yet
+                            if (_ctrl.isOpened.value &&
+                                _ctrl.predictions.isEmpty) {
+                              return Center(child: WaveLoading());
+                            }
+
+                            // 2. Show predictions list when search is opened and has results
+                            if (_ctrl.isOpened.value == false &&
+                                _ctrl.predictions.isNotEmpty &&
+                                _ctrl.locationController.text.isNotEmpty) {
+                              return Container(
+                                decoration: BoxDecoration(
+                                  color: kWhiteColor,
+                                  borderRadius: BorderRadius.circular(12),
+                                ),
+                                height: 220,
+                                padding: EdgeInsets.symmetric(
+                                  horizontal: 10,
+                                  vertical: 15,
+                                ),
+                                child: ListView.builder(
+                                  itemCount: _ctrl.predictions.length,
+                                  itemBuilder: (context, index) {
+                                    final prediction = _ctrl.predictions[index];
+                                    log('${prediction["description"]}');
+                                    return CustomText(
+                                      paddingTop: 10,
+                                      paddingBottom: 10,
+                                      color: kBlackColor,
+                                      size: 12,
+                                      weight: FontWeight.w600,
+                                      text:
+                                          (prediction["description"] ??
+                                              'No Data'),
+                                      onTap: () async {
+                                        // Get the coordinates of the selected location
+                                        await _ctrl.getPlaceCoordinates(
+                                          prediction["place_id"],
+                                        );
+                                        _ctrl.predictions.clear();
+                                      },
+                                    );
+                                  },
+                                ),
+                              );
+                            }
+
+                            // 3. Default: Hide when search is closed or text field is empty
+                            return SizedBox.shrink();
+                          }),
+
+                          // Obx(() {
+                          //   if (_ctrl.isOpened.value &&
+                          //       _ctrl.predictions.isEmpty) {
+                          //     return Center(child: WaveLoading());
+                          //   }
+
+                          //   if (_ctrl.isOpened.value == false &&
+                          //           _ctrl.predictions.isEmpty ||
+                          //       _ctrl.locationController.text.isEmpty) {
+                          //     return SizedBox.shrink();
+                          //   }
+
+                          //   if (_ctrl.isOpened.value &&
+                          //       _ctrl.predictions.isNotEmpty &&
+                          //       _ctrl.locationController.text.isNotEmpty) {
+                          //     return Container(
+                          //       decoration: BoxDecoration(
+                          //         color: kWhiteColor,
+                          //         borderRadius: BorderRadius.circular(12),
+                          //       ),
+                          //       height: 220,
+                          //       padding: EdgeInsets.symmetric(
+                          //         horizontal: 10,
+                          //         vertical: 15,
+                          //       ),
+                          //       child: ListView.builder(
+                          //         itemCount: _ctrl.predictions.length,
+                          //         itemBuilder: (context, index) {
+                          //           final prediction = _ctrl.predictions[index];
+                          //           log('${prediction["description"]}');
+                          //           return CustomText(
+                          //             paddingTop: 10,
+                          //             paddingBottom: 10,
+                          //             color: kBlackColor,
+                          //             size: 12,
+                          //             weight: FontWeight.w600,
+                          //             text:
+                          //                 (prediction["description"] ??
+                          //                     'No Data'),
+                          //             onTap: () async {
+                          //               // Get the coordinates of the selected location
+                          //               await _ctrl.getPlaceCoordinates(
+                          //                 prediction["place_id"],
+                          //               );
+                          //               _ctrl.predictions.clear();
+
+                          //               // setState(() {});
+                          //             },
+                          //           );
+                          //         },
+                          //       ),
+                          //     );
+                          //   }
+
+                          //   // Show a red container when no search results are available, and the user has typed
+                          //   if (_ctrl.isOpened.value == false ||
+                          //       _ctrl.locationController.text.isEmpty) {
+                          //     return SizedBox.shrink();
+                          //   }
+
+                          //   if (_ctrl.locationController.text.isEmpty) {
+                          //     return SizedBox.shrink();
+                          //   }
+
+                          //   // Default case: No action taken, empty widget
+                          //   return SizedBox.shrink();
+                          // }),
                           SizedBox(height: h(context, 8)),
 
                           // CustomLabelTextFeild(
@@ -466,8 +690,34 @@ class CreateNewPlanScreen extends StatelessWidget {
                               //   return;
                               // }
 
-                              if (_ctrl.ageValue.value == null) {
-                                displayToast(msg: "Please select a age.");
+                              if (_ctrl.ageFromController.text.isEmpty) {
+                                displayToast(msg: "Please select minimum age.");
+                                return;
+                              }
+                              // ---------------- Min Age -------------
+                              String ageValue = _ctrl.ageFromController.text;
+
+                              _ctrl.minAgeChecker = int.parse(ageValue);
+                              if (_ctrl.minAgeChecker <= 17) {
+                                displayToast(
+                                  msg: "Please correct minimum age to be 18.",
+                                );
+                                return;
+                              }
+
+                              if (_ctrl.ageToController.text.isEmpty) {
+                                displayToast(msg: "Please select maximum age.");
+                                return;
+                              }
+
+                              // ---------------- Max Age -------------
+                              String maxAgeValue = _ctrl.ageToController.text;
+                              _ctrl.maxAgeChecker = int.parse(maxAgeValue);
+                              if (_ctrl.maxAgeChecker <= 18) {
+                                displayToast(
+                                  msg:
+                                      "Please correct maximum age to be greater than 18.",
+                                );
                                 return;
                               }
 
@@ -689,95 +939,95 @@ class CustomDropdownFieldMember extends StatelessWidget {
 
 // Age Limit
 
-class CustomDropdownFieldAgeLimit extends StatelessWidget {
-  final String label;
-  final String? selectedValue;
-  final ValueChanged<String?> onChanged;
+// class CustomDropdownFieldAgeLimit extends StatelessWidget {
+//   final String label;
+//   final String? selectedValue;
+//   final ValueChanged<String?> onChanged;
 
-  const CustomDropdownFieldAgeLimit({
-    super.key,
-    required this.label,
-    required this.selectedValue,
-    required this.onChanged,
-  });
+//   const CustomDropdownFieldAgeLimit({
+//     super.key,
+//     required this.label,
+//     required this.selectedValue,
+//     required this.onChanged,
+//   });
 
-  @override
-  Widget build(BuildContext context) {
-    // List of member options (3, 10, 20, 30... 100)
-    final List<String> ageOptions = [
-      '18-22',
-      '23-27',
-      '28-32',
-      '33-37',
-      '38-42',
-      '43-47',
-      '48-52',
-      '53-57',
-      '58-62',
-      '63-67',
-      '68-72',
-      '73-77',
-      // '78-82',
-      // '83-87',
-      // '88-92',
-      // '93-97',
-      // '98-100',
-    ];
+//   @override
+//   Widget build(BuildContext context) {
+//     // List of member options (3, 10, 20, 30... 100)
+//     final List<String> ageOptions = [
+//       '18-22',
+//       '23-27',
+//       '28-32',
+//       '33-37',
+//       '38-42',
+//       '43-47',
+//       '48-52',
+//       '53-57',
+//       '58-62',
+//       '63-67',
+//       '68-72',
+//       '73-77',
+//       // '78-82',
+//       // '83-87',
+//       // '88-92',
+//       // '93-97',
+//       // '98-100',
+//     ];
 
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        // Text(
-        //   label,
-        //   style: TextStyle(
-        //     fontSize: 16,
-        //     fontWeight: FontWeight.w600,
-        //     color: Colors.black87,
-        //   ),
-        // ),
-        // const SizedBox(height: 8),
-        Container(
-          padding: all(context, 6),
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(h(context, 12)),
-          ),
-          child: DropdownButtonHideUnderline(
-            child: DropdownButton<String>(
-              value: selectedValue,
-              hint: Text(
-                "Select Age",
-                style: TextStyle(
-                  fontSize: f(context, 15),
-                  fontWeight: FontWeight.w400,
-                  color:
-                      (selectedValue != null)
-                          ? kBlackColor.withValues(alpha: 0.5)
-                          : kBlackColor,
+//     return Column(
+//       crossAxisAlignment: CrossAxisAlignment.start,
+//       children: [
+//         // Text(
+//         //   label,
+//         //   style: TextStyle(
+//         //     fontSize: 16,
+//         //     fontWeight: FontWeight.w600,
+//         //     color: Colors.black87,
+//         //   ),
+//         // ),
+//         // const SizedBox(height: 8),
+//         Container(
+//           padding: all(context, 6),
+//           decoration: BoxDecoration(
+//             color: Colors.white,
+//             borderRadius: BorderRadius.circular(h(context, 12)),
+//           ),
+//           child: DropdownButtonHideUnderline(
+//             child: DropdownButton<String>(
+//               value: selectedValue,
+//               hint: Text(
+//                 "Select Age",
+//                 style: TextStyle(
+//                   fontSize: f(context, 15),
+//                   fontWeight: FontWeight.w400,
+//                   color:
+//                       (selectedValue != null)
+//                           ? kBlackColor.withValues(alpha: 0.5)
+//                           : kBlackColor,
 
-                  fontFamily: AppFonts.HelveticaNowDisplay,
-                ),
-              ),
-              icon: const Icon(Icons.keyboard_arrow_down_rounded),
-              isExpanded: true,
-              items:
-                  ageOptions.map((value) {
-                    return DropdownMenuItem<String>(
-                      value: value,
-                      child: Text(
-                        value == 10 ? "10+" : "$value",
-                        style: const TextStyle(
-                          fontSize: 14,
-                          color: Colors.black87,
-                        ),
-                      ),
-                    );
-                  }).toList(),
-              onChanged: onChanged,
-            ),
-          ),
-        ),
-      ],
-    );
-  }
-}
+//                   fontFamily: AppFonts.HelveticaNowDisplay,
+//                 ),
+//               ),
+//               icon: const Icon(Icons.keyboard_arrow_down_rounded),
+//               isExpanded: true,
+//               items:
+//                   ageOptions.map((value) {
+//                     return DropdownMenuItem<String>(
+//                       value: value,
+//                       child: Text(
+//                         value == 10 ? "10+" : "$value",
+//                         style: const TextStyle(
+//                           fontSize: 14,
+//                           color: Colors.black87,
+//                         ),
+//                       ),
+//                     );
+//                   }).toList(),
+//               onChanged: onChanged,
+//             ),
+//           ),
+//         ),
+//       ],
+//     );
+//   }
+// }

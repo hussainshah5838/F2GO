@@ -181,7 +181,7 @@ class CreatePlanDetailsScreen extends StatelessWidget {
                                     ),
                                     CustomText(
                                       text:
-                                          "${planItem.rating}(${planItem.reviewCount} reviews)",
+                                          "${planItem.rating}(${planItem.reviewCount} reviews",
                                       size: 15,
                                       weight: FontWeight.w500,
                                       color: kBlackColor,

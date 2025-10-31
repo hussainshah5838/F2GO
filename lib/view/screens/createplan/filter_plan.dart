@@ -290,7 +290,9 @@
 // ---------- FIlter Correct Plans -----------------
 
 import 'dart:async';
+import 'dart:developer';
 import 'package:f2g/constants/app_colors.dart';
+import 'package:f2g/constants/loading_animation.dart';
 import 'package:f2g/controller/my_ctrl/plan_controller.dart';
 import 'package:f2g/model/my_model/plan_model.dart';
 import 'package:f2g/view/screens/Home/filter_bottomshett.dart';
@@ -305,7 +307,8 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import '../../../constants/app_fonts.dart';
 
 class FilterScreenPage extends StatefulWidget {
-  const FilterScreenPage({super.key});
+  String? categoryFilter;
+  FilterScreenPage({super.key, this.categoryFilter});
 
   @override
   State<FilterScreenPage> createState() => _FilterScreenPageState();
@@ -324,7 +327,8 @@ class _FilterScreenPageState extends State<FilterScreenPage> {
   @override
   void initState() {
     super.initState();
-    planController.fetchPlans();
+    // planController.fetchPlans();
+    log("List Length ::: ${planController.plans.length}");
     _initializeMap();
   }
 
@@ -367,15 +371,123 @@ class _FilterScreenPageState extends State<FilterScreenPage> {
         1000; // Convert to KM
   }
 
-  // ✅ Main function to apply filters and refresh map markers
-  Future<void> _applyFilters() async {
+  // Future<void> _applyFilters({
+  //   bool useAge = true,
+  //   bool usePeople = true,
+  //   bool useDistance = true,
+  // }) async {
+  //   if (currentPosition == null) return;
+
+  //   final ageRange = filterController.ageRange.value;
+  //   final peopleRange = filterController.peopleRange.value;
+  //   final distanceRange = filterController.distanceRange.value;
+
+  //   Set<Marker> newMarkers = {};
+  //   Set<Circle> newCircles = {};
+
+  //   for (var event in planController.plans) {
+  //     try {
+  //       if (event.location == null) continue;
+
+  //       // Convert address to coordinates
+  //       List<Location> locations = await locationFromAddress(event.location!);
+  //       if (locations.isEmpty) continue;
+
+  //       final eventPos = LatLng(
+  //         locations.first.latitude,
+  //         locations.first.longitude,
+  //       );
+  //       final distance = _calculateDistance(currentPosition!, eventPos);
+
+  //       // ------------------------------
+  //       // ✅ Parse age and people safely
+  //       // ------------------------------
+  //       final defaultAgeStart = 18;
+  //       final defaultAgeEnd = 22;
+  //       final defaultPeopleEnd = 40;
+
+  //       // Parse event age like "18-25"
+  //       int eventAgeStart = defaultAgeStart;
+  //       int eventAgeEnd = defaultAgeEnd;
+
+  //       if (event.age != null && event.age!.contains('-')) {
+  //         final parts = event.age!.split('-');
+  //         if (parts.length == 2) {
+  //           eventAgeStart = int.tryParse(parts[0].trim()) ?? defaultAgeStart;
+  //           eventAgeEnd = int.tryParse(parts[1].trim()) ?? defaultAgeEnd;
+  //         }
+  //       }
+
+  //       // Parse event people (e.g. "30")
+  //       int eventPeople =
+  //           int.tryParse(event.maxMembers?.toString() ?? '') ??
+  //           defaultPeopleEnd;
+
+  //       // ---------------------------------
+  //       // ✅ Apply filters (corrected)
+  //       // ---------------------------------
+  //       // Age: overlap logic
+  //       final withinAge =
+  //           !useAge ||
+  //           (eventAgeEnd >= ageRange.start && eventAgeStart <= ageRange.end);
+
+  //       // People: 0 to maxParticipants
+  //       final withinPeople = !usePeople || (eventPeople <= peopleRange.end);
+
+  //       // Distance: simple check
+  //       final withinDistance = !useDistance || distance <= distanceRange.end;
+
+  //       // -------------------------------
+  //       // ✅ Add marker if passes filters
+  //       // -------------------------------
+  //       if (withinAge && withinPeople && withinDistance) {
+  //         newMarkers.add(
+  //           Marker(
+  //             markerId: MarkerId(event.id ?? event.title ?? ''),
+  //             position: eventPos,
+  //             infoWindow: InfoWindow(title: event.title),
+  //             onTap: () => _showEventPopup(event),
+  //           ),
+  //         );
+  //       }
+  //     } catch (e) {
+  //       debugPrint("Error filtering location: $e");
+  //     }
+  //   }
+
+  //   // ✅ Draw distance circle if distance filter is used
+  //   if (useDistance) {
+  //     newCircles.add(
+  //       Circle(
+  //         circleId: const CircleId("search_radius"),
+  //         center: currentPosition!,
+  //         radius: distanceRange.end * 1000,
+  //         fillColor: kSecondaryColor.withValues(alpha: 0.15),
+  //         strokeColor: kSecondaryColor,
+  //         strokeWidth: 2,
+  //       ),
+  //     );
+  //   }
+
+  //   setState(() {
+  //     markers = newMarkers;
+  //     circles = newCircles;
+  //   });
+  // }
+
+  Future<void> _applyFilters({
+    bool useAge = false,
+    bool usePeople = false,
+    bool useDistance = true,
+    // String? selectedCategory, // ✅ new optional filter
+  }) async {
     if (currentPosition == null) return;
 
     final ageRange = filterController.ageRange.value;
     final peopleRange = filterController.peopleRange.value;
     final distanceRange = filterController.distanceRange.value;
 
-    Set<Marker> newMarkers = {}; // ✅ use new Set
+    Set<Marker> newMarkers = {};
     Set<Circle> newCircles = {};
 
     for (var event in planController.plans) {
@@ -386,22 +498,58 @@ class _FilterScreenPageState extends State<FilterScreenPage> {
         List<Location> locations = await locationFromAddress(event.location!);
         if (locations.isEmpty) continue;
 
-        final loc = locations.first;
-        final eventPos = LatLng(loc.latitude, loc.longitude);
+        final eventPos = LatLng(
+          locations.first.latitude,
+          locations.first.longitude,
+        );
         final distance = _calculateDistance(currentPosition!, eventPos);
 
-        int eventAge = int.tryParse(event.age?.toString() ?? '0') ?? 0;
+        // ------------------------------
+        // ✅ Parse age and people safely
+        // ------------------------------
+        final defaultAgeStart = 18;
+        final defaultAgeEnd = 22;
+        final defaultPeopleEnd = 40;
+
+        // Parse event age like "18-25"
+        int eventAgeStart = defaultAgeStart;
+        int eventAgeEnd = defaultAgeEnd;
+
+        if (event.age != null && event.age!.contains('-')) {
+          final parts = event.age!.split('-');
+          if (parts.length == 2) {
+            eventAgeStart = int.tryParse(parts[0].trim()) ?? defaultAgeStart;
+            eventAgeEnd = int.tryParse(parts[1].trim()) ?? defaultAgeEnd;
+          }
+        }
+
+        // Parse event people (e.g. "30")
         int eventPeople =
-            int.tryParse(event.maxMembers?.toString() ?? '0') ?? 0;
+            int.tryParse(event.maxMembers?.toString() ?? '') ??
+            defaultPeopleEnd;
 
+        // ---------------------------------
+        // ✅ Apply filters (corrected)
+        // ---------------------------------
         final withinAge =
-            eventAge >= ageRange.start && eventAge <= ageRange.end;
-        final withinPeople =
-            eventPeople >= peopleRange.start && eventPeople <= peopleRange.end;
-        final withinDistance =
-            distance >= distanceRange.start && distance <= distanceRange.end;
+            !useAge ||
+            (eventAgeEnd >= ageRange.start && eventAgeStart <= ageRange.end);
 
-        if (withinAge && withinPeople && withinDistance) {
+        final withinPeople = !usePeople || (eventPeople <= peopleRange.end);
+
+        final withinDistance = !useDistance || distance <= distanceRange.end;
+
+        // ✅ New category filter
+        final withinCategory =
+            widget.categoryFilter == null ||
+            widget.categoryFilter!.isEmpty ||
+            (event.category?.toLowerCase().trim() ==
+                widget.categoryFilter?.toLowerCase().trim());
+
+        // -------------------------------
+        // ✅ Add marker if passes filters
+        // -------------------------------
+        if (withinAge && withinPeople && withinDistance && withinCategory) {
           newMarkers.add(
             Marker(
               markerId: MarkerId(event.id ?? event.title ?? ''),
@@ -416,21 +564,20 @@ class _FilterScreenPageState extends State<FilterScreenPage> {
       }
     }
 
-    // ✅ Add radius circle after filtering
-    newCircles.add(
-      Circle(
-        circleId: const CircleId("search_radius"),
-        center: currentPosition!,
-        radius: distanceRange.end * 1000, // max distance (in meters)
-        // fillColor: Colors.blue.withOpacity(0.15),
-        fillColor: kSecondaryColor.withValues(alpha: 0.15),
-        // strokeColor: Colors.blueAccent,
-        strokeColor: kSecondaryColor,
-        strokeWidth: 2,
-      ),
-    );
+    // ✅ Draw distance circle if distance filter is used
+    if (useDistance) {
+      newCircles.add(
+        Circle(
+          circleId: const CircleId("search_radius"),
+          center: currentPosition!,
+          radius: distanceRange.end * 1000,
+          fillColor: kSecondaryColor.withValues(alpha: 0.15),
+          strokeColor: kSecondaryColor,
+          strokeWidth: 2,
+        ),
+      );
+    }
 
-    // ✅ Update UI once at end (no partial setStates)
     setState(() {
       markers = newMarkers;
       circles = newCircles;
@@ -538,7 +685,7 @@ class _FilterScreenPageState extends State<FilterScreenPage> {
   @override
   Widget build(BuildContext context) {
     if (isLoading) {
-      return const Scaffold(body: Center(child: CircularProgressIndicator()));
+      return Scaffold(body: Center(child: WaveLoading()));
     }
 
     return Scaffold(

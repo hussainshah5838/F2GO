@@ -1,5 +1,6 @@
 import 'package:f2g/core/bindings/bindings.dart';
 import 'package:f2g/firebase_options.dart';
+import 'package:f2g/services/notification_service/notification_services.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -10,6 +11,11 @@ import 'config/theme/light_theme.dart';
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+
+  NotificationServices().initLocalNotification();
+  NotificationServices().notificationPermission();
+  NotificationServices().firebaseInit();
+
   runApp(MyApp());
 }
 

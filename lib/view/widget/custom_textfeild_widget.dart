@@ -117,7 +117,9 @@ class CustomLabelTextFeild extends StatelessWidget {
   final int? maxLines;
   final bool readOnly;
   final VoidCallback? onTap;
-  const CustomLabelTextFeild({
+  final Function(String)? onChanged;
+  TextInputType? keyboardType;
+  CustomLabelTextFeild({
     super.key,
     this.controller,
     required this.label,
@@ -126,6 +128,8 @@ class CustomLabelTextFeild extends StatelessWidget {
     this.maxLines = 1,
     this.readOnly = false,
     this.onTap,
+    this.onChanged,
+    this.keyboardType,
   });
 
   @override
@@ -138,6 +142,8 @@ class CustomLabelTextFeild extends StatelessWidget {
         borderRadius: BorderRadius.circular(h(context, 12)),
       ),
       child: TextFormField(
+        keyboardType: keyboardType,
+        onChanged: onChanged,
         onTap: onTap,
         readOnly: readOnly,
         controller: controller,

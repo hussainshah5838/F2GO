@@ -18,22 +18,23 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 class MyPlansScreen extends StatefulWidget {
-  MyPlansScreen({super.key});
+  const MyPlansScreen({super.key});
 
   @override
   State<MyPlansScreen> createState() => _MyPlansScreenState();
 }
 
 class _MyPlansScreenState extends State<MyPlansScreen> {
-  PlanController _ctrl = Get.find<PlanController>();
+  final PlanController _ctrl = Get.find<PlanController>();
 
   @override
   void initState() {
     super.initState();
-    _ctrl.fetchMyPlan();
+
+    // Delay fetch to avoid reactive rebuild during first frame
+    Future.microtask(() => _ctrl.fetchMyPlan());
   }
 
-  //
   @override
   Widget build(BuildContext context) {
     return DefaultTabController(
@@ -52,9 +53,7 @@ class _MyPlansScreenState extends State<MyPlansScreen> {
                     Row(
                       children: [
                         InkWell(
-                          onTap: () {
-                            Get.back();
-                          },
+                          onTap: () => Get.back(),
                           child: CommonImageView(
                             imagePath: Assets.imagesMenu,
                             height: 48,
@@ -74,50 +73,45 @@ class _MyPlansScreenState extends State<MyPlansScreen> {
                     ),
                     SizedBox(height: h(context, 20)),
 
-                    SizedBox(height: h(context, 20)),
+                    /// ✅ Only one Obx wrapper
+                    Expanded(
+                      child: Obx(() {
+                        if (_ctrl.isLoading.value) {
+                          return Center(child: WaveLoading());
+                        }
 
-                    Obx(
-                      () => Expanded(
-                        child: Column(
-                          children: [
-                            // ACTIVE PLANS TAB
-                            _ctrl.isLoading.value
-                                ? Center(child: WaveLoading())
-                                : _ctrl.myPlans.isEmpty
-                                ? Center(
-                                  child: CustomText(
-                                    text: "No Plans Found!",
-                                    color: kBlackColor,
-                                    size: 13,
-                                  ),
-                                )
-                                : Obx(
-                                  () => ListView.builder(
-                                    shrinkWrap: true,
-                                    itemCount: _ctrl.myPlans.length,
-                                    itemBuilder: (context, index) {
-                                      final item = _ctrl.myPlans[index];
-                                      return InkWell(
-                                        onTap: () {
-                                          Get.to(
-                                            () => PlansDetailScreen(
-                                              isStatusChange: true,
-                                            ),
-                                            arguments: {'data': item},
-                                          );
-                                        },
-                                        child: _buildActiveCompletedCard(
-                                          item,
-                                          context,
-                                          index,
-                                        ),
-                                      );
-                                    },
-                                  ),
-                                ),
-                          ],
-                        ),
-                      ),
+                        if (_ctrl.myPlans.isEmpty) {
+                          return Center(
+                            child: CustomText(
+                              text: "No Plans Found!",
+                              color: kBlackColor,
+                              size: 13,
+                            ),
+                          );
+                        }
+
+                        return ListView.builder(
+                          itemCount: _ctrl.myPlans.length,
+                          itemBuilder: (context, index) {
+                            final item = _ctrl.myPlans[index];
+                            return InkWell(
+                              onTap: () {
+                                // ✅ Navigation safely deferred to next frame
+                                WidgetsBinding.instance.addPostFrameCallback((
+                                  _,
+                                ) {
+                                  Get.to(
+                                    () =>
+                                        PlansDetailScreen(isStatusChange: true),
+                                    arguments: {'data': item},
+                                  );
+                                });
+                              },
+                              child: _buildActiveCompletedCard(item, context),
+                            );
+                          },
+                        );
+                      }),
                     ),
                   ],
                 ),
@@ -129,12 +123,7 @@ class _MyPlansScreenState extends State<MyPlansScreen> {
     );
   }
 
-  Widget _buildActiveCompletedCard(
-    PlanModel item,
-    BuildContext context,
-    int mainIndex,
-  ) {
-    var _ctrl = Get.find<PlanController>();
+  Widget _buildActiveCompletedCard(PlanModel item, BuildContext context) {
     return Container(
       margin: only(context, bottom: 10),
       padding: all(context, 10),
@@ -145,6 +134,7 @@ class _MyPlansScreenState extends State<MyPlansScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          /// --- Header ---
           Row(
             children: [
               ClipRRect(
@@ -156,14 +146,13 @@ class _MyPlansScreenState extends State<MyPlansScreen> {
                   width: 48,
                 ),
               ),
-
               SizedBox(width: w(context, 9)),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     CustomText(
-                      text: item.title.toString(),
+                      text: item.title ?? '',
                       size: 16,
                       weight: FontWeight.w500,
                       color: kBlackColor,
@@ -180,7 +169,7 @@ class _MyPlansScreenState extends State<MyPlansScreen> {
                         ),
                         SizedBox(width: w(context, 4)),
                         CustomText(
-                          text: item.location.toString(),
+                          text: item.location ?? '',
                           size: 12,
                           weight: FontWeight.w500,
                           color: kBlackColor.withValues(alpha: 0.5),
@@ -210,7 +199,7 @@ class _MyPlansScreenState extends State<MyPlansScreen> {
                         shape: BoxShape.circle,
                         color:
                             (item.status == PlanStatus.active.name)
-                                ? Color(0xff34A853)
+                                ? const Color(0xff34A853)
                                 : kSecondaryColor,
                       ),
                     ),
@@ -221,7 +210,7 @@ class _MyPlansScreenState extends State<MyPlansScreen> {
                       weight: FontWeight.w500,
                       color:
                           (item.status == PlanStatus.active.name)
-                              ? Color(0xff34A853)
+                              ? const Color(0xff34A853)
                               : kSecondaryColor,
                       fontFamily: AppFonts.HelveticaNowDisplay,
                     ),
@@ -230,13 +219,16 @@ class _MyPlansScreenState extends State<MyPlansScreen> {
               ),
             ],
           ),
+
           SizedBox(height: h(context, 10)),
           Divider(
-            color: Color(0xffE3E3E3),
+            color: const Color(0xffE3E3E3),
             thickness: h(context, 1),
             height: h(context, 1),
           ),
           SizedBox(height: h(context, 10)),
+
+          /// --- Date and Participants ---
           Row(
             children: [
               Expanded(
@@ -265,55 +257,49 @@ class _MyPlansScreenState extends State<MyPlansScreen> {
                 ),
               ),
 
+              /// --- Live Participant Avatars ---
               StreamBuilder<DocumentSnapshot>(
                 stream: plansCollection.doc(item.id).snapshots(),
                 builder: (context, snapshot) {
                   if (!snapshot.hasData) {
-                    return const Center(child: CircularProgressIndicator());
+                    return const Center(
+                      child: SizedBox(
+                        width: 20,
+                        height: 20,
+                        child: CircularProgressIndicator(strokeWidth: 2),
+                      ),
+                    );
                   }
 
                   final data = snapshot.data!.data() as Map<String, dynamic>?;
 
-                  // List of participant IDs
                   final participantIds = List<String>.from(
                     data?['participantsIds'] ?? [],
                   );
 
-                  // If no participants, show nothing
                   if (participantIds.isEmpty) {
                     return const SizedBox.shrink();
                   }
 
-                  // Get only first 3 participant IDs
-                  List<String> limitedIds = participantIds.take(3).toList();
+                  final limitedIds = participantIds.take(3).toList();
 
                   return FutureBuilder<List<DocumentSnapshot>>(
                     future: Future.wait(
-                      limitedIds.map(
-                        (uid) => userCollection.doc(uid).get(),
-                        // If you want to fetch all participants, use the below line instead
-                        // FirebaseFirestore.instance
-                        //     .collection('users')
-                        //     .doc(uid)
-                        //     .get(),
-                      ),
+                      limitedIds.map((uid) => userCollection.doc(uid).get()),
                     ),
                     builder: (context, userSnapshots) {
                       if (!userSnapshots.hasData) {
-                        return const Center(child: CircularProgressIndicator());
+                        return const SizedBox(
+                          width: 20,
+                          height: 20,
+                          child: CircularProgressIndicator(strokeWidth: 2),
+                        );
                       }
 
-                      final userDocs =
-                          userSnapshots
-                              .data!; // List<DocumentSnapshot<Map<String, dynamic>>?>
-
-                      List<UserModel> validUsers =
+                      final userDocs = userSnapshots.data!;
+                      final validUsers =
                           userDocs
-                              .where(
-                                (doc) =>
-                                    (doc as DocumentSnapshot).exists &&
-                                    doc.data() != null,
-                              )
+                              .where((doc) => doc.exists && doc.data() != null)
                               .map((doc) => UserModel.fromMap(doc))
                               .toList();
 
@@ -325,9 +311,8 @@ class _MyPlansScreenState extends State<MyPlansScreen> {
 
                       return Stack(
                         clipBehavior: Clip.none,
-                        children: List.generate(
-                          validUsers.length,
-                          (i) => Padding(
+                        children: List.generate(validUsers.length, (i) {
+                          return Padding(
                             padding: only(context, left: w(context, i * 18.0)),
                             child: CommonImageView(
                               radius: 100,
@@ -336,58 +321,15 @@ class _MyPlansScreenState extends State<MyPlansScreen> {
                               width: 28,
                               fit: BoxFit.cover,
                             ),
-                          ),
-                        ),
+                          );
+                        }),
                       );
                     },
                   );
                 },
               ),
-
-              // Stack(
-              //   clipBehavior: Clip.none,
-              //   children: List.generate(
-              //     item.avatars.length,
-              //     (i) => Padding(
-              //       padding: only(context, left: w(context, i * 18.0)),
-              //       child: CommonImageView(
-              //         imagePath: item.avatars[i],
-              //         height: 28,
-              //         width: 28,
-              //         fit: BoxFit.contain,
-              //       ),
-              //     ),
-              //   ),
-              // ),
             ],
           ),
-
-          // CustomText(
-          //   paddingTop: 15,
-          //   paddingBottom: 10,
-          //   text: "Plan Status:",
-          //   color: kBlackColor,
-          //   size: 12,
-          //   weight: FontWeight.w600,
-          // ),
-
-          // Row(
-          //   children: List.generate(
-          //     2,
-          //     (index) => Expanded(
-          //       child: Obx(
-          //         () => StatusButton(
-          //           onTap: () {
-          //             _ctrl.buttonStatusIndex.value = index;
-          //           },
-          //           text: (index == 0) ? "Active" : "Completed",
-          //           isStatusActive:
-          //               (_ctrl.buttonStatusIndex.value == index) ? true : false,
-          //         ),
-          //       ),
-          //     ),
-          //   ),
-          // ),
         ],
       ),
     );

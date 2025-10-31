@@ -346,7 +346,9 @@ class LoginScreen extends StatelessWidget {
                             children: [
                               SigninButtons(
                                 image: Assets.imagesGooglelogo,
-                                onTap: () {},
+                                onTap: () {
+                                  authInputController.googleAuth();
+                                },
                               ),
                               SizedBox(width: w(context, 8.54)),
                               SigninButtons(

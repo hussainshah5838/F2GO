@@ -20,6 +20,10 @@ var myGamesCollection = fireStore.collection('myGames');
 // ----- Chat -----
 var chatCollection = fireStore.collection('chat');
 
+// ----- Plans -----
+
+var notificationCollection = fireStore.collection('notificationCampaigns');
+
 getFcmToken() async {
   try {
     var token = await FirebaseMessaging.instance.getToken();

@@ -1,284 +1,307 @@
 // import 'dart:async';
 // import 'dart:math';
-// import 'package:app_settings/app_settings.dart';
 // import 'package:firebase_messaging/firebase_messaging.dart';
 // import 'package:flutter/foundation.dart';
 // import 'package:flutter_local_notifications/flutter_local_notifications.dart';
-// import 'package:flutter_timezone/flutter_timezone.dart';
-// import 'package:timezone/timezone.dart' as tz;
-// import 'package:timezone/data/latest.dart' as tz;
+// import 'package:permission_handler/permission_handler.dart' as AppSettings;
 
-// class NotificationServices {
-//   // final enableNotification =
-//   //     UserService.instance.parentData.value.notificationStatus;
+import 'dart:math';
 
-//   FirebaseMessaging messaging = FirebaseMessaging.instance;
-//   // FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
-//   //     FlutterLocalNotificationsPlugin();
-//   FlutterLocalNotificationsPlugin notificationPlugin =
-//       FlutterLocalNotificationsPlugin();
+import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:flutter/foundation.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:permission_handler/permission_handler.dart' as AppSettings;
 
-//   // final curdServices = CurdServices();
+class NotificationServices {
+  // final enableNotification =
+  //     UserService.instance.parentData.value.notificationStatus;
 
-//   Future<void> notificationPermission() async {
-//     NotificationSettings settings = await messaging.requestPermission(
-//       alert: true,
-//       announcement: true,
-//       badge: true,
-//       criticalAlert: true,
-//       provisional: true,
-//       sound: true,
-//     );
+  FirebaseMessaging messaging = FirebaseMessaging.instance;
+  // FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
+  //     FlutterLocalNotificationsPlugin();
+  FlutterLocalNotificationsPlugin notificationPlugin =
+      FlutterLocalNotificationsPlugin();
 
-//     if (settings.authorizationStatus == AuthorizationStatus.authorized) {
-//       print('User granted permission');
-//     } else if (settings.authorizationStatus ==
-//         AuthorizationStatus.provisional) {
-//       print('User granted provisional permission');
-//     } else {
-//       AppSettings.openAppSettings();
+  // final curdServices = CurdServices();
 
-//       // appSe.ope
-//       print('User denied permission');
-//     }
-//   }
+  Future<void> notificationPermission() async {
+    NotificationSettings settings = await messaging.requestPermission(
+      alert: true,
+      announcement: true,
+      badge: true,
+      criticalAlert: true,
+      provisional: true,
+      sound: true,
+    );
 
-//   // ---------- Get Device Token ---------------
+    if (settings.authorizationStatus == AuthorizationStatus.authorized) {
+      print('User granted permission');
+    } else if (settings.authorizationStatus ==
+        AuthorizationStatus.provisional) {
+      print('User granted provisional permission');
+    } else {
+      AppSettings.openAppSettings();
 
-//   // Future<String> getDeviceToken() async {
-//   //   String? token = await messaging.getToken();
-//   //   print('token: $token');
-//   //   return token!;
-//   // }
+      // appSe.ope
+      print('User denied permission');
+    }
+  }
 
-//   // ---------- Display Message ---------------
+  // ---------- Get Device Token ---------------
 
-//   void firebaseInit() {
-//     FirebaseMessaging.onMessage.listen((message) {
-//       print('---------------------------------------------------');
-//       print('---------------------------------------------------');
-//       print('---------------------------------------------------');
-//       print("New Notification: ${message.notification?.title}");
-//       if (kDebugMode) {
-//         print(message.notification!.title.toString());
-//         print(message.notification!.body.toString());
-//       }
-//       // curdServices.postNotificationToFireStore(
-//       //     title: message.notification!.title.toString(),
-//       //     description: message.notification!.body.toString());
+  // Future<String> getDeviceToken() async {
+  //   String? token = await messaging.getToken();
+  //   print('token: $token');
+  //   return token!;
+  // }
 
-//       showNotification(message);
-//     });
+  // ---------- Display Message ---------------
 
-//     FirebaseMessaging.onMessageOpenedApp.listen((message) {
-//       // Handle when notification is clicked
-//       if (message.data.containsKey("requestId")) {
-//         // String requestId = message.data["requestId"];
-//         // Navigate to accept/decline screen
-//         // navigateToRequestScreen(requestId);
-//       }
-//     });
-//   }
+  void firebaseInit() {
+    FirebaseMessaging.onMessage.listen((message) {
+      print('---------------------------------------------------');
+      print('---------------------------------------------------');
+      print('---------------------------------------------------');
+      print("New Notification: ${message.notification?.title}");
+      if (kDebugMode) {
+        print(message.notification!.title.toString());
+        print(message.notification!.body.toString());
+      }
+      // curdServices.postNotificationToFireStore(
+      //     title: message.notification!.title.toString(),
+      //     description: message.notification!.body.toString());
 
-//   Future<void> backgroundHandler(RemoteMessage message) async {
-//     print("Background message received: ${message.notification?.title}");
-//   }
+      showNotification(message);
+    });
 
-//   // ---------- init Local Notification ---------------
+    FirebaseMessaging.onMessageOpenedApp.listen((message) {
+      // Handle when notification is clicked
+      if (message.data.containsKey("requestId")) {
+        // String requestId = message.data["requestId"];
+        // Navigate to accept/decline screen
+        // navigateToRequestScreen(requestId);
+      }
+    });
+  }
 
-//   void initLocalNotification() async {
-//     var androidInitializationSettings =
-//         AndroidInitializationSettings('@mipmap/ic_launcher');
-//     var iosInitializationSettings = DarwinInitializationSettings();
+  Future<void> backgroundHandler(RemoteMessage message) async {
+    print("Background message received: ${message.notification?.title}");
+  }
 
-//     var initializationSettings = InitializationSettings(
-//       android: androidInitializationSettings,
-//       iOS: iosInitializationSettings,
-//     );
+  // ---------- init Local Notification ---------------
 
-//     //--------- Pay Load -----------
+  void initLocalNotification() async {
+    var androidInitializationSettings = AndroidInitializationSettings(
+      '@mipmap/ic_launcher',
+    );
+    var iosInitializationSettings = DarwinInitializationSettings();
 
-//     await notificationPlugin.initialize(initializationSettings,
-//         onDidReceiveNotificationResponse: (payload) {});
+    var initializationSettings = InitializationSettings(
+      android: androidInitializationSettings,
+      iOS: iosInitializationSettings,
+    );
 
-//     tz.initializeTimeZones();
-//     final String currentTimeZone = await FlutterTimezone.getLocalTimezone();
-//     tz.setLocalLocation(tz.getLocation(currentTimeZone));
-//   }
+    //--------- Pay Load -----------
 
-//   // ---------- show Notification from local notification plugin ---------------
+    await notificationPlugin.initialize(
+      initializationSettings,
+      onDidReceiveNotificationResponse: (payload) {},
+    );
 
-//   Future<void> showNotification(RemoteMessage message) async {
-//     // ------ Channel
+    // tz.initializeTimeZones();
+    // final String currentTimeZone = await FlutterTimezone.getLocalTimezone();
+    // tz.setLocalLocation(tz.getLocation(currentTimeZone));
+  }
 
-//     AndroidNotificationChannel channel = AndroidNotificationChannel(
-//         Random.secure().nextInt(100000).toString(),
-//         'High Importance Notifications',
-//         importance: Importance.max);
+  // ---------- show Notification from local notification plugin ---------------
 
-//     // ------ Android Notification Detail
+  Future<void> showNotification(RemoteMessage message) async {
+    // ------ Channel
 
-//     AndroidNotificationDetails androidNotificationDetails =
-//         AndroidNotificationDetails(
-//       channel.id.toString(),
-//       channel.name.toString(),
-//       channelDescription: 'mood_print',
-//       importance: Importance.high,
-//       priority: Priority.high,
-//       ticker: 'ticker',
-//     );
+    AndroidNotificationChannel channel = AndroidNotificationChannel(
+      Random.secure().nextInt(100000).toString(),
+      'High Importance Notifications',
+      importance: Importance.max,
+    );
 
-//     // ------ ios notification setting
+    // ------ Android Notification Detail
 
-//     DarwinNotificationDetails darwinNotificationDetails =
-//         DarwinNotificationDetails(
-//       presentAlert: true,
-//       presentBadge: true,
-//       presentSound: true,
-//     );
+    AndroidNotificationDetails androidNotificationDetails =
+        AndroidNotificationDetails(
+          channel.id.toString(),
+          channel.name.toString(),
+          channelDescription: 'mood_print',
+          importance: Importance.high,
+          priority: Priority.high,
+          ticker: 'ticker',
+        );
 
-//     // ------ Motification Details
-//     NotificationDetails notificationDetails = NotificationDetails(
-//       android: androidNotificationDetails,
-//       iOS: darwinNotificationDetails,
-//     );
+    // ------ Update Client Side when recived accepted notification
 
-//     Future.delayed(Duration.zero, () {
-//       notificationPlugin.show(0, message.notification!.title.toString(),
-//           message.notification!.body.toString(), notificationDetails);
-//     });
-//   }
+    // if (UserTypeService.instance.userType == 'client') {
+    //   print(
+    //       '------- Notification Recived ${UserTypeService.instance.userType} ------');
 
-//   // Future<void> scheduleFirstDayNotification() async {
-//   //   tz.initializeTimeZones();
-//   //   await notificationPlugin.zonedSchedule(
-//   //     0,
-//   //     'Day 1 Challenge',
-//   //     'Check today’s challenge and stay consistent!',
-//   //     tz.TZDateTime.now(tz.local).add(const Duration(seconds: 3)),
-//   //     const NotificationDetails(
-//   //       android: AndroidNotificationDetails(
-//   //         'challenge_channel',
-//   //         'Daily Challenge Notifications',
-//   //         channelDescription: 'Reminder for your 30-day challenge',
-//   //         importance: Importance.high,
-//   //         priority: Priority.high,
-//   //       ),
-//   //     ),
-//   //     androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
-//   //     uiLocalNotificationDateInterpretation:
-//   //         UILocalNotificationDateInterpretation.absoluteTime,
-//   //   );
-//   //   print('scchhdule sucessfully 1');
-//   // }
+    //   UserService.instance.getUserInformation();
+    // }
 
-//   Future<void> scheduleNotification({
-//     String? title,
-//     String? body,
-//     int hours = 8,
-//   }) async {
-//     // Get the current date/time in device's local timezone
+    // ------ ios notification setting
 
-//     int uniqueId = DateTime.now().millisecondsSinceEpoch ~/ 1000;
+    DarwinNotificationDetails darwinNotificationDetails =
+        DarwinNotificationDetails(
+          presentAlert: true,
+          presentBadge: true,
+          presentSound: true,
+        );
 
-//     // final now = tz.TZDateTime.now(tz.local);
+    // ------ Motification Details
+    NotificationDetails notificationDetails = NotificationDetails(
+      android: androidNotificationDetails,
+      iOS: darwinNotificationDetails,
+    );
 
-//     // create a date/time for today at the specified hour/min
+    Future.delayed(Duration.zero, () {
+      notificationPlugin.show(
+        0,
+        message.notification!.title.toString(),
+        message.notification!.body.toString(),
+        notificationDetails,
+      );
+    });
+  }
 
-//     // var scheduleDate = tz.TZDateTime(
-//     //   tz.local,
-//     //   now.year,
-//     //   now.month,
-//     //   now.day,
-//     //   hour,
-//     //   minute,
-//     // );
+  // Future<void> scheduleFirstDayNotification() async {
+  //   tz.initializeTimeZones();
+  //   await notificationPlugin.zonedSchedule(
+  //     0,
+  //     'Day 1 Challenge',
+  //     'Check today’s challenge and stay consistent!',
+  //     tz.TZDateTime.now(tz.local).add(const Duration(seconds: 3)),
+  //     const NotificationDetails(
+  //       android: AndroidNotificationDetails(
+  //         'challenge_channel',
+  //         'Daily Challenge Notifications',
+  //         channelDescription: 'Reminder for your 30-day challenge',
+  //         importance: Importance.high,
+  //         priority: Priority.high,
+  //       ),
+  //     ),
+  //     androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
+  //     uiLocalNotificationDateInterpretation:
+  //         UILocalNotificationDateInterpretation.absoluteTime,
+  //   );
+  //   print('scchhdule sucessfully 1');
+  // }
 
-//     final scheduledTime = tz.TZDateTime.now(tz.local).add(Duration(
-//       hours: hours,
-//     ));
+  // Future<void> scheduleNotification({
+  //   String? title,
+  //   String? body,
+  //   int hours = 8,
+  // }) async {
+  //   // Get the current date/time in device's local timezone
 
-//     // Schedule the notification
+  //   int uniqueId = DateTime.now().millisecondsSinceEpoch ~/ 1000;
 
-//     // await notificationPlugin.zonedSchedule(
-//     //   uniqueId,
-//     //   title ?? 'Time to enter data!',
-//     //   body ?? 'You can now enter your data again.',
-//     //   scheduledTime,
-//     //   NotificationDetails(
-//     //     android: AndroidNotificationDetails(
-//     //       'Time to enter data!',
-//     //       'You can now enter your data again.',
-//     //       channelDescription: 'Reminder You can now enter your data again.',
-//     //       importance: Importance.high,
-//     //       playSound: true,
-//     //       priority: Priority.high,
-//     //     ),
-//     //   ),
-//     //   // androidAllowWhileIdle: true,
+  //   // final now = tz.TZDateTime.now(tz.local);
 
-//     //   // for iOS
-//     //   // uiLocalNotificationDateInterpretation:
-//     //   //     UILocalNotificationDateInterpretation.absoluteTime,
+  //   // create a date/time for today at the specified hour/min
 
-//     //   // for Android
-//     //   androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
+  //   // var scheduleDate = tz.TZDateTime(
+  //   //   tz.local,
+  //   //   now.year,
+  //   //   now.month,
+  //   //   now.day,
+  //   //   hour,
+  //   //   minute,
+  //   // );
 
-//     //   // Make Notification repeat daily at same time
-//     //   // matchDateTimeComponents: DateTimeComponents.time
-//     // );
+  //   // final scheduledTime = tz.TZDateTime.now(tz.local).add(Duration(
+  //   //   hours: hours,
+  //   // ));
 
-//     print('----------- ✅ Notification Scheduled -------------');
-//   }
+  //   // Schedule the notification
 
-//   // Cancel all notifications
-//   Future<void> cancelAllNotification() async {
-//     await notificationPlugin.cancelAll();
-//   }
+  //   await notificationPlugin.zonedSchedule(
+  //     uniqueId,
+  //     title ?? 'Time to enter data!',
+  //     body ?? 'You can now enter your data again.',
+  //     scheduledTime,
+  //     NotificationDetails(
+  //       android: AndroidNotificationDetails(
+  //         'Time to enter data!',
+  //         'You can now enter your data again.',
+  //         channelDescription: 'Reminder You can now enter your data again.',
+  //         importance: Importance.high,
+  //         playSound: true,
+  //         priority: Priority.high,
+  //       ),
+  //     ),
+  //     // androidAllowWhileIdle: true,
 
-// // -------- Now
-//   Future<void> sendNotification(int id, String title, String body) async {
-//     const AndroidNotificationDetails androidPlatformChannelSpecifics =
-//         AndroidNotificationDetails(
-//       'hazard_channel', // Channel ID
-//       'Hazard Alerts', // Channel name
-//       channelDescription: 'Notifications for nearby hazards',
-//       importance: Importance.high,
-//       priority: Priority.high,
-//       ticker: 'ticker',
-//     );
+  //     // for iOS
+  //     uiLocalNotificationDateInterpretation:
+  //         UILocalNotificationDateInterpretation.absoluteTime,
 
-//     const NotificationDetails platformChannelSpecifics =
-//         NotificationDetails(android: androidPlatformChannelSpecifics);
+  //     // for Android
+  //     androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
 
-//     await notificationPlugin.show(
-//       id, // Notification ID
-//       title, // Notification title
-//       body, // Notification body
-//       platformChannelSpecifics,
-//     );
-//   }
+  //     // Make Notification repeat daily at same time
+  //     // matchDateTimeComponents: DateTimeComponents.time
+  //   );
 
-//   Future<void> showNowNotification(int id, String title, String body) async {
-//     const AndroidNotificationDetails androidPlatformChannelSpecifics =
-//         AndroidNotificationDetails(
-//       'alert',
-//       'alert Notifications',
-//       channelDescription: 'Channel for alert notifications',
-//       importance: Importance.high,
-//       priority: Priority.high,
-//       showProgress: true,
-//       maxProgress: 100,
-//       enableVibration: true,
-//     );
-//     const NotificationDetails platformChannelSpecifics =
-//         NotificationDetails(android: androidPlatformChannelSpecifics);
-//     await notificationPlugin.show(
-//       id,
-//       title,
-//       body,
-//       platformChannelSpecifics,
-//       payload: 'item x',
-//     );
-//   }
-// }
+  //   print('----------- ✅ Notification Scheduled -------------');
+  // }
+
+  // Cancel all notifications
+  Future<void> cancelAllNotification() async {
+    await notificationPlugin.cancelAll();
+  }
+
+  // -------- Now
+  Future<void> sendNotification(int id, String title, String body) async {
+    const AndroidNotificationDetails androidPlatformChannelSpecifics =
+        AndroidNotificationDetails(
+          'hazard_channel', // Channel ID
+          'Hazard Alerts', // Channel name
+          channelDescription: 'Notifications for nearby hazards',
+          importance: Importance.high,
+          priority: Priority.high,
+          ticker: 'ticker',
+        );
+
+    const NotificationDetails platformChannelSpecifics = NotificationDetails(
+      android: androidPlatformChannelSpecifics,
+    );
+
+    await notificationPlugin.show(
+      id, // Notification ID
+      title, // Notification title
+      body, // Notification body
+      platformChannelSpecifics,
+    );
+  }
+
+  Future<void> showNowNotification(int id, String title, String body) async {
+    const AndroidNotificationDetails androidPlatformChannelSpecifics =
+        AndroidNotificationDetails(
+          'alert',
+          'alert Notifications',
+          channelDescription: 'Channel for alert notifications',
+          importance: Importance.high,
+          priority: Priority.high,
+          showProgress: true,
+          maxProgress: 100,
+          enableVibration: true,
+        );
+    const NotificationDetails platformChannelSpecifics = NotificationDetails(
+      android: androidPlatformChannelSpecifics,
+    );
+    await notificationPlugin.show(
+      id,
+      title,
+      body,
+      platformChannelSpecifics,
+      payload: 'item x',
+    );
+  }
+}

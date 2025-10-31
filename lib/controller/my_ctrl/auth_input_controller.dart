@@ -1,6 +1,7 @@
 import 'dart:developer';
 import 'package:f2g/constants/firebase_const.dart';
 import 'package:f2g/controller/loading_animation.dart';
+import 'package:f2g/core/bindings/bindings.dart';
 import 'package:f2g/main.dart';
 import 'package:f2g/model/my_model/user_model.dart';
 import 'package:f2g/view/screens/Home/home_screen.dart';
@@ -10,6 +11,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/widgets.dart';
 import 'package:get/get.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 
 class AuthInputController extends GetxController {
   FirebaseMessaging fcmToken = FirebaseMessaging.instance;
@@ -131,7 +133,7 @@ class AuthInputController extends GetxController {
       // await userService.getCurrentUserInformation();
 
       hideLoadingDialog();
-      Get.offAll(() => HomeScreen());
+      Get.offAll(() => HomeScreen(), binding: PlanBindings());
     } on FirebaseAuthException catch (e) {
       hideLoadingDialog();
       displayToast(msg: e.toString());
@@ -197,7 +199,7 @@ class AuthInputController extends GetxController {
 
       hideLoadingDialog();
 
-      Get.off(() => HomeScreen());
+      Get.off(() => HomeScreen(), binding: PlanBindings());
 
       displayToast(msg: "Account created successfully");
     } on FirebaseAuthException catch (e) {
@@ -216,84 +218,81 @@ class AuthInputController extends GetxController {
 
   //  -------------- Google Authentication ------------------
 
-  // Future<void> googleAuth({String? userType}) async {
-  //   try {
-  //     showLoadingDialog();
-  //     final GoogleSignInAccount? googleUser = await GoogleSignIn(scopes: ['email', 'profile']).signIn();
+  Future<void> googleAuth() async {
+    try {
+      String fcm = await fcmToken.getToken() ?? "";
+      showLoadingDialog();
+      final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
 
-  //         // await GoogleSignIn(scopes: ['email', 'profile']).signIn();
+      if (googleUser == null) {
+        hideLoadingDialog();
+        log('User canceled the Google sign-in process');
+        return;
+      }
 
-  //     if (googleUser == null) {
-  //       hideLoadingDialog();
-  //       log('User canceled the Google sign-in process');
-  //       return;
-  //     }
+      final GoogleSignInAuthentication? googleAuth =
+          await googleUser.authentication;
 
-  //     final GoogleSignInAuthentication? googleAuth =
-  //         await googleUser.authentication;
+      if (googleAuth?.accessToken == null) {
+        // isGoogleAuthLoading.value = false;
+        hideLoadingDialog();
+        log('Google authentication access token is null');
+        return;
+      }
 
-  //     if (googleAuth?.idToken == null) {
-  //       // isGoogleAuthLoading.value = false;
-  //       hideLoadingDialog();
-  //       log('Google authentication id token is null');
-  //       return;
-  //     }
+      // var auth = googleUser.id;
 
-  //     // var auth = googleUser.id;
+      final credential = await GoogleAuthProvider.credential(
+        accessToken: googleAuth?.accessToken,
+        idToken: googleAuth?.idToken,
+      );
 
-  //     final credential = await GoogleAuthProvider.credential(
-  //       accessToken: googleAuth?.idToken,
-  //       idToken: googleAuth?.idToken,
-  //     );
+      // auth =
+      // await FirebaseAuth.instance.signInWithCredential(credential);
+      await auth.signInWithCredential(credential);
+      // as FirebaseAuth;
 
-  //     // auth =
-  //     // await FirebaseAuth.instance.signInWithCredential(credential);
-  //     await auth.signInWithCredential(credential);
+      log(
+        'User signed in: ${auth.currentUser?.displayName}, ${auth.currentUser?.email}',
+      );
+      log('Google Auth Id: ${auth.currentUser?.uid}');
 
-  //     log(
-  //       'User signed in: ${auth.currentUser?.displayName}, ${auth.currentUser?.email}',
-  //     );
-  //     log('Google Auth Id: ${auth.currentUser?.uid}');
+      // Check if the user data is stored in Firestore or not.
 
-  //     //  TODO: IsEmailExist
+      final doc = await userCollection.doc(auth.currentUser?.uid).get();
 
-  //     bool isEmailExist = await isUserExistWithEmail(
-  //       email: auth.currentUser!.email.toString(),
-  //     );
+      // document is exists
+      if (doc.exists) {
+        hideLoadingDialog();
 
-  //     if (isEmailExist) {
-  //       await socialLoginMethod(email: auth.currentUser!.email.toString());
-  //       hideLoadingDialog();
+        Get.offAll(() => HomeScreen(), binding: PlanBindings());
+        log('Document exists, user info not updated');
+      }
+      // document doesn't exists
+      else {
+        await saveUserToFirestore(
+          model: UserModel(
+            bio: "",
+            fullName: auth.currentUser?.displayName.toString(),
+            email: auth.currentUser?.email.toString(),
+            fcmToken: fcm,
+            authType: 'socail_auth',
+            profileImage: profileDefaultImage,
+            createdAt: DateTime.now(),
+          ),
+        );
 
-  //       log("if: Is email exist: $isEmailExist");
-  //     } else {
-  //       await socialSignUpMethod(
-  //         fullName: '${auth.currentUser?.displayName}',
-  //         email: '${auth.currentUser?.email}',
-  //         userType: userType!,
-  //         authId: auth.currentUser!.uid,
-  //       );
+        hideLoadingDialog();
 
-  //       await UserTypeService.instance.initUserType();
-  //       if (UserTypeService.instance.userType == UserType.client.name) {
-  //         log('Go To Client Nav Bar');
-  //         Get.to(() => ClientNavBar());
-  //       } else {
-  //         log('Go To Therapist Nav Bar');
-  //         Get.to(() => TherapistNavBar());
-  //       }
+        Get.offAll(() => HomeScreen(), binding: PlanBindings());
 
-  //       hideLoadingDialog();
-
-  //       log("else: Is email exist: $isEmailExist");
-  //     }
-
-  //     hideLoadingDialog();
-  //   } catch (e) {
-  //     hideLoadingDialog();
-  //     log('An error occurred during Google sign-in: $e');
-  //   }
-  // }
+        log("Document doesn't exist");
+      }
+    } catch (e) {
+      hideLoadingDialog();
+      log('An error occurred during Google sign-in: $e');
+    }
+  }
 
   // -------------- Save User Data to Firestore ------------------
 
