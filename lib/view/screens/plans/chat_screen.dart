@@ -13,6 +13,7 @@ import 'package:f2g/model/my_model/chat/message_model.dart';
 import 'package:f2g/model/my_model/plan_model.dart';
 import 'package:f2g/services/date_formator/general_service.dart';
 import 'package:f2g/services/user/user_services.dart';
+import 'package:f2g/view/screens/persons_informations/participants_information.dart';
 import 'package:f2g/view/screens/plans/view_picture.dart';
 import 'package:f2g/view/widget/common_image_view_widget.dart';
 import 'package:f2g/view/widget/Custom_text_widget.dart';
@@ -107,30 +108,42 @@ class _ChatScreenState extends State<ChatScreen> {
                               color: kWhiteColor,
                             ),
 
-                            child: Row(
-                              children: [
-                                ClipRRect(
-                                  borderRadius: BorderRadius.circular(
-                                    h(context, 100),
+                            child: InkWell(
+                              onTap: () {
+                                Get.to(
+                                  () => ParticipantsInformationScreen(
+                                    title: planModel.title ?? "",
+                                    image: planModel.planPhoto ?? "",
+                                    participantsIds:
+                                        planModel.participantsIds ?? [],
                                   ),
-                                  child: CommonImageView(
-                                    url: planModel.planPhoto,
-                                    height: 36,
-                                    width: 36,
-                                    fit: BoxFit.cover,
+                                );
+                              },
+                              child: Row(
+                                children: [
+                                  ClipRRect(
+                                    borderRadius: BorderRadius.circular(
+                                      h(context, 100),
+                                    ),
+                                    child: CommonImageView(
+                                      url: planModel.planPhoto,
+                                      height: 36,
+                                      width: 36,
+                                      fit: BoxFit.cover,
+                                    ),
                                   ),
-                                ),
-                                CustomText(
-                                  text: "${planModel.title}",
-                                  maxLines: 1,
-                                  textOverflow: TextOverflow.ellipsis,
-                                  size: 16,
-                                  paddingLeft: 6,
-                                  weight: FontWeight.w500,
-                                  color: kBlackColor,
-                                  fontFamily: AppFonts.HelveticaNowDisplay,
-                                ),
-                              ],
+                                  CustomText(
+                                    text: "${planModel.title}",
+                                    maxLines: 1,
+                                    textOverflow: TextOverflow.ellipsis,
+                                    size: 16,
+                                    paddingLeft: 6,
+                                    weight: FontWeight.w500,
+                                    color: kBlackColor,
+                                    fontFamily: AppFonts.HelveticaNowDisplay,
+                                  ),
+                                ],
+                              ),
                             ),
                           ),
                         ),

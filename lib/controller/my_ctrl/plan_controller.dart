@@ -20,11 +20,13 @@ import 'package:uuid/uuid.dart';
 
 class PlanController extends GetxController {
   // Page Builder
+
+  RxInt selectedTabIndexValue = 0.obs;
   RxInt currentPage = 0.obs;
-  RxInt itemsPerPage = 6.obs;
+  RxInt itemsPerPage = 4.obs;
 
   RxInt currentExpirePage = 0.obs;
-  RxInt itemsExpirePerPage = 6.obs;
+  RxInt itemsExpirePerPage = 4.obs;
 
   int minAgeChecker = 18;
   int maxAgeChecker = 19;
@@ -167,7 +169,7 @@ class PlanController extends GetxController {
     // maxMemberController.clear();
     maxMemberValue.value = null;
     locationController.clear();
-    selectedCategory.value = null;
+    selectedImage.value = null;
     eventSelectedImage = null;
   }
 

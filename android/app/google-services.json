@@ -14,6 +14,14 @@
       },
       "oauth_client": [
         {
+          "client_id": "377108240787-38i4s465p99gerfgdp6keqgsuo9sjn9g.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.infinity.f2go",
+            "certificate_hash": "01ed19af9d7f569deccf6878ee4b35173de06858"
+          }
+        },
+        {
           "client_id": "377108240787-8egldbs3pphp8m5mlc5j4ola08icclbe.apps.googleusercontent.com",
           "client_type": 3
         }

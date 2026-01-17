@@ -119,6 +119,7 @@ class CustomLabelTextFeild extends StatelessWidget {
   final VoidCallback? onTap;
   final Function(String)? onChanged;
   TextInputType? keyboardType;
+  bool isLebal;
   CustomLabelTextFeild({
     super.key,
     this.controller,
@@ -127,6 +128,7 @@ class CustomLabelTextFeild extends StatelessWidget {
     this.isheight = false,
     this.maxLines = 1,
     this.readOnly = false,
+    this.isLebal = true,
     this.onTap,
     this.onChanged,
     this.keyboardType,
@@ -155,7 +157,7 @@ class CustomLabelTextFeild extends StatelessWidget {
           fontFamily: AppFonts.HelveticaNowDisplay,
         ),
         decoration: InputDecoration(
-          labelText: label,
+          labelText: isLebal ? label : null,
           labelStyle: TextStyle(
             fontSize: f(context, 15),
             fontWeight: FontWeight.w500,

@@ -96,4 +96,14 @@ class WaveLoading extends StatelessWidget {
       size: size,
     );
   }
+} // ------- hexagonDots Loading Animation Widget ----------
+
+class hexagonDotsLoading extends StatelessWidget {
+  double size;
+  hexagonDotsLoading({super.key, this.size = 50});
+
+  @override
+  Widget build(BuildContext context) {
+    return LoadingAnimationWidget.hexagonDots(color: kBlackColor, size: size);
+  }
 }

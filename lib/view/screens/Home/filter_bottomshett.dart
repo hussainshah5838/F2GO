@@ -517,7 +517,10 @@ class FilterBottomSheet extends StatelessWidget {
                 padding: EdgeInsets.only(bottom: h(context, 5)),
                 child: CustomText(
                   // text: "${val.start.toInt()} yrs to ${val.end.toInt()} yrs",
-                  text: "${val.start.toInt()} yrs to ${val.end.toInt()} yrs",
+                  text:
+                      (val.end == 65)
+                          ? "${val.start.toInt()} yrs to +${val.end.toInt()} yrs"
+                          : "${val.start.toInt()} yrs to ${val.end.toInt()} yrs",
                   size: 12,
                   weight: FontWeight.w500,
                   color: kBlackColor.withValues(alpha: 0.8),
@@ -538,7 +541,7 @@ class FilterBottomSheet extends StatelessWidget {
               context,
               controller.ageRange,
               min: 18,
-              max: 70,
+              max: 65,
               minText: 'p',
               maxText: 'p',
               screenWidth: Get.width / 3,

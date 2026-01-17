@@ -14,6 +14,14 @@ class Assets {
   /// assets/images/addicon.png
   static const String imagesAddicon = "assets/images/addicon.png";
 
+  /// Assets for imagesAmericanExpressIcon
+  /// assets/images/american_express_icon.png
+  static const String imagesAmericanExpressIcon = "assets/images/american_express_icon.png";
+
+  /// Assets for imagesApplePay
+  /// assets/images/apple_pay.png
+  static const String imagesApplePay = "assets/images/apple_pay.png";
+
   /// Assets for imagesApplelogo
   /// assets/images/applelogo.png
   static const String imagesApplelogo = "assets/images/applelogo.png";
@@ -37,6 +45,10 @@ class Assets {
   /// Assets for imagesCameraicon
   /// assets/images/cameraicon.png
   static const String imagesCameraicon = "assets/images/cameraicon.png";
+
+  /// Assets for imagesCardType
+  /// assets/images/card_type.png
+  static const String imagesCardType = "assets/images/card_type.png";
 
   /// Assets for imagesChaticon
   /// assets/images/chaticon.png
@@ -82,6 +94,10 @@ class Assets {
   /// assets/images/fullname.png
   static const String imagesFullname = "assets/images/fullname.png";
 
+  /// Assets for imagesGPayIcon
+  /// assets/images/g_pay_icon.png
+  static const String imagesGPayIcon = "assets/images/g_pay_icon.png";
+
   /// Assets for imagesGames
   /// assets/images/games.png
   static const String imagesGames = "assets/images/games.png";
@@ -126,6 +142,10 @@ class Assets {
   /// assets/images/key.png
   static const String imagesKey = "assets/images/key.png";
 
+  /// Assets for imagesLimitedPlan
+  /// assets/images/limited_plan.png
+  static const String imagesLimitedPlan = "assets/images/limited_plan.png";
+
   /// Assets for imagesLocationicon
   /// assets/images/locationicon.png
   static const String imagesLocationicon = "assets/images/locationicon.png";
@@ -153,6 +173,10 @@ class Assets {
   /// Assets for imagesMeuseumimage
   /// assets/images/meuseumimage.png
   static const String imagesMeuseumimage = "assets/images/meuseumimage.png";
+
+  /// Assets for imagesMsCrown
+  /// assets/images/ms_crown.png
+  static const String imagesMsCrown = "assets/images/ms_crown.png";
 
   /// Assets for imagesMueseumhd
   /// assets/images/mueseumhd.png
@@ -249,6 +273,10 @@ class Assets {
   /// Assets for imagesReadicon
   /// assets/images/readicon.png
   static const String imagesReadicon = "assets/images/readicon.png";
+
+  /// Assets for imagesRedMarkerIcon
+  /// assets/images/red_marker_icon.png
+  static const String imagesRedMarkerIcon = "assets/images/red_marker_icon.png";
 
   /// Assets for imagesRequirementsmetcheck
   /// assets/images/requirementsmetcheck.png

@@ -4,6 +4,8 @@ import 'package:f2g/constants/loading_animation.dart';
 import 'package:f2g/controller/my_ctrl/auth_input_controller.dart';
 import 'package:f2g/controller/my_ctrl/editprofile_controller.dart';
 import 'package:f2g/core/common/global_instance.dart';
+import 'package:f2g/view/screens/subscriptions/subscription_screens.dart';
+import 'package:f2g/view/screens/user_profile/view_profile_image.dart';
 import 'package:f2g/view/widget/custom_switch.dart';
 import 'package:f2g/view/widget/custom_textfeild_widget.dart';
 import 'package:flutter/material.dart';
@@ -183,19 +185,44 @@ class UserProfileScreen extends StatelessWidget {
                         () => Row(
                           children: [
                             (userService.userModel.value.profileImage != null)
-                                ? CommonImageView(
-                                  url: userService.userModel.value.profileImage,
-                                  height: 40,
-                                  width: 40,
-                                  radius: 100,
-                                  fit: BoxFit.cover,
+                                ? InkWell(
+                                  onTap: () {
+                                    log("Worrk");
+                                    Get.to(
+                                      () => ViewProfileImage(
+                                        imageSource:
+                                            "${userService.userModel.value.profileImage}",
+                                      ),
+                                    );
+                                  },
+                                  child: CommonImageView(
+                                    url:
+                                        userService
+                                            .userModel
+                                            .value
+                                            .profileImage,
+                                    height: 40,
+                                    width: 40,
+                                    radius: 100,
+                                    fit: BoxFit.cover,
+                                  ),
                                 )
-                                : CommonImageView(
-                                  imagePath: Assets.imagesProfilepic,
-                                  height: 40,
-                                  width: 40,
-                                  radius: 100,
-                                  fit: BoxFit.cover,
+                                : InkWell(
+                                  onTap: () {
+                                    log("Worrk");
+                                    Get.to(
+                                      () => ViewProfileImage(
+                                        imageSource: Assets.imagesProfilepic,
+                                      ),
+                                    );
+                                  },
+                                  child: CommonImageView(
+                                    imagePath: Assets.imagesProfilepic,
+                                    height: 40,
+                                    width: 40,
+                                    radius: 100,
+                                    fit: BoxFit.cover,
+                                  ),
                                 ),
 
                             SizedBox(width: w(context, 6)),
@@ -295,6 +322,16 @@ class UserProfileScreen extends StatelessWidget {
                             Get.to(() => ChangePasswordScreen());
                           },
                         ),
+
+                        SizedBox(height: h(context, 8)),
+                        _buildSettingTile(
+                          context,
+                          iconPath: Assets.imagesMsCrown,
+                          title: "Manage Subscriptions",
+                          onTap: () {
+                            Get.to(() => SubscriptionPlanScreen());
+                          },
+                        ),
                         SizedBox(height: h(context, 8)),
 
                         _buildNotificationTile(context),
@@ -377,6 +414,7 @@ class UserProfileScreen extends StatelessWidget {
         width: w(context, double.maxFinite),
         decoration: BoxDecoration(
           color: kWhiteColor,
+          borderRadius: BorderRadius.circular(h(context, 12)),
 
           // borderRadius: BorderRadiusGeometry.circular(h(context, 12)),
         ),

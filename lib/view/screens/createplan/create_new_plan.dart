@@ -42,6 +42,18 @@ class _CreateNewPlanScreenState extends State<CreateNewPlanScreen> {
 
   @override
   void dispose() {
+    _ctrl.titleController.clear();
+    _ctrl.locationController.clear();
+    _ctrl.ageFromController.clear();
+    _ctrl.ageToController.clear();
+    _ctrl.startDate.value = null;
+    _ctrl.startTime.value = null;
+    _ctrl.endDate.value = null;
+    _ctrl.endTime.value = null;
+    _ctrl.maxMemberValue.value = null;
+    _ctrl.descriptionController.clear();
+    _ctrl.selectedImage.value = null;
+    _ctrl.eventSelectedImage = null;
     scrollController.dispose(); // ✅ Dispose it
     super.dispose();
   }
@@ -277,6 +289,10 @@ class _CreateNewPlanScreenState extends State<CreateNewPlanScreen> {
                                           },
                                           onTap: () {
                                             _ctrl.startDate.value = _startDate;
+                                            if (_startDate == null) {
+                                              _ctrl.startDate.value =
+                                                  DateTime.now();
+                                            }
                                             Get.back();
                                           },
                                         ),
@@ -308,6 +324,10 @@ class _CreateNewPlanScreenState extends State<CreateNewPlanScreen> {
                                           },
                                           onTap: () {
                                             _ctrl.startTime.value = _startTime;
+                                            if (_startTime == null) {
+                                              _ctrl.startTime.value =
+                                                  DateTime.now();
+                                            }
                                             Get.back();
                                           },
                                         ),
@@ -347,6 +367,10 @@ class _CreateNewPlanScreenState extends State<CreateNewPlanScreen> {
                                           },
                                           onTap: () {
                                             _ctrl.endDate.value = _endDate;
+                                            if (_endDate == null) {
+                                              _ctrl.endDate.value =
+                                                  DateTime.now();
+                                            }
                                             Get.back();
                                           },
                                         ),
@@ -378,6 +402,10 @@ class _CreateNewPlanScreenState extends State<CreateNewPlanScreen> {
                                           },
                                           onTap: () {
                                             _ctrl.endTime.value = _endTime;
+                                            if (_endTime == null) {
+                                              _ctrl.endTime.value =
+                                                  DateTime.now();
+                                            }
                                             Get.back();
                                           },
                                         ),
@@ -404,17 +432,21 @@ class _CreateNewPlanScreenState extends State<CreateNewPlanScreen> {
                               Get.bottomSheet(
                                 NumberSelector(
                                   title: "Maximum Members Allowed",
-                                  onTap: () {
-                                    // _ctrl.startDate.value = _startDate;
-                                    _ctrl.maxMemberValue.value =
-                                        _maximumMembersAllowed;
-                                    Get.back();
-                                    log("Close --");
-                                  },
+
                                   onNumberSelected: (v) {
                                     _maximumMembersAllowed = v;
 
                                     log("On-Number-Selected: $v");
+                                  },
+                                  onTap: () {
+                                    // _ctrl.startDate.value = _startDate;
+                                    _ctrl.maxMemberValue.value =
+                                        _maximumMembersAllowed;
+                                    if (_maximumMembersAllowed == null) {
+                                      _ctrl.maxMemberValue.value = '3';
+                                    }
+                                    Get.back();
+                                    log("Close --");
                                   },
                                 ),
                               );

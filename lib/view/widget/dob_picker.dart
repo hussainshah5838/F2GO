@@ -14,6 +14,7 @@ class DateTimePicker extends StatelessWidget {
   VoidCallback? onTap;
   double? height;
   String? title;
+  int? minimumDate, maximumDate;
   DateTimePicker({
     super.key,
     required this.onDateTimeChanged,
@@ -22,6 +23,8 @@ class DateTimePicker extends StatelessWidget {
     this.height,
     this.onTap,
     this.title,
+    this.maximumDate,
+    this.minimumDate,
   });
 
   @override
@@ -57,8 +60,8 @@ class DateTimePicker extends StatelessWidget {
           SizedBox(
             height: height ?? Get.height * 0.30,
             child: CupertinoDatePicker(
-              minimumYear: 1995,
-              maximumYear: 2080,
+              minimumYear: minimumDate ?? 1995,
+              maximumYear: maximumDate ?? 2080,
               mode: mode,
               dateOrder: DatePickerDateOrder.dmy,
               //  showDayOfWeek: false,

@@ -234,7 +234,7 @@ class LoginScreen extends StatelessWidget {
                               child: CustomButton(
                                 onPressed: () {
                                   // authInputController.isPasswordError.value =
-                                  true;
+                                  // true;
                                   if (!authInputController.isEmailValid.value) {
                                     displayToast(
                                       msg:

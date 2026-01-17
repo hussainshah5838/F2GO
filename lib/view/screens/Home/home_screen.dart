@@ -17,6 +17,7 @@ import 'package:f2g/view/screens/notifcation/notification.dart';
 import 'package:f2g/view/screens/plans/plan_details.dart';
 import 'package:f2g/view/screens/plans/plans.dart';
 import 'package:f2g/view/screens/user_profile/User_Profile.dart';
+import 'package:f2g/view/screens/user_profile/view_profile_image.dart';
 import 'package:f2g/view/widget/Custom_text_widget.dart';
 import 'package:f2g/view/widget/common_image_view_widget.dart';
 import 'package:f2g/view/widget/custom_button_widget.dart';
@@ -370,23 +371,47 @@ class _HomeScreenState extends State<HomeScreen> {
                           () => Row(
                             children: [
                               (userService.userModel.value.profileImage != null)
-                                  ? CommonImageView(
-                                    url:
-                                        userService
-                                            .userModel
-                                            .value
-                                            .profileImage,
-                                    height: 36,
-                                    width: 36,
-                                    radius: 100,
-                                    fit: BoxFit.cover,
+                                  ? GestureDetector(
+                                    behavior: HitTestBehavior.translucent,
+                                    onTap: () {
+                                      log("Worrk");
+                                      Get.to(
+                                        () => ViewProfileImage(
+                                          imageSource:
+                                              "${userService.userModel.value.profileImage}",
+                                        ),
+                                      );
+                                    },
+                                    child: CommonImageView(
+                                      url:
+                                          userService
+                                              .userModel
+                                              .value
+                                              .profileImage,
+                                      height: 36,
+                                      width: 36,
+                                      radius: 100,
+                                      fit: BoxFit.cover,
+                                    ),
                                   )
-                                  : CommonImageView(
-                                    imagePath: Assets.imagesProfilepic,
-                                    height: 36,
-                                    width: 36,
-                                    radius: 100,
-                                    fit: BoxFit.cover,
+                                  : InkWell(
+                                    onTap: () {
+                                      log("Worrk");
+                                      Get.to(
+                                        () => ViewProfileImage(
+                                          imageSource:
+                                              Assets.imagesProfilepic
+                                                  .toString(),
+                                        ),
+                                      );
+                                    },
+                                    child: CommonImageView(
+                                      imagePath: Assets.imagesProfilepic,
+                                      height: 36,
+                                      width: 36,
+                                      radius: 100,
+                                      fit: BoxFit.cover,
+                                    ),
                                   ),
 
                               SizedBox(width: w(context, 6)),
@@ -786,23 +811,45 @@ class _HomeScreenState extends State<HomeScreen> {
                               child:
                                   (userService.userModel.value.profileImage !=
                                           null)
-                                      ? CommonImageView(
-                                        url:
-                                            userService
-                                                .userModel
-                                                .value
-                                                .profileImage,
-                                        height: 48,
-                                        width: 48,
-                                        radius: 100,
-                                        fit: BoxFit.cover,
+                                      ? InkWell(
+                                        onTap: () {
+                                          log("Worrk");
+                                          Get.to(
+                                            () => ViewProfileImage(
+                                              imageSource:
+                                                  "${userService.userModel.value.profileImage}",
+                                            ),
+                                          );
+                                        },
+                                        child: CommonImageView(
+                                          url:
+                                              userService
+                                                  .userModel
+                                                  .value
+                                                  .profileImage,
+                                          height: 48,
+                                          width: 48,
+                                          radius: 100,
+                                          fit: BoxFit.cover,
+                                        ),
                                       )
-                                      : CommonImageView(
-                                        imagePath: Assets.imagesProfilepic,
-                                        height: 48,
-                                        width: 48,
-                                        radius: 100,
-                                        fit: BoxFit.cover,
+                                      : InkWell(
+                                        onTap: () {
+                                          log("Worrk");
+                                          Get.to(
+                                            () => ViewProfileImage(
+                                              imageSource:
+                                                  Assets.imagesProfilepic,
+                                            ),
+                                          );
+                                        },
+                                        child: CommonImageView(
+                                          imagePath: Assets.imagesProfilepic,
+                                          height: 48,
+                                          width: 48,
+                                          radius: 100,
+                                          fit: BoxFit.cover,
+                                        ),
                                       ),
                             ),
                           ],
@@ -1197,11 +1244,15 @@ class _HomeScreenState extends State<HomeScreen> {
                                         log("$value");
 
                                         if (value == 0) {
+                                          _ctrl.selectedTabIndexValue.value =
+                                              value;
                                           // _ctrl.currentPage.value = 0;
                                           await _ctrl.fetchPlans(
                                             status: PlanStatus.active.name,
                                           );
                                         } else {
+                                          _ctrl.selectedTabIndexValue.value =
+                                              value;
                                           await _ctrl.expiredFetchPlans();
                                           // _ctrl.currentPage.value = 1;
 
@@ -1895,40 +1946,44 @@ class _HomeScreenState extends State<HomeScreen> {
                       //   child: Icon(Icons.add),
                       // ),
                     )
-                    : Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        SizedBox(width: 30),
-                        Container(
-                          height: 50,
-                          child: CustomButton(
-                            onPressed: () {
-                              // Get.to(CreatePlanScreen());
-                              // Get.to(CreatePlanScreen());
-                              Get.to(
-                                () => CreateNewPlanScreen(),
-                                binding: PlanBindings(),
-                              );
-                            },
-                            text: "Create new Plan",
-                            iscustomgradient: true,
-                            gradient: LinearGradient(
-                              colors: [Color(0xff62D5C3), Color(0xffB5F985)],
-                              begin: Alignment.centerLeft,
-                              end: Alignment.centerRight,
+                    : Visibility(
+                      visible:
+                          _ctrl.selectedTabIndexValue.value == 0 ? true : false,
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          SizedBox(width: 30),
+                          Container(
+                            height: 50,
+                            child: CustomButton(
+                              onPressed: () {
+                                // Get.to(CreatePlanScreen());
+                                // Get.to(CreatePlanScreen());
+                                Get.to(
+                                  () => CreateNewPlanScreen(),
+                                  binding: PlanBindings(),
+                                );
+                              },
+                              text: "Create new Plan",
+                              iscustomgradient: true,
+                              gradient: LinearGradient(
+                                colors: [Color(0xff62D5C3), Color(0xffB5F985)],
+                                begin: Alignment.centerLeft,
+                                end: Alignment.centerRight,
+                              ),
+                              borderradius: 100,
+                              isimage: true,
+                              imagePath: Assets.imagesAddicon,
+                              size: 15,
+                              weight: FontWeight.w500,
+                              fontFamily: AppFonts.HelveticaNowDisplay,
+                              color: kBlackColor,
+                              height: 40,
+                              width: 170,
                             ),
-                            borderradius: 100,
-                            isimage: true,
-                            imagePath: Assets.imagesAddicon,
-                            size: 15,
-                            weight: FontWeight.w500,
-                            fontFamily: AppFonts.HelveticaNowDisplay,
-                            color: kBlackColor,
-                            height: 40,
-                            width: 170,
                           ),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
           ),
         ),
@@ -1945,8 +2000,18 @@ class _HomeScreenState extends State<HomeScreen> {
       margin: only(context, bottom: 10),
       padding: all(context, 10),
       decoration: BoxDecoration(
-        color: kWhiteColor,
         borderRadius: BorderRadius.circular(h(context, 12)),
+        gradient: LinearGradient(
+          colors: [
+            Color(0xff3BD2E2).withValues(alpha: 0.5),
+            Color(0xff3BD2E2).withValues(alpha: 0.5),
+            Color.fromARGB(255, 178, 247, 255).withValues(alpha: 0.5),
+            Color.fromARGB(255, 207, 226, 169).withValues(alpha: 0.5),
+          ],
+
+          begin: Alignment.topCenter,
+          end: Alignment.bottomCenter,
+        ),
       ),
       child: InkWell(
         onTap: onDetailPage,
@@ -1966,7 +2031,7 @@ class _HomeScreenState extends State<HomeScreen> {
               paddingTop: 5,
               text: item.title.toString(),
               size: 15,
-              weight: FontWeight.w500,
+              weight: FontWeight.w600,
               color: kBlackColor,
               fontFamily: AppFonts.HelveticaNowDisplay,
               maxLines: 1,

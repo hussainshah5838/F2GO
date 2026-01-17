@@ -88,23 +88,23 @@ class RegisterScreen extends StatelessWidget {
                     child: SingleChildScrollView(
                       child: Column(
                         children: [
-                          Obx(
-                            () => CustomTextfeildWidget(
-                              index: 2,
-                              hintText: "Full name",
-                              controller:
-                                  textControllers
-                                      .signupFullNameController
-                                      .value,
-                              suffixicon:
-                                  authInputController.isfullnameFilled.value
-                                      ? Assets.imagesRequirementsmetcheck
-                                      : Assets.imagesFullname,
-                              issuffix: true,
-                              onChanged:
-                                  (v) => authInputController.isFullNameValid(),
-                            ),
-                          ),
+                          // Obx(
+                          //   () => CustomTextfeildWidget(
+                          //     index: 2,
+                          //     hintText: "Full name",
+                          //     controller:
+                          //         textControllers
+                          //             .signupFullNameController
+                          //             .value,
+                          //     suffixicon:
+                          //         authInputController.isfullnameFilled.value
+                          //             ? Assets.imagesRequirementsmetcheck
+                          //             : Assets.imagesFullname,
+                          //     issuffix: true,
+                          //     onChanged:
+                          //         (v) => authInputController.isFullNameValid(),
+                          //   ),
+                          // ),
                           SizedBox(height: h(context, 8)),
                           Obx(
                             () => CustomTextfeildWidget(
@@ -237,15 +237,15 @@ class RegisterScreen extends StatelessWidget {
                               padding: symmetric(context, horizontal: 20),
                               child: CustomButton(
                                 onPressed: () {
-                                  if (authInputController
-                                          .isfullnameFilled
-                                          .value ==
-                                      false) {
-                                    displayToast(
-                                      msg: "Please fill in your full name",
-                                    );
-                                    return;
-                                  }
+                                  // if (authInputController
+                                  //         .isfullnameFilled
+                                  //         .value ==
+                                  //     false) {
+                                  //   displayToast(
+                                  //     msg: "Please fill in your full name",
+                                  //   );
+                                  //   return;
+                                  // }
                                   if (authInputController
                                           .isSignupEmailValid
                                           .value ==

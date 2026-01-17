@@ -6,6 +6,7 @@ import 'package:f2g/constants/firebase_const.dart';
 import 'package:f2g/core/bindings/bindings.dart';
 import 'package:f2g/view/screens/Home/home_screen.dart';
 import 'package:f2g/view/screens/auth/login/login.dart';
+import 'package:f2g/view/screens/launch/my_loading_screen.dart';
 import 'package:f2g/view/screens/launch/onboarding.dart';
 import 'package:f2g/view/widget/Custom_text_widget.dart';
 import 'package:flutter/material.dart';
@@ -23,6 +24,7 @@ class _SplashScreenState extends State<SplashScreen> {
   @override
   void initState() {
     super.initState();
+
     splashScreenHandler();
   }
 
@@ -37,9 +39,13 @@ class _SplashScreenState extends State<SplashScreen> {
     bool key = prefs.getBool('key') ?? false;
 
     Timer(Duration(seconds: 3), () {
+      // Get.to(() => CompleteProfileOnboarding());
+
+      // Get.to(() => SubscriptionPlanScreen());
+
       if (auth.currentUser != null) {
         Get.offAll(
-          () => HomeScreen(),
+          () => MyLoadingScreen(),
           binding: PlanBindings(),
           // EventLocation(),
         );

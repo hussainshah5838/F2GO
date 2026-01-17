@@ -4,8 +4,13 @@ import 'package:f2g/controller/loading_animation.dart';
 import 'package:f2g/core/bindings/bindings.dart';
 import 'package:f2g/main.dart';
 import 'package:f2g/model/my_model/user_model.dart';
+import 'package:f2g/services/user/user_services.dart';
+import 'package:f2g/services/user_profile_setup/user_profile_setup_service.dart';
 import 'package:f2g/view/screens/Home/home_screen.dart';
 import 'package:f2g/view/screens/auth/login/login.dart';
+import 'package:f2g/view/screens/launch/complete_profile_onboarding/complete_profile_onboarding.dart';
+import 'package:f2g/view/screens/launch/my_loading_screen.dart';
+import 'package:f2g/view/screens/my_plans/my_plans.dart';
 import 'package:f2g/view/screens/textcontrollers/textcontrollers.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
@@ -14,6 +19,29 @@ import 'package:get/get.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
 class AuthInputController extends GetxController {
+  @override
+  void onClose() {
+    fullNameController.dispose();
+    userLocationController.dispose();
+    userBioController.dispose();
+    emergencyNameController.dispose();
+    emergencyContactNoController.dispose();
+    super.dispose();
+  }
+
+  // ---- USER PROFILE SETUP ------
+  TextEditingController fullNameController = TextEditingController();
+  RxnString gender = RxnString();
+
+  RxnString dob = RxnString();
+  RxnString profileImage = RxnString();
+  TextEditingController userLocationController = TextEditingController();
+  TextEditingController userBioController = TextEditingController();
+  TextEditingController emergencyNameController = TextEditingController();
+  TextEditingController emergencyContactNoController = TextEditingController();
+  RxnString emergencyPesonRelation = RxnString();
+
+  //-------------------------------
   FirebaseMessaging fcmToken = FirebaseMessaging.instance;
   var isrememberme = false.obs;
   var ispolicyagree = false.obs;
@@ -25,7 +53,7 @@ class AuthInputController extends GetxController {
   var isEmailValid = false.obs;
   var isSignupEmailValid = false.obs;
   var areFieldsFilled = false.obs;
-  var isfullnameFilled = false.obs;
+  // var isfullnameFilled = false.obs;
   var isPasswordError = false.obs;
   var isSignupPasswordValidRx = false.obs;
 
@@ -33,10 +61,22 @@ class AuthInputController extends GetxController {
 
   final TextControllers textControllers = Get.find<TextControllers>();
 
-  void isFullNameValid() {
-    isfullnameFilled.value =
-        textControllers.signupFullNameController.value.text.trim().isNotEmpty;
-    checkSignupFields();
+  // void isFullNameValid() {
+  //   isfullnameFilled.value =
+  //       textControllers.signupFullNameController.value.text.trim().isNotEmpty;
+  //   checkSignupFields();
+  // }
+
+  void clearValues() {
+    fullNameController.clear();
+    userLocationController.clear();
+    userBioController.clear();
+    emergencyNameController.clear();
+    emergencyContactNoController.clear();
+    gender.value = null;
+    dob.value = null;
+    emergencyPesonRelation.value = null;
+    profileImage.value = null;
   }
 
   bool isSignupPasswordValid() {
@@ -75,9 +115,8 @@ class AuthInputController extends GetxController {
 
   void checkSignupFields() {
     areSignupFeildstrue.value =
-        isSignupPasswordValidRx.value &&
-        isSignupEmailValid.value &&
-        isfullnameFilled.value;
+        isSignupPasswordValidRx.value && isSignupEmailValid.value;
+    // isfullnameFilled.value;
   }
 
   void validatePassword() {
@@ -130,10 +169,37 @@ class AuthInputController extends GetxController {
         password: password,
       );
 
+      UserService.instance.getCurrentUserInformation();
+
+      String? id = UserService.instance.userModel.value.id;
+
+      final uPS = userProfilleSetupSrvices.instance;
+
+      if (id != null) {
+        uPS.checkIsUserRegistered(userId: id);
+      }
+
+      if (uPS.isUserExist.value) {
+        log("User Exist Navigate to Home Screen");
+        hideLoadingDialog();
+      } else {
+        log("User Not Exist Navigate to Complete Profile Onboarding Screen");
+        hideLoadingDialog();
+      }
+      uPS.isUserExist.value
+          ? Get.offAll(() => CompleteProfileOnboarding())
+          : Get.offAll(() => MyLoadingScreen(), binding: PlanBindings());
+
       // await userService.getCurrentUserInformation();
 
       hideLoadingDialog();
-      Get.offAll(() => HomeScreen(), binding: PlanBindings());
+      // await UserService.instance.getCurrentUserInformation();
+      // final userId = UserService.instance.userModel.value.id!;
+      // await userProfilleSetupSrvices.instance.checkIsUserRegistered(
+      //   userId: userId,
+      // );
+
+      // Get.offAll(() => HomeScreen(), binding: PlanBindings());
     } on FirebaseAuthException catch (e) {
       hideLoadingDialog();
       displayToast(msg: e.toString());
@@ -183,23 +249,25 @@ class AuthInputController extends GetxController {
 
       // Add User Data Into Firestore Database
 
-      await saveUserToFirestore(
-        model: UserModel(
-          bio: "",
-          fullName: fullName.trim().toString(),
-          email: email.trim().toString(),
-          fcmToken: fcm,
-          authType: 'email',
-          profileImage: profileDefaultImage,
-          createdAt: DateTime.now(),
-        ),
-      );
+      // await saveUserToFirestore(
+      //   model: UserModel(
+      //     id: userCredential.user?.uid ?? "",
+      //     bio: "",
+      //     fullName: fullName.trim().toString(),
+      //     email: email.trim().toString(),
+      //     fcmToken: fcm,
+      //     authType: 'email',
+      //     profileImage: profileDefaultImage,
+      //     createdAt: DateTime.now(),
+      //   ),
+      // );
 
       // await userService.getCurrentUserInformation();
 
       hideLoadingDialog();
+      Get.offAll(() => CompleteProfileOnboarding());
 
-      Get.off(() => HomeScreen(), binding: PlanBindings());
+      // Get.off(() => HomeScreen(), binding: PlanBindings());
 
       displayToast(msg: "Account created successfully");
     } on FirebaseAuthException catch (e) {
@@ -265,13 +333,14 @@ class AuthInputController extends GetxController {
       if (doc.exists) {
         hideLoadingDialog();
 
-        Get.offAll(() => HomeScreen(), binding: PlanBindings());
+        Get.offAll(() => MyLoadingScreen(), binding: PlanBindings());
         log('Document exists, user info not updated');
       }
       // document doesn't exists
       else {
         await saveUserToFirestore(
           model: UserModel(
+            id: auth.currentUser?.uid ?? "",
             bio: "",
             fullName: auth.currentUser?.displayName.toString(),
             email: auth.currentUser?.email.toString(),
@@ -296,12 +365,14 @@ class AuthInputController extends GetxController {
 
   // -------------- Save User Data to Firestore ------------------
 
-  Future<void> saveUserToFirestore({required model}) async {
-    if (auth.currentUser == null) return;
+  Future<bool> saveUserToFirestore({required model}) async {
+    if (auth.currentUser == null) return false;
     try {
       await userCollection.doc(auth.currentUser!.uid).set(model.toMap());
+      return true;
     } catch (e) {
       log("Error while saving user data into firestore ------- $e ");
+      return false;
     }
   }
 

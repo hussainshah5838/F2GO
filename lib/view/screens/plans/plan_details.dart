@@ -33,7 +33,6 @@ class _PlansDetailScreenState extends State<PlansDetailScreen> {
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     data = args['data'];
   }
