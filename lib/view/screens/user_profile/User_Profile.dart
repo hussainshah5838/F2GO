@@ -181,10 +181,12 @@ class UserProfileScreen extends StatelessWidget {
                   ),
                   child: Column(
                     children: [
-                      Obx(
-                        () => Row(
+                      Obx(() {
+                        final profileImage =
+                            userService.userModel.value.profileImage;
+                        return Row(
                           children: [
-                            (userService.userModel.value.profileImage != null)
+                            (profileImage != null && profileImage.isNotEmpty)
                                 ? InkWell(
                                   onTap: () {
                                     log("Worrk");
@@ -201,7 +203,7 @@ class UserProfileScreen extends StatelessWidget {
                                             .userModel
                                             .value
                                             .profileImage,
-                                    height: 40,
+                                    height: 35,
                                     width: 40,
                                     radius: 100,
                                     fit: BoxFit.cover,
@@ -217,8 +219,8 @@ class UserProfileScreen extends StatelessWidget {
                                     );
                                   },
                                   child: CommonImageView(
-                                    imagePath: Assets.imagesProfilepic,
-                                    height: 40,
+                                    imagePath: Assets.imagesPersonsProfileImage,
+                                    height: 35,
                                     width: 40,
                                     radius: 100,
                                     fit: BoxFit.cover,
@@ -253,8 +255,8 @@ class UserProfileScreen extends StatelessWidget {
                               ),
                             ),
                           ],
-                        ),
-                      ),
+                        );
+                      }),
                       SizedBox(height: h(context, 16)),
 
                       InkWell(

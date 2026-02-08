@@ -1,5 +1,6 @@
 import 'package:f2g/constants/app_colors.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 
 import '../../constants/app_fonts.dart';
@@ -119,7 +120,9 @@ class CustomLabelTextFeild extends StatelessWidget {
   final VoidCallback? onTap;
   final Function(String)? onChanged;
   TextInputType? keyboardType;
+  FocusNode? focusNode;
   bool isLebal;
+  List<TextInputFormatter>? inputFormatters;
   CustomLabelTextFeild({
     super.key,
     this.controller,
@@ -132,6 +135,8 @@ class CustomLabelTextFeild extends StatelessWidget {
     this.onTap,
     this.onChanged,
     this.keyboardType,
+    this.focusNode,
+    this.inputFormatters,
   });
 
   @override
@@ -144,6 +149,8 @@ class CustomLabelTextFeild extends StatelessWidget {
         borderRadius: BorderRadius.circular(h(context, 12)),
       ),
       child: TextFormField(
+        inputFormatters: inputFormatters,
+        focusNode: focusNode,
         keyboardType: keyboardType,
         onChanged: onChanged,
         onTap: onTap,

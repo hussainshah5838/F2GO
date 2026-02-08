@@ -29,7 +29,7 @@ class ChatController extends GetxController {
     required String chatID,
   }) async {
     try {
-      showLoadingDialog();
+      // showLoadingDialog();
 
       DateTime currentDateTime = DateTime.now();
       // String chatThreadId = "$myID-$participantsID";
@@ -53,7 +53,7 @@ class ChatController extends GetxController {
 
       log('Chat-thread created');
 
-      hideLoadingDialog();
+      // hideLoadingDialog();
     } catch (e) {
       log('Chat-thread Error while creating: -----> $e');
       hideLoadingDialog();
@@ -96,6 +96,7 @@ class ChatController extends GetxController {
     required String senderProfileImage,
     required String threadID,
     String? newMessage,
+    String? imageFile,
   }) async {
     try {
       isLoading.value = true;

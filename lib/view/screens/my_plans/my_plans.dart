@@ -11,7 +11,7 @@ import 'package:f2g/core/common/global_instance.dart';
 import 'package:f2g/core/enums/plan_status.dart';
 import 'package:f2g/model/my_model/plan_model.dart';
 import 'package:f2g/model/my_model/user_model.dart';
-import 'package:f2g/view/screens/plans/plan_details.dart';
+import 'package:f2g/view/screens/Home/details.dart';
 import 'package:f2g/view/widget/Custom_text_widget.dart';
 import 'package:f2g/view/widget/common_image_view_widget.dart';
 import 'package:flutter/material.dart';
@@ -33,6 +33,7 @@ class _MyPlansScreenState extends State<MyPlansScreen> {
 
     // Delay fetch to avoid reactive rebuild during first frame
     Future.microtask(() => _ctrl.fetchMyPlan());
+    Future.microtask(() => _ctrl.myJoinedPlan());
   }
 
   @override
@@ -44,38 +45,83 @@ class _MyPlansScreenState extends State<MyPlansScreen> {
         body: Stack(
           children: [
             Image.asset(Assets.imagesRadialgradient, fit: BoxFit.cover),
-            SafeArea(
-              child: Padding(
-                padding: symmetric(context, horizontal: 20),
-                child: Column(
-                  children: [
-                    SizedBox(height: h(context, 20)),
-                    Row(
-                      children: [
-                        InkWell(
-                          onTap: () => Get.back(),
-                          child: CommonImageView(
-                            imagePath: Assets.imagesMenu,
-                            height: 48,
-                            width: 48,
-                            fit: BoxFit.contain,
+            SingleChildScrollView(
+              child: SafeArea(
+                child: Padding(
+                  padding: symmetric(context, horizontal: 20),
+                  child: Column(
+                    children: [
+                      SizedBox(height: h(context, 20)),
+                      Row(
+                        children: [
+                          InkWell(
+                            onTap: () => Get.back(),
+                            child: CommonImageView(
+                              imagePath: Assets.imagesMenu,
+                              height: 48,
+                              width: 48,
+                              fit: BoxFit.contain,
+                            ),
                           ),
-                        ),
-                        SizedBox(width: w(context, 15)),
-                        CustomText(
-                          text: "My Plans",
-                          size: 20,
-                          weight: FontWeight.w500,
-                          color: kBlackColor,
-                          fontFamily: AppFonts.HelveticaNowDisplay,
-                        ),
-                      ],
-                    ),
-                    SizedBox(height: h(context, 20)),
+                          SizedBox(width: w(context, 15)),
+                          CustomText(
+                            text: "My Plans",
+                            size: 20,
+                            weight: FontWeight.w500,
+                            color: kBlackColor,
+                            fontFamily: AppFonts.HelveticaNowDisplay,
+                          ),
+                        ],
+                      ),
+                      SizedBox(height: h(context, 20)),
 
-                    /// ✅ Only one Obx wrapper
-                    Expanded(
-                      child: Obx(() {
+                      /// ✅ Only one Obx wrapper
+                      // Expanded(
+                      //   child: Obx(() {
+                      //     if (_ctrl.isLoading.value) {
+                      //       return Center(child: WaveLoading());
+                      //     }
+
+                      //     if (_ctrl.myPlans.isEmpty) {
+                      //       return Center(
+                      //         child: CustomText(
+                      //           text: "No Plans Found!",
+                      //           color: kBlackColor,
+                      //           size: 13,
+                      //         ),
+                      //       );
+                      //     }
+
+                      //     return ListView.builder(
+                      //       itemCount: _ctrl.myPlans.length,
+                      //       itemBuilder: (context, index) {
+                      //         final item = _ctrl.myPlans[index];
+                      //         return InkWell(
+                      //           onTap: () {
+                      //             // ✅ Navigation safely deferred to next frame
+                      //             WidgetsBinding.instance.addPostFrameCallback((
+                      //               _,
+                      //             ) {
+                      //               // Get.to(
+                      //               //   () =>
+                      //               //       PlansDetailScreen(isStatusChange: true),
+                      //               //   arguments: {'data': item},
+                      //               // );
+                      //               Get.to(
+                      //                 () => DetailsScreen(),
+                      //                 arguments: {'data': item},
+                      //               );
+                      //             });
+                      //           },
+                      //           child: _buildActiveCompletedCard(item, context),
+                      //         );
+                      //       },
+                      //     );
+                      //   }),
+                      // ),
+
+                      // MY-PLAN
+                      Obx(() {
                         if (_ctrl.isLoading.value) {
                           return Center(child: WaveLoading());
                         }
@@ -90,30 +136,103 @@ class _MyPlansScreenState extends State<MyPlansScreen> {
                           );
                         }
 
-                        return ListView.builder(
-                          itemCount: _ctrl.myPlans.length,
-                          itemBuilder: (context, index) {
-                            final item = _ctrl.myPlans[index];
-                            return InkWell(
-                              onTap: () {
-                                // ✅ Navigation safely deferred to next frame
-                                WidgetsBinding.instance.addPostFrameCallback((
-                                  _,
-                                ) {
-                                  Get.to(
-                                    () =>
-                                        PlansDetailScreen(isStatusChange: true),
-                                    arguments: {'data': item},
-                                  );
-                                });
-                              },
-                              child: _buildActiveCompletedCard(item, context),
-                            );
-                          },
+                        return Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            CustomText(
+                              paddingBottom: 8,
+                              paddingRight: 10,
+                              text: "My Plans",
+                              color: kBlackColor,
+                              size: 13,
+                            ),
+                            Column(
+                              children: List.generate(_ctrl.myPlans.length, (
+                                index,
+                              ) {
+                                final item = _ctrl.myPlans[index];
+
+                                return InkWell(
+                                  onTap: () {
+                                    // ✅ Navigation safely deferred to next frame
+                                    WidgetsBinding.instance
+                                        .addPostFrameCallback((_) {
+                                          Get.to(
+                                            () => DetailsScreen(),
+                                            arguments: {'data': item},
+                                          );
+                                        });
+                                  },
+                                  child: _buildActiveCompletedCard(
+                                    item,
+                                    context,
+                                  ),
+                                );
+                              }),
+                            ),
+                          ],
                         );
                       }),
-                    ),
-                  ],
+
+                      // MY-JOINED PLANS
+                      Obx(() {
+                        if (_ctrl.isLoading.value) {
+                          return Center(child: WaveLoading());
+                        }
+
+                        if (_ctrl.myJoinedPlans.isEmpty) {
+                          return SizedBox.shrink();
+                        }
+
+                        // CustomText(
+                        //       text: "No Plans Found!",
+                        //       color: kBlackColor,
+                        //       size: 13,
+                        //     ),
+
+                        return Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            CustomText(
+                              paddingBottom: 8,
+                              paddingTop: 15,
+                              paddingRight: 10,
+                              text: "Joined Plans",
+                              color: kBlackColor,
+                              size: 13,
+                            ),
+
+                            Column(
+                              children: List.generate(
+                                _ctrl.myJoinedPlans.length,
+                                (index) {
+                                  final item = _ctrl.myJoinedPlans[index];
+
+                                  return InkWell(
+                                    onTap: () {
+                                      // ✅ Navigation safely deferred to next frame
+                                      WidgetsBinding.instance
+                                          .addPostFrameCallback((_) {
+                                            Get.to(
+                                              () => DetailsScreen(),
+                                              arguments: {'data': item},
+                                            );
+                                          });
+                                    },
+                                    child: _buildActiveCompletedCard(
+                                      item,
+                                      context,
+                                    ),
+                                  );
+                                },
+                              ),
+                            ),
+                          ],
+                        );
+                      }),
+                      SizedBox(height: 20),
+                    ],
+                  ),
                 ),
               ),
             ),

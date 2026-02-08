@@ -21,6 +21,8 @@ import 'package:uuid/uuid.dart';
 class PlanController extends GetxController {
   // Page Builder
 
+  final FocusNode searchFocusNode = FocusNode();
+
   RxInt selectedTabIndexValue = 0.obs;
   RxInt currentPage = 0.obs;
   RxInt itemsPerPage = 4.obs;
@@ -57,6 +59,7 @@ class PlanController extends GetxController {
   RxList<PlanModel> expirePlans = <PlanModel>[].obs;
   late RxList<PlanModel> filterPlans = <PlanModel>[].obs;
   RxList<PlanModel> myPlans = <PlanModel>[].obs;
+  RxList<PlanModel> myJoinedPlans = <PlanModel>[].obs;
   RxList<PlanModel> favourites = <PlanModel>[].obs;
   RxBool isLoading = false.obs;
 
@@ -139,6 +142,7 @@ class PlanController extends GetxController {
       final ctrl = Get.find<ChatController>();
 
       await ctrl.creatingChatThread(myID: auth.currentUser!.uid, chatID: id);
+      await fetchPlans(status: PlanStatus.active.name);
 
       hideLoadingDialog();
       clearFields();
@@ -239,6 +243,43 @@ class PlanController extends GetxController {
       isLoading.value = false;
       displayToast(msg: "Error while fetching My-Plans: $e");
       log("❌ Error while fetching My-Plans: $e");
+    }
+  }
+
+  Future<void> myJoinedPlan() async {
+    try {
+      isLoading.value = true;
+
+      await Future.delayed(const Duration(milliseconds: 50));
+
+      myJoinedPlans.clear();
+      update();
+
+      final QuerySnapshot<Map<String, dynamic>> snapShot;
+
+      snapShot =
+          await plansCollection
+              .where(
+                "participantsIds",
+                arrayContains: auth.currentUser?.uid, // ✅ FIXED HERE
+              )
+              .get();
+
+      if (snapShot.docs.isNotEmpty) {
+        for (final doc in snapShot.docs) {
+          final data = doc.data();
+          myJoinedPlans.add(PlanModel.fromMap(data));
+        }
+      }
+
+      update();
+
+      isLoading.value = false;
+      log("✅ Joined Plans Fetched: ${myJoinedPlans.length}");
+    } catch (e) {
+      isLoading.value = false;
+      displayToast(msg: "Error while fetching Joined Plans: $e");
+      log("❌ Error while fetching Joined Plans: $e");
     }
   }
 
@@ -474,6 +515,7 @@ class PlanController extends GetxController {
   // ---- Fetch Fav ----
   Future<void> fetchFav() async {
     try {
+      log("Fav Fun Hit");
       isLoading.value = true;
 
       final QuerySnapshot<Map<String, dynamic>> snapShot;
@@ -588,9 +630,16 @@ class PlanController extends GetxController {
 
   @override
   void onInit() {
-    // TODO: implement onInit
     super.onInit();
     fetchPlans(status: PlanStatus.active.name);
     expiredFetchPlans();
+
+    // ever(Get.currentRoute.obs, (_) {
+    //   searchFocusNode.unfocus();
+    // });
+  }
+
+  void clearFocus() {
+    searchFocusNode.unfocus();
   }
 }

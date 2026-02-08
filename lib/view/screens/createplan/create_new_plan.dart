@@ -8,6 +8,7 @@ import 'package:f2g/view/widget/custom_textfeild_widget.dart';
 import 'package:f2g/view/widget/dob_picker.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:gradient_borders/gradient_borders.dart';
 import '../../widget/Custom_text_widget.dart';
 import '../../widget/Common_image_view_widget.dart';
@@ -281,7 +282,7 @@ class _CreateNewPlanScreenState extends State<CreateNewPlanScreen> {
                                     ),
                                     onTap: () {
                                       Get.bottomSheet(
-                                        DateTimePicker(
+                                        _DateTimePicker(
                                           title: "Start Date",
                                           mode: CupertinoDatePickerMode.date,
                                           onDateTimeChanged: (v) {
@@ -359,7 +360,7 @@ class _CreateNewPlanScreenState extends State<CreateNewPlanScreen> {
 
                                     onTap: () {
                                       Get.bottomSheet(
-                                        DateTimePicker(
+                                        _DateTimePicker(
                                           title: "End Date",
                                           mode: CupertinoDatePickerMode.date,
                                           onDateTimeChanged: (v) {
@@ -514,6 +515,9 @@ class _CreateNewPlanScreenState extends State<CreateNewPlanScreen> {
                                     label: "Max",
 
                                     controller: _ctrl.ageToController,
+                                    inputFormatters: [
+                                      MaxAge65PlusInputFormatter(), // ✅ Shows "65+" when >= 65
+                                    ],
                                   ),
                                 ),
                               ],
@@ -749,6 +753,14 @@ class _CreateNewPlanScreenState extends State<CreateNewPlanScreen> {
                                 displayToast(
                                   msg:
                                       "Please correct maximum age to be greater than 18.",
+                                );
+                                return;
+                              }
+
+                              if (_ctrl.maxAgeChecker < _ctrl.minAgeChecker) {
+                                displayToast(
+                                  msg:
+                                      "Maximum age must be greater than minimum age.",
                                 );
                                 return;
                               }
@@ -1063,3 +1075,157 @@ class CustomDropdownFieldMember extends StatelessWidget {
 //     );
 //   }
 // }
+class MaxAge65PlusInputFormatter extends TextInputFormatter {
+  @override
+  TextEditingValue formatEditUpdate(
+    TextEditingValue oldValue,
+    TextEditingValue newValue,
+  ) {
+    String text = newValue.text;
+
+    // If user deletes "65+" back to empty, allow editing
+    if (text.isEmpty) {
+      return TextEditingValue.empty;
+    }
+
+    // Remove non-digit characters except '+'
+    String cleaned = text.replaceAll(RegExp(r'[^0-9+]'), '');
+    String numberOnly = cleaned.replaceAll('+', '');
+
+    // If user is editing "65+" and backspaces, allow them to type numbers again
+    if (oldValue.text == "65+" && numberOnly.isEmpty) {
+      return TextEditingValue(
+        text: "",
+        selection: TextSelection.collapsed(offset: 0),
+      );
+    }
+
+    // Limit to 2 digits
+    if (numberOnly.length > 2) {
+      numberOnly = numberOnly.substring(0, 2);
+    }
+
+    int? age = int.tryParse(numberOnly);
+
+    if (age != null && age >= 65) {
+      return TextEditingValue(
+        text: "65+",
+        selection: TextSelection.collapsed(offset: 3),
+      );
+    }
+
+    return TextEditingValue(
+      text: numberOnly,
+      selection: TextSelection.collapsed(offset: numberOnly.length),
+    );
+  }
+}
+
+// ignore: must_be_immutable
+class _DateTimePicker extends StatelessWidget {
+  final Function(DateTime) onDateTimeChanged;
+  final DateTime? initialDateTime;
+  final CupertinoDatePickerMode mode;
+  final VoidCallback? onTap;
+  final double? height;
+  final String? title;
+
+  // ✅ FIXED: DateTime instead of int
+  final DateTime? minimumDate;
+  final DateTime? maximumDate;
+
+  const _DateTimePicker({
+    super.key,
+    required this.onDateTimeChanged,
+    this.initialDateTime,
+    this.mode = CupertinoDatePickerMode.date,
+    this.height,
+    this.onTap,
+    this.title,
+    this.minimumDate,
+    this.maximumDate,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    // 🔥 Start of today (removes past dates)
+    final DateTime today = DateTime(
+      DateTime.now().year,
+      DateTime.now().month,
+      DateTime.now().day,
+    );
+
+    return Container(
+      decoration: const BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.only(
+          topLeft: Radius.circular(20),
+          topRight: Radius.circular(20),
+        ),
+      ),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Container(
+            margin: const EdgeInsets.only(top: 15, bottom: 15),
+            height: 7,
+            width: 80,
+            decoration: BoxDecoration(
+              color: kBlackColor.withValues(alpha: 0.2),
+              borderRadius: BorderRadius.circular(100),
+            ),
+          ),
+
+          if (title != null)
+            CustomText(
+              text: title!,
+              color: kBlackColor,
+              size: 20,
+              weight: FontWeight.w600,
+            ),
+
+          SizedBox(
+            height: height ?? Get.height * 0.30,
+            child: CupertinoDatePicker(
+              mode: mode,
+              dateOrder: DatePickerDateOrder.dmy,
+
+              // ✅ THIS disables old dates + makes them grey
+              minimumDate: minimumDate ?? today,
+
+              // Optional future limit
+              maximumDate: maximumDate,
+
+              initialDateTime: initialDateTime ?? today,
+
+              onDateTimeChanged: onDateTimeChanged,
+            ),
+          ),
+
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 10),
+            child: CustomButton(
+              onPressed: onTap,
+              text: "Done",
+              iscustomgradient: true,
+              gradient: const LinearGradient(
+                colors: [Color(0xff21E3D7), Color(0xffB5F985)],
+                begin: Alignment.centerLeft,
+                end: Alignment.centerRight,
+              ),
+              borderradius: 100,
+              size: 18,
+              weight: FontWeight.w500,
+              fontFamily: AppFonts.HelveticaNowDisplay,
+              color: kBlackColor,
+              height: 50,
+              width: double.maxFinite,
+            ),
+          ),
+
+          const SizedBox(height: 50),
+        ],
+      ),
+    );
+  }
+}

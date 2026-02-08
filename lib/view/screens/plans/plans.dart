@@ -11,7 +11,7 @@ import 'package:f2g/core/common/global_instance.dart';
 import 'package:f2g/core/enums/plan_status.dart';
 import 'package:f2g/model/my_model/plan_model.dart';
 import 'package:f2g/model/my_model/user_model.dart';
-import 'package:f2g/view/screens/plans/plan_details.dart';
+import 'package:f2g/view/screens/Home/details.dart';
 import 'package:f2g/view/widget/Custom_text_widget.dart';
 import 'package:f2g/view/widget/common_image_view_widget.dart';
 import 'package:flutter/material.dart';
@@ -169,8 +169,12 @@ class _PlansScreenState extends State<PlansScreen> {
                                       final item = _ctrl.plans[index];
                                       return InkWell(
                                         onTap: () {
+                                          // Get.to(
+                                          //   () => PlansDetailScreen(),
+                                          //   arguments: {'data': item},
+                                          // );
                                           Get.to(
-                                            () => PlansDetailScreen(),
+                                            () => DetailsScreen(),
                                             arguments: {'data': item},
                                           );
                                         },
@@ -201,8 +205,12 @@ class _PlansScreenState extends State<PlansScreen> {
                                     final item = _ctrl.plans[index];
                                     return InkWell(
                                       onTap: () {
+                                        // Get.to(
+                                        //   () => PlansDetailScreen(),
+                                        //   arguments: {'data': item},
+                                        // );
                                         Get.to(
-                                          () => PlansDetailScreen(),
+                                          () => DetailsScreen(),
                                           arguments: {'data': item},
                                         );
                                       },

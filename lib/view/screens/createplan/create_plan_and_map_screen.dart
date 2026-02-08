@@ -682,14 +682,18 @@
 // }
 
 import 'dart:async';
+import 'dart:developer';
 import 'package:f2g/constants/app_colors.dart';
 import 'package:f2g/constants/app_fonts.dart';
 import 'package:f2g/constants/loading_animation.dart';
 import 'package:f2g/controller/my_ctrl/plan_controller.dart';
+import 'package:f2g/core/bindings/bindings.dart';
 import 'package:f2g/core/enums/plan_status.dart';
 import 'package:f2g/model/my_model/plan_model.dart';
+import 'package:f2g/view/screens/Home/details.dart';
 import 'package:f2g/view/screens/createplan/create_new_plan.dart';
-import 'package:f2g/view/screens/plans/plan_details.dart';
+import 'package:f2g/view/screens/launch/my_loading_screen.dart';
+import 'package:f2g/view/screens/launch/my_loading_screen_two.dart';
 import 'package:f2g/view/widget/Custom_text_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:geocoding/geocoding.dart';
@@ -895,9 +899,13 @@ class _CreatePlanAndMapScreenState extends State<CreatePlanAndMapScreen> {
                       child: InkWell(
                         onTap: () {
                           Get.close(1);
+                          // Get.to(
+                          //   () => PlansDetailScreen(),
+                          //   arguments: {"data": model},
+                          // );
                           Get.to(
-                            () => PlansDetailScreen(),
-                            arguments: {"data": model},
+                            () => DetailsScreen(),
+                            arguments: {'data': model},
                           );
                         },
                         child: Container(
@@ -932,40 +940,58 @@ class _CreatePlanAndMapScreenState extends State<CreatePlanAndMapScreen> {
   @override
   Widget build(BuildContext context) {
     if (isLoading) {
-      return Scaffold(body: Center(child: WaveLoading()));
+      return WillPopScope(
+        onWillPop: () async {
+          controller.plans.value = [];
+          Get.to(() => MyLoadingScreen2());
+
+          log("1 ----------- > I am Back");
+          return true;
+        },
+        child: Scaffold(body: Center(child: WaveLoading())),
+      );
     }
 
-    return Scaffold(
-      backgroundColor: kWhiteColor,
-      body: Stack(
-        children: [
-          GoogleMap(
-            myLocationEnabled: true,
-            myLocationButtonEnabled: false,
-            zoomControlsEnabled: false,
-            onMapCreated: (controller) {
-              mapController = controller;
-              if (currentPosition != null) {
-                mapController.animateCamera(
-                  CameraUpdate.newLatLngZoom(currentPosition!, 10),
-                );
-              }
-            },
-            initialCameraPosition: CameraPosition(
-              target:
-                  currentPosition ??
-                  const LatLng(33.6844, 73.0479), // Default Islamabad
-              zoom: 6.5,
+    return WillPopScope(
+      onWillPop: () async {
+        controller.plans.value = [];
+        Get.to(() => MyLoadingScreen2());
+
+        log("1 ----------- > I am Back");
+        return true;
+      },
+      child: Scaffold(
+        backgroundColor: kWhiteColor,
+        body: Stack(
+          children: [
+            GoogleMap(
+              myLocationEnabled: true,
+              myLocationButtonEnabled: false,
+              zoomControlsEnabled: false,
+              onMapCreated: (controller) {
+                mapController = controller;
+                if (currentPosition != null) {
+                  mapController.animateCamera(
+                    CameraUpdate.newLatLngZoom(currentPosition!, 10),
+                  );
+                }
+              },
+              initialCameraPosition: CameraPosition(
+                target:
+                    currentPosition ??
+                    const LatLng(33.6844, 73.0479), // Default Islamabad
+                zoom: 6.5,
+              ),
+              markers: markers,
             ),
-            markers: markers,
-          ),
-          _buildHeader(context),
-        ],
-      ),
-      floatingActionButton: FloatingActionButton(
-        backgroundColor: kSecondaryColor,
-        onPressed: _goToMyLocation,
-        child: const Icon(Icons.my_location, color: Colors.white),
+            _buildHeader(context),
+          ],
+        ),
+        floatingActionButton: FloatingActionButton(
+          backgroundColor: kSecondaryColor,
+          onPressed: _goToMyLocation,
+          child: const Icon(Icons.my_location, color: Colors.white),
+        ),
       ),
     );
   }
@@ -987,7 +1013,10 @@ class _CreatePlanAndMapScreenState extends State<CreatePlanAndMapScreen> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   InkWell(
-                    onTap: () => Get.back(),
+                    onTap: () {
+                      controller.plans.value = [];
+                      Get.to(() => MyLoadingScreen2());
+                    },
                     child: CommonImageView(
                       imagePath: Assets.imagesGreybackicon,
                       height: 48,

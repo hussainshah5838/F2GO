@@ -1,23 +1,28 @@
 import 'package:f2g/constants/app_colors.dart';
 import 'package:f2g/constants/app_images.dart';
 import 'package:f2g/constants/loading_animation.dart';
+import 'package:f2g/controller/my_ctrl/plan_controller.dart';
+import 'package:f2g/core/enums/plan_status.dart';
 import 'package:f2g/view/screens/Home/home_screen.dart';
 import 'package:f2g/view/widget/Custom_text_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get_core/src/get_main.dart';
+import 'package:get/get_instance/get_instance.dart';
 import 'package:get/get_navigation/src/extension_navigation.dart';
 
-class MyLoadingScreen extends StatefulWidget {
-  const MyLoadingScreen({super.key});
+class MyLoadingScreen2 extends StatefulWidget {
+  const MyLoadingScreen2({super.key});
 
   @override
-  State<MyLoadingScreen> createState() => _MyLoadingScreenState();
+  State<MyLoadingScreen2> createState() => _MyLoadingScreen2State();
 }
 
-class _MyLoadingScreenState extends State<MyLoadingScreen>
+class _MyLoadingScreen2State extends State<MyLoadingScreen2>
     with SingleTickerProviderStateMixin {
   late AnimationController _controller;
   late Animation<double> _animation;
+
+  PlanController ctrl = Get.find<PlanController>();
 
   @override
   void initState() {
@@ -39,8 +44,10 @@ class _MyLoadingScreenState extends State<MyLoadingScreen>
     _controller.forward();
 
     // Navigate to Home after 3 seconds
-    Future.delayed(const Duration(seconds: 3), () {
-      Get.offAll(() => HomeScreen());
+    Future.delayed(const Duration(seconds: 3), () async {
+      ctrl.fetchPlans(status: PlanStatus.active.name);
+      ctrl.expirePlans();
+      Get.to(() => HomeScreen());
     });
   }
 

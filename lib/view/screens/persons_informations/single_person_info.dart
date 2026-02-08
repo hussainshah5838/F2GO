@@ -81,20 +81,16 @@ class _SinglePersonInformationScreenState
                     children: [
                       MyBackBtn(),
                       SizedBox(height: h(context, 24)),
-                      Center(
-                        child: ClipRRect(
-                          borderRadius: BorderRadius.circular(h(context, 100)),
-                          child: CommonImageView(
-                            url: profileImage,
-                            imagePath:
-                                profileImage.isEmpty
-                                    ? Assets.imagesNoImageFound
-                                    : null,
-                            height: 90,
-                            width: 90,
-                            fit: BoxFit.cover,
-                          ),
-                        ),
+                      CommonImageView(
+                        url: profileImage,
+                        imagePath:
+                            profileImage.isEmpty
+                                ? Assets.imagesNoImageFound
+                                : null,
+                        height: 150,
+                        width: 170,
+                        radius: 100,
+                        fit: BoxFit.cover,
                       ),
                       SizedBox(height: h(context, 14)),
                       CustomText(
@@ -105,30 +101,30 @@ class _SinglePersonInformationScreenState
                         fontFamily: AppFonts.HelveticaNowDisplay,
                         paddingBottom: 6,
                       ),
-                      if (email.isNotEmpty)
-                        CustomText(
-                          text: email,
-                          size: 16,
-                          weight: FontWeight.w400,
-                          color: kBlackColor.withValues(alpha: .6),
-                          fontFamily: AppFonts.HelveticaNowDisplay,
-                          paddingBottom: 10,
-                        ),
-                      if (location.isNotEmpty)
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            const Icon(Icons.location_on_outlined, size: 16),
-                            SizedBox(width: w(context, 4)),
-                            CustomText(
-                              text: location,
-                              size: 16,
-                              weight: FontWeight.w500,
-                              color: kBlackColor.withValues(alpha: .6),
-                              fontFamily: AppFonts.HelveticaNowDisplay,
-                            ),
-                          ],
-                        ),
+                      // if (email.isNotEmpty)
+                      //   CustomText(
+                      //     text: email,
+                      //     size: 16,
+                      //     weight: FontWeight.w400,
+                      //     color: kBlackColor.withValues(alpha: .6),
+                      //     fontFamily: AppFonts.HelveticaNowDisplay,
+                      //     paddingBottom: 10,
+                      //   ),
+                      // if (location.isNotEmpty)
+                      //   Row(
+                      //     mainAxisAlignment: MainAxisAlignment.center,
+                      //     children: [
+                      //       const Icon(Icons.location_on_outlined, size: 16),
+                      //       SizedBox(width: w(context, 4)),
+                      //       CustomText(
+                      //         text: location,
+                      //         size: 16,
+                      //         weight: FontWeight.w500,
+                      //         color: kBlackColor.withValues(alpha: .6),
+                      //         fontFamily: AppFonts.HelveticaNowDisplay,
+                      //       ),
+                      //     ],
+                      //   ),
                       if (bio.isNotEmpty) ...[
                         SizedBox(height: h(context, 18)),
                         Container(

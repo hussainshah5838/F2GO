@@ -106,7 +106,10 @@ class _SubscriptionPlanScreenState extends State<SubscriptionPlanScreen> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             CustomText(
-                              text: "Free Plan",
+                              text:
+                                  _selectedPlan == SubscriptionPlan.premium
+                                      ? "Premium Plan"
+                                      : "Free Plan",
                               size: 22,
                               weight: FontWeight.w700,
                               color: kBlackColor,
@@ -127,17 +130,27 @@ class _SubscriptionPlanScreenState extends State<SubscriptionPlanScreen> {
                     ],
                   ),
                   SizedBox(height: h(context, 20)),
-                  _buildFeatureRow(context, "Limit of 2 plans per week"),
+                  _selectedPlan == SubscriptionPlan.premium
+                      ? _buildFeatureRow(context, "Unlimited plan creation")
+                      : _buildFeatureRow(context, "Limit of 2 plans per week"),
                   SizedBox(height: h(context, 10)),
-                  _buildFeatureRow(
-                    context,
-                    "Filters: Distance + Category only",
-                  ),
+                  _selectedPlan == SubscriptionPlan.premium
+                      ? _buildFeatureRow(context, "Advanced filters")
+                      : _buildFeatureRow(
+                        context,
+                        "Filters: Distance + Category only",
+                      ),
                   SizedBox(height: h(context, 10)),
-                  _buildFeatureRow(
-                    context,
-                    "Notifications after reaching the weekly limit recommending upgrade.",
-                  ),
+                  _selectedPlan == SubscriptionPlan.premium
+                      ? _buildFeatureRow(context, "Premium badge")
+                      : _buildFeatureRow(
+                        context,
+                        "Notifications after reaching the weekly limit recommending upgrade.",
+                      ),
+                  SizedBox(height: h(context, 10)),
+                  _selectedPlan == SubscriptionPlan.premium
+                      ? _buildFeatureRow(context, "Highlighted plans")
+                      : SizedBox.shrink(),
                   const Spacer(),
                   _PlanOptionCard(
                     title: "FREE 1 MONTH PREMIUM TRIAL",
@@ -152,7 +165,7 @@ class _SubscriptionPlanScreenState extends State<SubscriptionPlanScreen> {
                   SizedBox(height: h(context, 12)),
                   _PlanOptionCard(
                     title: "PREMIUM PACKAGE",
-                    subtitle: "\$99.99 /monthly",
+                    subtitle: "\$4.99 /monthly",
                     isSelected: _selectedPlan == SubscriptionPlan.premium,
                     trailing: const Icon(
                       Icons.star_rounded,

@@ -85,32 +85,38 @@ class EditProfileScreen extends StatelessWidget {
                     ),
                     child: Row(
                       children: [
-                        Obx(
-                          () =>
-                              controller.selectedImage.value != null
-                                  ? ClipRRect(
-                                    borderRadius: BorderRadius.circular(
-                                      h(context, 22),
-                                    ),
-                                    child: Image.file(
-                                      controller.selectedImage.value!,
-                                      height: h(context, 44),
-                                      width: h(context, 44),
-                                      fit: BoxFit.cover,
-                                    ),
-                                  )
-                                  : CommonImageView(
-                                    url:
-                                        userService
-                                            .userModel
-                                            .value
-                                            .profileImage,
-                                    height: 44,
-                                    width: 44,
-                                    radius: 100,
-                                    fit: BoxFit.fill,
-                                  ),
-                        ),
+                        Obx(() {
+                          final profileImage =
+                              userService.userModel.value.profileImage;
+                          return controller.selectedImage.value != null
+                              ? ClipRRect(
+                                borderRadius: BorderRadius.circular(
+                                  h(context, 22),
+                                ),
+                                child: Image.file(
+                                  controller.selectedImage.value!,
+                                  height: h(context, 44),
+                                  width: h(context, 44),
+                                  fit: BoxFit.cover,
+                                ),
+                              )
+                              : (profileImage != null &&
+                                  profileImage.isNotEmpty)
+                              ? CommonImageView(
+                                url: userService.userModel.value.profileImage,
+                                height: 40,
+                                width: 45,
+                                radius: 100,
+                                fit: BoxFit.fill,
+                              )
+                              : CommonImageView(
+                                imagePath: Assets.imagesPersonsProfileImage,
+                                height: 40,
+                                width: 45,
+                                radius: 100,
+                                fit: BoxFit.fill,
+                              );
+                        }),
                         SizedBox(width: w(context, 8)),
 
                         Expanded(

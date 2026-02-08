@@ -295,6 +295,7 @@ import 'package:f2g/constants/app_colors.dart';
 import 'package:f2g/constants/loading_animation.dart';
 import 'package:f2g/controller/my_ctrl/plan_controller.dart';
 import 'package:f2g/model/my_model/plan_model.dart';
+import 'package:f2g/view/screens/Home/details.dart';
 import 'package:f2g/view/screens/Home/filter_bottomshett.dart';
 import 'package:f2g/view/screens/plans/plan_details.dart';
 import 'package:f2g/view/widget/Custom_text_widget.dart';
@@ -655,10 +656,11 @@ class _FilterScreenPageState extends State<FilterScreenPage> {
                   ),
                   onPressed: () {
                     Get.back();
-                    Get.to(
-                      () => PlansDetailScreen(),
-                      arguments: {"data": model},
-                    );
+                    // Get.to(
+                    //   () => PlansDetailScreen(),
+                    //   arguments: {"data": model},
+                    // );
+                    Get.to(() => DetailsScreen(), arguments: {'data': model});
                   },
                   child: const Text(
                     "View Details",

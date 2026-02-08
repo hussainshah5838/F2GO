@@ -247,6 +247,8 @@ class AuthInputController extends GetxController {
         password: password.trim().toString(),
       );
 
+      final uid = userCredential.user!.uid;
+
       // Add User Data Into Firestore Database
 
       // await saveUserToFirestore(
@@ -327,36 +329,60 @@ class AuthInputController extends GetxController {
 
       // Check if the user data is stored in Firestore or not.
 
-      final doc = await userCollection.doc(auth.currentUser?.uid).get();
+      // final doc = await userCollection.doc(auth.currentUser?.uid).get();
 
       // document is exists
-      if (doc.exists) {
-        hideLoadingDialog();
+      // if (doc.exists) {
+      //   hideLoadingDialog();
 
+      //   Get.offAll(() => MyLoadingScreen(), binding: PlanBindings());
+      //   log('Document exists, user info not updated');
+      // }
+      // // document doesn't exists
+      // else {
+      //   await saveUserToFirestore(
+      //     model: UserModel(
+      //       id: auth.currentUser?.uid ?? "",
+      //       bio: "",
+      //       fullName: auth.currentUser?.displayName.toString(),
+      //       email: auth.currentUser?.email.toString(),
+      //       fcmToken: fcm,
+      //       authType: 'socail_auth',
+      //       profileImage: profileDefaultImage,
+      //       createdAt: DateTime.now(),
+      //     ),
+      //   );
+
+      //   hideLoadingDialog();
+
+      //   Get.offAll(() => HomeScreen(), binding: PlanBindings());
+
+      //   log("Document doesn't exist");
+      // }
+
+      await UserService.instance.getCurrentUserInformation();
+
+      String? id = UserService.instance.userModel.value.id;
+
+      final uPS = userProfilleSetupSrvices.instance;
+
+      if (id != null) {
+        log("--------------------$id");
+        await uPS.checkIsUserRegistered(userId: id);
+      }
+
+      if (uPS.isUserExist.value) {
+        log("User Exist Navigate to Home Screen");
         Get.offAll(() => MyLoadingScreen(), binding: PlanBindings());
-        log('Document exists, user info not updated');
-      }
-      // document doesn't exists
-      else {
-        await saveUserToFirestore(
-          model: UserModel(
-            id: auth.currentUser?.uid ?? "",
-            bio: "",
-            fullName: auth.currentUser?.displayName.toString(),
-            email: auth.currentUser?.email.toString(),
-            fcmToken: fcm,
-            authType: 'socail_auth',
-            profileImage: profileDefaultImage,
-            createdAt: DateTime.now(),
-          ),
-        );
-
         hideLoadingDialog();
-
-        Get.offAll(() => HomeScreen(), binding: PlanBindings());
-
-        log("Document doesn't exist");
+      } else {
+        log("User Not Exist Navigate to Complete Profile Onboarding Screen");
+        Get.offAll(() => CompleteProfileOnboarding());
+        hideLoadingDialog();
       }
+      // uPS.isUserExist.value
+      //     ? Get.offAll(() => CompleteProfileOnboarding())
+      //     : Get.offAll(() => MyLoadingScreen(), binding: PlanBindings());
     } catch (e) {
       hideLoadingDialog();
       log('An error occurred during Google sign-in: $e');

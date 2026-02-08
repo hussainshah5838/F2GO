@@ -1,13 +1,15 @@
 import 'dart:developer';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:f2g/constants/app_colors.dart';
 import 'package:f2g/constants/app_images.dart';
 import 'package:f2g/constants/app_styling.dart';
+import 'package:f2g/constants/firebase_const.dart';
 import 'package:f2g/controller/loading_animation.dart';
 import 'package:f2g/controller/my_ctrl/plan_controller.dart';
 import 'package:f2g/core/common/global_instance.dart';
 import 'package:f2g/core/enums/plan_status.dart';
 import 'package:f2g/model/my_model/plan_model.dart';
-import 'package:f2g/view/screens/plans/plan_details.dart';
+import 'package:f2g/view/screens/Home/details.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:gradient_borders/gradient_borders.dart';
@@ -25,12 +27,9 @@ class FavouritesScreen extends StatefulWidget {
 class _FavouritesScreenState extends State<FavouritesScreen> {
   final _ctrl = Get.find<PlanController>();
 
-  @override
-  void initState() {
-    // TODO: implement initState
-    super.initState();
-    _ctrl.fetchFav();
-  }
+  // Get current user ID - replace this with your actual user ID getter
+  String get currentUserId =>
+      auth.currentUser?.uid ?? ''; // or however you get the user ID
 
   @override
   Widget build(BuildContext context) {
@@ -70,56 +69,60 @@ class _FavouritesScreenState extends State<FavouritesScreen> {
                   ),
                   SizedBox(height: h(context, 12)),
                   Expanded(
-                    child: Obx(
-                      () => Column(
-                        children: [
-                          _ctrl.isLoading.value
-                              ? Expanded(child: Center(child: WaveLoading()))
-                              : _ctrl.favourites.isEmpty
-                              ? Expanded(
-                                child: Center(
-                                  child: CustomText(
-                                    text: "No favourites plans found!",
-                                    color: kBlackColor,
-                                    size: 13,
+                    child: StreamBuilder<QuerySnapshot>(
+                      stream:
+                          FirebaseFirestore.instance
+                              .collection('plans')
+                              .where('favIds', arrayContains: currentUserId)
+                              .snapshots(),
+                      builder: (context, snapshot) {
+                        if (snapshot.connectionState ==
+                            ConnectionState.waiting) {
+                          return Center(child: WaveLoading());
+                        }
+
+                        if (snapshot.hasError) {
+                          return Center(
+                            child: CustomText(
+                              text: "Error loading favourites",
+                              color: kBlackColor,
+                              size: 13,
+                            ),
+                          );
+                        }
+
+                        if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
+                          return _buildEmptyWidget(context);
+                        }
+
+                        final favouritePlans =
+                            snapshot.data!.docs
+                                .map(
+                                  (doc) => PlanModel.fromMap(
+                                    doc.data() as Map<String, dynamic>,
                                   ),
-                                ),
-                              )
-                              : ListView.builder(
-                                shrinkWrap: true,
-                                itemCount: _ctrl.favourites.length,
-                                itemBuilder: (context, index) {
-                                  final item = _ctrl.favourites[index];
-                                  return InkWell(
-                                    onTap: () {
-                                      Get.to(
-                                        () => PlansDetailScreen(),
-                                        arguments: {'data': item},
-                                      );
-                                    },
-                                    child: _buildFavouriteCard(item, context),
-                                  );
-                                },
-                              ),
-                        ],
-                      ),
+                                )
+                                .toList();
+
+                        return ListView.builder(
+                          padding: symmetric(context, vertical: 10),
+                          itemCount: favouritePlans.length,
+                          itemBuilder: (_, index) {
+                            final item = favouritePlans[index];
+                            return InkWell(
+                              onTap: () {
+                                Get.to(
+                                  () => DetailsScreen(),
+                                  arguments: {'data': item},
+                                );
+                              },
+                              child: _buildFavouriteCard(item, context),
+                            );
+                          },
+                        );
+                      },
                     ),
                   ),
-                  // Expanded(
-                  //   child: Obx(
-                  //     () =>
-                  //         _controller.favouriteList.isEmpty
-                  //             ? _buildEmptyWidget(context)
-                  //             : ListView.builder(
-                  //               padding: symmetric(context, vertical: 10),
-                  //               itemCount: _controller.favouriteList.length,
-                  //               itemBuilder: (_, index) {
-                  //                 final item = _controller.favouriteList[index];
-                  //                 return _buildFavouriteCard(item, context);
-                  //               },
-                  //             ),
-                  //   ),
-                  // ),
                 ],
               ),
             ),
@@ -133,8 +136,8 @@ class _FavouritesScreenState extends State<FavouritesScreen> {
     return Center(
       child: CustomText(
         text: "No favourites yet",
-        size: 20,
-        weight: FontWeight.w500,
+        size: 15,
+        weight: FontWeight.w400,
         color: kBlackColor,
         fontFamily: AppFonts.HelveticaNowDisplay,
       ),
@@ -163,7 +166,6 @@ class _FavouritesScreenState extends State<FavouritesScreen> {
                   width: 48,
                 ),
               ),
-
               SizedBox(width: w(context, 9)),
               Expanded(
                 child: Column(
@@ -186,12 +188,14 @@ class _FavouritesScreenState extends State<FavouritesScreen> {
                           fit: BoxFit.contain,
                         ),
                         SizedBox(width: w(context, 4)),
-                        CustomText(
-                          text: item.location.toString(),
-                          size: 12,
-                          weight: FontWeight.w500,
-                          color: kBlackColor.withValues(alpha: 0.5),
-                          fontFamily: AppFonts.HelveticaNowDisplay,
+                        Expanded(
+                          child: CustomText(
+                            text: item.location.toString(),
+                            size: 12,
+                            weight: FontWeight.w500,
+                            color: kBlackColor.withValues(alpha: 0.5),
+                            fontFamily: AppFonts.HelveticaNowDisplay,
+                          ),
                         ),
                       ],
                     ),
@@ -271,22 +275,6 @@ class _FavouritesScreenState extends State<FavouritesScreen> {
                   ],
                 ),
               ),
-
-              // Stack(
-              //   clipBehavior: Clip.none,
-              //   children: List.generate(
-              //     item.avatars.length,
-              //     (i) => Padding(
-              //       padding: only(context, left: w(context, i * 18.0)),
-              //       child: CommonImageView(
-              //         imagePath: item.avatars[i],
-              //         height: 28,
-              //         width: 28,
-              //         fit: BoxFit.contain,
-              //       ),
-              //     ),
-              //   ),
-              // ),
             ],
           ),
           SizedBox(height: h(context, 10)),
@@ -294,7 +282,6 @@ class _FavouritesScreenState extends State<FavouritesScreen> {
             onTap: () async {
               log("Removing from fav ${item.id}");
               await _ctrl.removeFavouritePlan(planId: item.id!);
-              Get.close(1);
             },
             child: Container(
               height: h(context, 42),
@@ -307,7 +294,6 @@ class _FavouritesScreenState extends State<FavouritesScreen> {
                     end: Alignment.centerRight,
                   ),
                 ),
-
                 borderRadius: BorderRadius.circular(h(context, 8)),
               ),
               child: Center(

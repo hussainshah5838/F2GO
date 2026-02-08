@@ -242,6 +242,10 @@ class Assets {
   /// assets/images/personimage7.png
   static const String imagesPersonimage7 = "assets/images/personimage7.png";
 
+  /// Assets for imagesPersonsProfileImage
+  /// assets/images/persons_profile_image.png
+  static const String imagesPersonsProfileImage = "assets/images/persons_profile_image.png";
+
   /// Assets for imagesPlanimg
   /// assets/images/planimg.png
   static const String imagesPlanimg = "assets/images/planimg.png";
