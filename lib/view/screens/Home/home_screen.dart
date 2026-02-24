@@ -847,11 +847,12 @@ class _HomeScreenState extends State<HomeScreen> {
                                       )
                                       : InkWell(
                                         onTap: () {
-                                          log("Worrk");
+                                          log("Work");
                                           Get.to(
                                             () => ViewProfileImage(
                                               imageSource:
-                                                  Assets.imagesProfilepic,
+                                                  Assets
+                                                      .imagesPersonsProfileImage,
                                             ),
                                           );
                                         },
@@ -2035,7 +2036,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                 // Get.to(CreatePlanScreen());
                                 Get.to(
                                   () => CreateNewPlanScreen(),
-                                  binding: PlanBindings(),
+                                  // binding: PlanBindings(),
                                 );
                               },
                               text: "Create new Plan",

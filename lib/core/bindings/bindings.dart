@@ -21,11 +21,18 @@ class ProfileBindings implements Bindings {
   }
 }
 
+// class PlanBindings implements Bindings {
+//   @override
+//   void dependencies() {
+//     Get.put(PlanController());
+//     Get.put(ChatController());
+//   }
+// }
 class PlanBindings implements Bindings {
   @override
   void dependencies() {
-    Get.put(PlanController());
-    Get.put(ChatController());
+    Get.lazyPut(() => PlanController(), fenix: true); // ✅ recreates if deleted
+    Get.lazyPut(() => ChatController(), fenix: true); // ✅ recreates if deleted
   }
 }
 

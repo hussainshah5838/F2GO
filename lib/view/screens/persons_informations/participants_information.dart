@@ -692,7 +692,7 @@ class _ParticipantsInformationScreenState
                                 CommonImageView(
                                   url: widget.image,
                                   height: 80,
-                                  width: 80,
+                                  width: 90,
                                   radius: 100,
                                   fit: BoxFit.cover,
                                 ),

@@ -4,6 +4,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:f2g/constants/app_colors.dart';
 import 'package:f2g/constants/app_fonts.dart';
 import 'package:f2g/constants/app_images.dart';
+import 'package:f2g/constants/app_sizes.dart';
 import 'package:f2g/constants/app_styling.dart';
 import 'package:f2g/constants/firebase_const.dart';
 import 'package:f2g/controller/loading_animation.dart';
@@ -203,7 +204,8 @@ class _DetailsScreenState extends State<DetailsScreen> {
                     right: 0,
                     child: Container(
                       padding: symmetric(context, horizontal: 20),
-                      height: h(context, 375),
+                      // height: h(context, 375),
+                      height: h(context, 300),
                       width: double.maxFinite,
                       decoration: BoxDecoration(
                         color: kWhiteColor,
@@ -425,199 +427,199 @@ class _DetailsScreenState extends State<DetailsScreen> {
                             //     ),
                             //   ],
                             // ),
-                            SizedBox(height: h(context, 50)),
+                            // SizedBox(height: h(context, 50)),
 
-                            // CHAT BUTTON
-                            StreamBuilder<DocumentSnapshot>(
-                              stream: chatCollection.doc(model.id).snapshots(),
-                              builder: (context, snapshot) {
-                                if (!snapshot.hasData) {
-                                  return CircularProgressIndicator();
-                                }
+                            // // CHAT BUTTON
+                            // StreamBuilder<DocumentSnapshot>(
+                            //   stream: chatCollection.doc(model.id).snapshots(),
+                            //   builder: (context, snapshot) {
+                            //     if (!snapshot.hasData) {
+                            //       return CircularProgressIndicator();
+                            //     }
 
-                                final data =
-                                    snapshot.data!.data()
-                                        as Map<String, dynamic>?;
-                                final participants = List<String>.from(
-                                  data?['participants'] ?? [],
-                                );
+                            //     final data =
+                            //         snapshot.data!.data()
+                            //             as Map<String, dynamic>?;
+                            //     final participants = List<String>.from(
+                            //       data?['participants'] ?? [],
+                            //     );
 
-                                final isParticipant = participants.contains(
-                                  auth.currentUser!.uid,
-                                );
-                                log(auth.currentUser!.uid);
+                            //     final isParticipant = participants.contains(
+                            //       auth.currentUser!.uid,
+                            //     );
+                            //     log(auth.currentUser!.uid);
 
-                                return isParticipant
-                                    ? InkWell(
-                                      onTap: () {
-                                        Get.to(
-                                          () =>
-                                              ChatScreen(chatHeadID: model.id!),
-                                          binding: ChatBindings(),
-                                          arguments: {'data': model},
-                                        );
-                                      },
-                                      child: Container(
-                                        margin: EdgeInsets.only(bottom: 12),
-                                        height: h(context, 50),
-                                        width: double.maxFinite,
-                                        decoration: BoxDecoration(
-                                          border: GradientBoxBorder(
-                                            gradient: LinearGradient(
-                                              colors: [
-                                                Color(0xff28E4D3),
-                                                Color(0xffAFF888),
-                                              ],
-                                              begin: Alignment.centerLeft,
-                                              end: Alignment.centerRight,
-                                            ),
-                                          ),
+                            //     return isParticipant
+                            //         ? InkWell(
+                            //           onTap: () {
+                            //             Get.to(
+                            //               () =>
+                            //                   ChatScreen(chatHeadID: model.id!),
+                            //               binding: ChatBindings(),
+                            //               arguments: {'data': model},
+                            //             );
+                            //           },
+                            //           child: Container(
+                            //             margin: EdgeInsets.only(bottom: 12),
+                            //             height: h(context, 50),
+                            //             width: double.maxFinite,
+                            //             decoration: BoxDecoration(
+                            //               border: GradientBoxBorder(
+                            //                 gradient: LinearGradient(
+                            //                   colors: [
+                            //                     Color(0xff28E4D3),
+                            //                     Color(0xffAFF888),
+                            //                   ],
+                            //                   begin: Alignment.centerLeft,
+                            //                   end: Alignment.centerRight,
+                            //                 ),
+                            //               ),
 
-                                          borderRadius: BorderRadius.circular(
-                                            h(context, 100),
-                                          ),
-                                        ),
-                                        child: Row(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.center,
-                                          children: [
-                                            CommonImageView(
-                                              imagePath: Assets.imagesChaticon,
-                                              height: 20,
-                                              width: 20,
-                                              fit: BoxFit.contain,
-                                            ),
+                            //               borderRadius: BorderRadius.circular(
+                            //                 h(context, 100),
+                            //               ),
+                            //             ),
+                            //             child: Row(
+                            //               mainAxisAlignment:
+                            //                   MainAxisAlignment.center,
+                            //               children: [
+                            //                 CommonImageView(
+                            //                   imagePath: Assets.imagesChaticon,
+                            //                   height: 20,
+                            //                   width: 20,
+                            //                   fit: BoxFit.contain,
+                            //                 ),
 
-                                            // Checking if participantsIds is contains my ID then display group chat button
-                                            CustomText(
-                                              text: "Open group chat",
-                                              size: 18,
-                                              paddingLeft: 6,
-                                              weight: FontWeight.w500,
-                                              color: kSecondaryColor,
-                                              fontFamily:
-                                                  AppFonts.HelveticaNowDisplay,
-                                            ),
-                                          ],
-                                        ),
-                                      ),
-                                    )
-                                    : SizedBox();
-                              },
-                            ),
+                            //                 // Checking if participantsIds is contains my ID then display group chat button
+                            //                 CustomText(
+                            //                   text: "Open group chat",
+                            //                   size: 18,
+                            //                   paddingLeft: 6,
+                            //                   weight: FontWeight.w500,
+                            //                   color: kSecondaryColor,
+                            //                   fontFamily:
+                            //                       AppFonts.HelveticaNowDisplay,
+                            //                 ),
+                            //               ],
+                            //             ),
+                            //           ),
+                            //         )
+                            //         : SizedBox();
+                            //   },
+                            // ),
 
-                            // PLAN BUTTON
-                            (model.planCreatorID == auth.currentUser?.uid)
-                                ? DisableButton(text: "My Plan")
-                                : (model.status == PlanStatus.completed.name)
-                                ? DisableButton()
-                                : StreamBuilder<DocumentSnapshot>(
-                                  stream:
-                                      plansCollection.doc(model.id).snapshots(),
-                                  builder: (context, snapshot) {
-                                    if (!snapshot.hasData) {
-                                      return CircularProgressIndicator();
-                                    }
+                            // // PLAN BUTTON
+                            // (model.planCreatorID == auth.currentUser?.uid)
+                            //     ? DisableButton(text: "My Plan")
+                            //     : (model.status == PlanStatus.completed.name)
+                            //     ? DisableButton()
+                            //     : StreamBuilder<DocumentSnapshot>(
+                            //       stream:
+                            //           plansCollection.doc(model.id).snapshots(),
+                            //       builder: (context, snapshot) {
+                            //         if (!snapshot.hasData) {
+                            //           return CircularProgressIndicator();
+                            //         }
 
-                                    final data =
-                                        snapshot.data!.data()
-                                            as Map<String, dynamic>?;
-                                    final participants = List<String>.from(
-                                      data?['participantsIds'] ?? [],
-                                    );
-                                    final isUserInList = participants.contains(
-                                      auth.currentUser?.uid,
-                                    );
+                            //         final data =
+                            //             snapshot.data!.data()
+                            //                 as Map<String, dynamic>?;
+                            //         final participants = List<String>.from(
+                            //           data?['participantsIds'] ?? [],
+                            //         );
+                            //         final isUserInList = participants.contains(
+                            //           auth.currentUser?.uid,
+                            //         );
 
-                                    final int maxMembers =
-                                        int.tryParse(model.maxMembers ?? '') ??
-                                        0;
+                            //         final int maxMembers =
+                            //             int.tryParse(model.maxMembers ?? '') ??
+                            //             0;
 
-                                    final int currentMembers =
-                                        model.participantsIds?.length ?? 0;
+                            //         final int currentMembers =
+                            //             model.participantsIds?.length ?? 0;
 
-                                    final bool isPlanFull =
-                                        currentMembers >= maxMembers;
+                            //         final bool isPlanFull =
+                            //             currentMembers >= maxMembers;
 
-                                    log(
-                                      "User: ${maxMembers} -- ${model.participantsIds?.length}",
-                                    );
-                                    return (isPlanFull)
-                                        ? CustomButton(
-                                          onPressed: () {
-                                            displayToast(
-                                              msg:
-                                                  "The plan is full. You cannot join.",
-                                            );
-                                          },
+                            //         log(
+                            //           "User: ${maxMembers} -- ${model.participantsIds?.length}",
+                            //         );
+                            //         return (isPlanFull)
+                            //             ? CustomButton(
+                            //               onPressed: () {
+                            //                 displayToast(
+                            //                   msg:
+                            //                       "The plan is full. You cannot join.",
+                            //                 );
+                            //               },
 
-                                          text: "Plan Full",
+                            //               text: "Plan Full",
 
-                                          iscustomgradient: true,
-                                          gradient: const LinearGradient(
-                                            colors: [
-                                              Color(0xff21E3D7),
-                                              Color(0xffB5F985),
-                                            ],
-                                            begin: Alignment.centerLeft,
-                                            end: Alignment.centerRight,
-                                          ),
-                                          borderradius: 100,
-                                          size: 18,
-                                          weight: FontWeight.w500,
-                                          fontFamily:
-                                              AppFonts.HelveticaNowDisplay,
-                                          color: kBlackColor,
-                                          height: 50,
-                                          width: double.maxFinite,
-                                        )
-                                        : CustomButton(
-                                          onPressed: () {
-                                            log(
-                                              "User is in list: $isUserInList",
-                                            );
-                                            PlanController _ctrl = Get.put(
-                                              PlanController(),
-                                            );
-                                            if (isUserInList) {
-                                              log("Leaving plan: ${model.id}");
-                                              _ctrl.leavePlan(
-                                                planId: model.id.toString(),
-                                              );
-                                            } else {
-                                              log("joining plan: ${model.id}");
-                                              _ctrl.joinPlan(
-                                                planId: model.id.toString(),
-                                              );
-                                            }
-                                          },
+                            //               iscustomgradient: true,
+                            //               gradient: const LinearGradient(
+                            //                 colors: [
+                            //                   Color(0xff21E3D7),
+                            //                   Color(0xffB5F985),
+                            //                 ],
+                            //                 begin: Alignment.centerLeft,
+                            //                 end: Alignment.centerRight,
+                            //               ),
+                            //               borderradius: 100,
+                            //               size: 18,
+                            //               weight: FontWeight.w500,
+                            //               fontFamily:
+                            //                   AppFonts.HelveticaNowDisplay,
+                            //               color: kBlackColor,
+                            //               height: 50,
+                            //               width: double.maxFinite,
+                            //             )
+                            //             : CustomButton(
+                            //               onPressed: () {
+                            //                 log(
+                            //                   "User is in list: $isUserInList",
+                            //                 );
+                            //                 PlanController _ctrl = Get.put(
+                            //                   PlanController(),
+                            //                 );
+                            //                 if (isUserInList) {
+                            //                   log("Leaving plan: ${model.id}");
+                            //                   _ctrl.leavePlan(
+                            //                     planId: model.id.toString(),
+                            //                   );
+                            //                 } else {
+                            //                   log("joining plan: ${model.id}");
+                            //                   _ctrl.joinPlan(
+                            //                     planId: model.id.toString(),
+                            //                   );
+                            //                 }
+                            //               },
 
-                                          text:
-                                              isUserInList
-                                                  ? "Leave Plan"
-                                                  : "Join",
-                                          iscustomgradient: true,
-                                          gradient: const LinearGradient(
-                                            colors: [
-                                              Color(0xff21E3D7),
-                                              Color(0xffB5F985),
-                                            ],
-                                            begin: Alignment.centerLeft,
-                                            end: Alignment.centerRight,
-                                          ),
-                                          borderradius: 100,
-                                          size: 18,
-                                          weight: FontWeight.w500,
-                                          fontFamily:
-                                              AppFonts.HelveticaNowDisplay,
-                                          color: kBlackColor,
-                                          height: 50,
-                                          width: double.maxFinite,
-                                        );
-                                  },
-                                ),
+                            //               text:
+                            //                   isUserInList
+                            //                       ? "Leave Plan"
+                            //                       : "Join",
+                            //               iscustomgradient: true,
+                            //               gradient: const LinearGradient(
+                            //                 colors: [
+                            //                   Color(0xff21E3D7),
+                            //                   Color(0xffB5F985),
+                            //                 ],
+                            //                 begin: Alignment.centerLeft,
+                            //                 end: Alignment.centerRight,
+                            //               ),
+                            //               borderradius: 100,
+                            //               size: 18,
+                            //               weight: FontWeight.w500,
+                            //               fontFamily:
+                            //                   AppFonts.HelveticaNowDisplay,
+                            //               color: kBlackColor,
+                            //               height: 50,
+                            //               width: double.maxFinite,
+                            //             );
+                            //       },
+                            //     ),
 
-                            SizedBox(height: 20),
+                            // SizedBox(height: 20),
                           ],
                         ),
                       ),
@@ -626,6 +628,170 @@ class _DetailsScreenState extends State<DetailsScreen> {
                 ],
               ),
             ),
+          ],
+        ),
+      ),
+      bottomNavigationBar: Padding(
+        padding: EdgeInsetsGeometry.only(left: 20, right: 20, bottom: 20),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            // CHAT BUTTON
+            StreamBuilder<DocumentSnapshot>(
+              stream: chatCollection.doc(model.id).snapshots(),
+              builder: (context, snapshot) {
+                if (!snapshot.hasData) {
+                  return CircularProgressIndicator();
+                }
+
+                final data = snapshot.data!.data() as Map<String, dynamic>?;
+                final participants = List<String>.from(
+                  data?['participants'] ?? [],
+                );
+
+                final isParticipant = participants.contains(
+                  auth.currentUser!.uid,
+                );
+                log(auth.currentUser!.uid);
+
+                return isParticipant
+                    ? InkWell(
+                      onTap: () {
+                        Get.to(
+                          () => ChatScreen(chatHeadID: model.id!),
+                          binding: ChatBindings(),
+                          arguments: {'data': model},
+                        );
+                      },
+                      child: Container(
+                        margin: EdgeInsets.only(bottom: 12),
+                        height: h(context, 50),
+                        width: double.maxFinite,
+                        decoration: BoxDecoration(
+                          border: GradientBoxBorder(
+                            gradient: LinearGradient(
+                              colors: [Color(0xff28E4D3), Color(0xffAFF888)],
+                              begin: Alignment.centerLeft,
+                              end: Alignment.centerRight,
+                            ),
+                          ),
+
+                          borderRadius: BorderRadius.circular(h(context, 100)),
+                        ),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            CommonImageView(
+                              imagePath: Assets.imagesChaticon,
+                              height: 20,
+                              width: 20,
+                              fit: BoxFit.contain,
+                            ),
+
+                            // Checking if participantsIds is contains my ID then display group chat button
+                            CustomText(
+                              text: "Open group chat",
+                              size: 18,
+                              paddingLeft: 6,
+                              weight: FontWeight.w500,
+                              color: kSecondaryColor,
+                              fontFamily: AppFonts.HelveticaNowDisplay,
+                            ),
+                          ],
+                        ),
+                      ),
+                    )
+                    : SizedBox();
+              },
+            ),
+
+            // PLAN BUTTON
+            (model.planCreatorID == auth.currentUser?.uid)
+                ? DisableButton(text: "My Plan")
+                : (model.status == PlanStatus.completed.name)
+                ? DisableButton()
+                : StreamBuilder<DocumentSnapshot>(
+                  stream: plansCollection.doc(model.id).snapshots(),
+                  builder: (context, snapshot) {
+                    if (!snapshot.hasData) {
+                      return CircularProgressIndicator();
+                    }
+
+                    final data = snapshot.data!.data() as Map<String, dynamic>?;
+                    final participants = List<String>.from(
+                      data?['participantsIds'] ?? [],
+                    );
+                    final isUserInList = participants.contains(
+                      auth.currentUser?.uid,
+                    );
+
+                    final int maxMembers =
+                        int.tryParse(model.maxMembers ?? '') ?? 0;
+
+                    final int currentMembers =
+                        model.participantsIds?.length ?? 0;
+
+                    final bool isPlanFull = currentMembers >= maxMembers;
+
+                    log(
+                      "User: ${maxMembers} -- ${model.participantsIds?.length}",
+                    );
+                    return (isPlanFull)
+                        ? CustomButton(
+                          onPressed: () {
+                            displayToast(
+                              msg: "The plan is full. You cannot join.",
+                            );
+                          },
+
+                          text: "Plan Full",
+
+                          iscustomgradient: true,
+                          gradient: const LinearGradient(
+                            colors: [Color(0xff21E3D7), Color(0xffB5F985)],
+                            begin: Alignment.centerLeft,
+                            end: Alignment.centerRight,
+                          ),
+                          borderradius: 100,
+                          size: 18,
+                          weight: FontWeight.w500,
+                          fontFamily: AppFonts.HelveticaNowDisplay,
+                          color: kBlackColor,
+                          height: 50,
+                          width: double.maxFinite,
+                        )
+                        : CustomButton(
+                          onPressed: () {
+                            log("User is in list: $isUserInList");
+                            PlanController _ctrl = Get.put(PlanController());
+                            if (isUserInList) {
+                              log("Leaving plan: ${model.id}");
+                              _ctrl.leavePlan(planId: model.id.toString());
+                            } else {
+                              log("joining plan: ${model.id}");
+                              _ctrl.joinPlan(planId: model.id.toString());
+                            }
+                          },
+
+                          text: isUserInList ? "Leave Plan" : "Join",
+                          iscustomgradient: true,
+                          gradient: const LinearGradient(
+                            colors: [Color(0xff21E3D7), Color(0xffB5F985)],
+                            begin: Alignment.centerLeft,
+                            end: Alignment.centerRight,
+                          ),
+                          borderradius: 100,
+                          size: 18,
+                          weight: FontWeight.w500,
+                          fontFamily: AppFonts.HelveticaNowDisplay,
+                          color: kBlackColor,
+                          height: 50,
+                          width: double.maxFinite,
+                        );
+                  },
+                ),
+
+            SizedBox(height: 20),
           ],
         ),
       ),

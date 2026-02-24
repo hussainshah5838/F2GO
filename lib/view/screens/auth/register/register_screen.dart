@@ -139,7 +139,7 @@ class RegisterScreen extends StatelessWidget {
                                   authInputController
                                           .isSignupPasswordValidRx
                                           .value
-                                      ? Assets.imagesRequirementsmetcheck
+                                      ? Assets.imagesSolideyedisabled
                                       : Assets.imagesSolideye,
                               // authInputController
                               //     .issinguppasswordvisible

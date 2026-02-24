@@ -747,8 +747,16 @@ class _CreateNewPlanScreenState extends State<CreateNewPlanScreen> {
                               }
 
                               // ---------------- Max Age -------------
-                              String maxAgeValue = _ctrl.ageToController.text;
-                              _ctrl.maxAgeChecker = int.parse(maxAgeValue);
+                              // String maxAgeValue = _ctrl.ageToController.text;
+                              // _ctrl.maxAgeChecker = int.parse(maxAgeValue);
+                              String maxAgeValue = _ctrl.ageToController.text
+                                  .replaceAll(
+                                    RegExp(r'[^0-9]'),
+                                    '',
+                                  ); // ✅ strips "+" or any non-numeric char
+
+                              _ctrl.maxAgeChecker =
+                                  int.tryParse(maxAgeValue) ?? 0;
                               if (_ctrl.maxAgeChecker <= 18) {
                                 displayToast(
                                   msg:

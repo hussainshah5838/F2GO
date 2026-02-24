@@ -210,6 +210,45 @@ class PlanController extends GetxController {
   //   }
   // }
 
+  // MY PLANS CORRECT FUNCTION IS THIS BELOW ONE
+  // Future<void> fetchMyPlan() async {
+  //   try {
+  //     isLoading.value = true;
+
+  //     await Future.delayed(Duration(milliseconds: 50));
+
+  //     myPlans.value = [];
+  //     update();
+
+  //     final QuerySnapshot<Map<String, dynamic>> snapShot;
+
+  //     snapShot =
+  //         await plansCollection
+  //             .where("planCreatorID", isEqualTo: auth.currentUser?.uid)
+  //             .orderBy("status", descending: true)
+  //             .orderBy("createdAt", descending: true)
+  //             .get();
+
+  //     if (snapShot.docs.isNotEmpty) {
+  //       myPlans.clear();
+
+  //       for (final doc in snapShot.docs) {
+  //         final data = doc.data();
+  //         myPlans.add(PlanModel.fromMap(data));
+  //       }
+  //     }
+
+  //     update();
+
+  //     isLoading.value = false;
+  //     log("✅ My-Plans Fetched: ${myPlans.length}");
+  //   } catch (e) {
+  //     isLoading.value = false;
+  //     displayToast(msg: "Error while fetching My-Plans: $e");
+  //     log("❌ Error while fetching My-Plans: $e");
+  //   }
+  // }
+
   Future<void> fetchMyPlan() async {
     try {
       isLoading.value = true;
@@ -224,15 +263,27 @@ class PlanController extends GetxController {
       snapShot =
           await plansCollection
               .where("planCreatorID", isEqualTo: auth.currentUser?.uid)
+              .orderBy("createdAt", descending: true)
               .get();
 
       if (snapShot.docs.isNotEmpty) {
         myPlans.clear();
 
+        List<PlanModel> fetchedPlans = [];
+
         for (final doc in snapShot.docs) {
           final data = doc.data();
-          myPlans.add(PlanModel.fromMap(data));
+          fetchedPlans.add(PlanModel.fromMap(data));
         }
+
+        // ✅ Sort — active plans on top, then by createdAt (already ordered)
+        fetchedPlans.sort((a, b) {
+          final aIsActive = a.status == "active" ? 0 : 1;
+          final bIsActive = b.status == "active" ? 0 : 1;
+          return aIsActive.compareTo(bIsActive);
+        });
+
+        myPlans.addAll(fetchedPlans);
       }
 
       update();
@@ -246,6 +297,42 @@ class PlanController extends GetxController {
     }
   }
 
+  // Future<void> myJoinedPlan() async {
+  //   try {
+  //     isLoading.value = true;
+
+  //     await Future.delayed(const Duration(milliseconds: 50));
+
+  //     myJoinedPlans.clear();
+  //     update();
+
+  //     final QuerySnapshot<Map<String, dynamic>> snapShot;
+
+  //     snapShot =
+  //         await plansCollection
+  //             .where(
+  //               "participantsIds",
+  //               arrayContains: auth.currentUser?.uid, // ✅ FIXED HERE
+  //             )
+  //             .get();
+
+  //     if (snapShot.docs.isNotEmpty) {
+  //       for (final doc in snapShot.docs) {
+  //         final data = doc.data();
+  //         myJoinedPlans.add(PlanModel.fromMap(data));
+  //       }
+  //     }
+
+  //     update();
+
+  //     isLoading.value = false;
+  //     log("✅ Joined Plans Fetched: ${myJoinedPlans.length}");
+  //   } catch (e) {
+  //     isLoading.value = false;
+  //     displayToast(msg: "Error while fetching Joined Plans: $e");
+  //     log("❌ Error while fetching Joined Plans: $e");
+  //   }
+  // }
   Future<void> myJoinedPlan() async {
     try {
       isLoading.value = true;
@@ -259,17 +346,25 @@ class PlanController extends GetxController {
 
       snapShot =
           await plansCollection
-              .where(
-                "participantsIds",
-                arrayContains: auth.currentUser?.uid, // ✅ FIXED HERE
-              )
+              .where("participantsIds", arrayContains: auth.currentUser?.uid)
               .get();
 
       if (snapShot.docs.isNotEmpty) {
+        List<PlanModel> fetchedPlans = [];
+
         for (final doc in snapShot.docs) {
           final data = doc.data();
-          myJoinedPlans.add(PlanModel.fromMap(data));
+          fetchedPlans.add(PlanModel.fromMap(data));
         }
+
+        // ✅ Active joined plans on top
+        fetchedPlans.sort((a, b) {
+          final aIsActive = a.status == "active" ? 0 : 1;
+          final bIsActive = b.status == "active" ? 0 : 1;
+          return aIsActive.compareTo(bIsActive);
+        });
+
+        myJoinedPlans.addAll(fetchedPlans);
       }
 
       update();
@@ -341,6 +436,7 @@ class PlanController extends GetxController {
       snapShot =
           await plansCollection
               .where("status", isEqualTo: PlanStatus.completed.name)
+              .orderBy("createdAt", descending: true)
               .get();
 
       if (snapShot.docs.isNotEmpty) {
@@ -381,10 +477,14 @@ class PlanController extends GetxController {
             await plansCollection
                 .where("category", isEqualTo: planCategories)
                 .where("status", isEqualTo: status)
+                .orderBy("createdAt", descending: true)
                 .get();
       } else {
         snapShot =
-            await plansCollection.where("status", isEqualTo: status).get();
+            await plansCollection
+                .where("status", isEqualTo: status)
+                .orderBy("createdAt", descending: true)
+                .get();
       }
 
       if (snapShot.docs.isNotEmpty) {

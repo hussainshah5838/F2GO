@@ -127,13 +127,14 @@ class _MyPlansScreenState extends State<MyPlansScreen> {
                         }
 
                         if (_ctrl.myPlans.isEmpty) {
-                          return Center(
-                            child: CustomText(
-                              text: "No Plans Found!",
-                              color: kBlackColor,
-                              size: 13,
-                            ),
-                          );
+                          // return Center(
+                          //   child: CustomText(
+                          //     text: "No Plans Found!",
+                          //     color: kBlackColor,
+                          //     size: 13,
+                          //   ),
+                          // );
+                          return SizedBox.shrink();
                         }
 
                         return Column(
@@ -177,7 +178,8 @@ class _MyPlansScreenState extends State<MyPlansScreen> {
                       // MY-JOINED PLANS
                       Obx(() {
                         if (_ctrl.isLoading.value) {
-                          return Center(child: WaveLoading());
+                          // return Center(child: WaveLoading());
+                          return SizedBox.shrink();
                         }
 
                         if (_ctrl.myJoinedPlans.isEmpty) {
@@ -195,7 +197,7 @@ class _MyPlansScreenState extends State<MyPlansScreen> {
                           children: [
                             CustomText(
                               paddingBottom: 8,
-                              paddingTop: 15,
+                              paddingTop: _ctrl.myPlans.isEmpty ? 0 : 15,
                               paddingRight: 10,
                               text: "Joined Plans",
                               color: kBlackColor,

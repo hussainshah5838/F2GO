@@ -1,22 +1,35 @@
+import 'dart:async';
+
 import 'package:f2g/core/bindings/bindings.dart';
 import 'package:f2g/firebase_options.dart';
 import 'package:f2g/services/notification_service/notification_services.dart';
+import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 import 'config/routes/routes.dart';
 import 'config/theme/light_theme.dart';
 
-Future<void> main() async {
-  WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+void main() {
+  runZonedGuarded(
+    () async {
+      WidgetsFlutterBinding.ensureInitialized();
+      await Firebase.initializeApp(
+        options: DefaultFirebaseOptions.currentPlatform,
+      );
 
-  NotificationServices().initLocalNotification();
-  NotificationServices().notificationPermission();
-  NotificationServices().firebaseInit();
+      NotificationServices().initLocalNotification();
+      NotificationServices().notificationPermission();
+      NotificationServices().firebaseInit();
 
-  runApp(MyApp());
+      runApp(MyApp());
+    },
+    (error, stack) {
+      FirebaseCrashlytics.instance.recordError(error, stack, fatal: true);
+    },
+  );
 }
 
 //DO NOT REMOVE Unless you find their usage.
@@ -29,6 +42,8 @@ String dummyImg =
     'https://images.unsplash.com/photo-1558507652-2d9626c4e67a?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=687&q=80';
 
 class MyApp extends StatelessWidget {
+  MyApp({super.key});
+  static FirebaseAnalytics analytics = FirebaseAnalytics.instance;
   @override
   Widget build(BuildContext context) {
     return GetMaterialApp(
@@ -41,6 +56,7 @@ class MyApp extends StatelessWidget {
       initialBinding: AuthBindings(),
       initialRoute: AppLinks.splash_screen,
       getPages: AppRoutes.pages,
+      navigatorObservers: [FirebaseAnalyticsObserver(analytics: analytics)],
       builder: (context, child) {
         final mediaQuery = MediaQuery.of(context);
         return MediaQuery(

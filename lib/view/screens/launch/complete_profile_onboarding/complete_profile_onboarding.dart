@@ -1814,9 +1814,23 @@ class _CompleteProfileOnboardingState extends State<CompleteProfileOnboarding>
       // ✅ Check if we're on the last step
       final isLastStep = _currentStep == _totalSteps - 1;
 
+      // if (!isLastStep) {
+      //   // Validate current step and move to next
+      //   if (!_validateStep(_currentStep)) return;
+      //   _changeStep(_currentStep + 1);
+      //   return;
+      // }
       if (!isLastStep) {
-        // Validate current step and move to next
         if (!_validateStep(_currentStep)) return;
+
+        // ✅ If on step 0, run face detection before moving forward
+        if (_currentStep == 0) {
+          final isFace = await authCtrl.detectFaceInImage(
+            authCtrl.profileImage.value!,
+          );
+          if (!isFace) return; // toast & null already handled inside function
+        }
+
         _changeStep(_currentStep + 1);
         return;
       }
@@ -1832,6 +1846,7 @@ class _CompleteProfileOnboardingState extends State<CompleteProfileOnboarding>
       final String userId = auth.currentUser!.uid;
 
       String? downloadUrl;
+
       if (authCtrl.profileImage.value != null) {
         downloadUrl = await FirebaseStorageService.instance.uploadImage(
           imagePath: authCtrl.profileImage.value!,
@@ -1856,7 +1871,10 @@ class _CompleteProfileOnboardingState extends State<CompleteProfileOnboarding>
         model: UserModel(
           id: userId,
           fullName: authCtrl.fullNameController.text.trim(),
-          bio: authCtrl.userBioController.text.trim(),
+          bio:
+              authCtrl.userBioController.text.trim().isEmpty
+                  ? ''
+                  : authCtrl.userBioController.text.trim(),
           gender: authCtrl.gender.value,
           dob: authCtrl.dob.value,
           location: authCtrl.userLocationController.text.trim(),
@@ -1897,6 +1915,11 @@ class _CompleteProfileOnboardingState extends State<CompleteProfileOnboarding>
   bool _validateStep(int step) {
     switch (step) {
       case 0:
+        if (authCtrl.profileImage.value == null) {
+          displayToast(msg: "Please upload your profile image");
+          return false;
+        }
+
         if (authCtrl.fullNameController.text.isEmpty) {
           displayToast(msg: "Please enter full name");
           return false;
@@ -1916,10 +1939,10 @@ class _CompleteProfileOnboardingState extends State<CompleteProfileOnboarding>
           displayToast(msg: "Please enter your address");
           return false;
         }
-        if (authCtrl.userBioController.text.isEmpty) {
-          displayToast(msg: "Please enter your biography");
-          return false;
-        }
+        // if (authCtrl.userBioController.text.isEmpty) {
+        //   displayToast(msg: "Please enter your biography");
+        //   return false;
+        // }
         return true;
 
       case 2:

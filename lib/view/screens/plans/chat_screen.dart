@@ -29,7 +29,7 @@ class ChatScreen extends StatefulWidget {
   State<ChatScreen> createState() => _ChatScreenState();
 }
 
-class _ChatScreenState extends State<ChatScreen> {
+class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
   ChatController controller = Get.find<ChatController>();
 
   final args = Get.arguments as Map<String, dynamic>;
@@ -45,7 +45,29 @@ class _ChatScreenState extends State<ChatScreen> {
   @override
   void initState() {
     super.initState();
+
     _scrollToBottom(); // Scroll to bottom when chat opens
+    WidgetsBinding.instance.addObserver(this);
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
+
+  // ✅ triggers every time keyboard opens or closes
+  @override
+  void didChangeMetrics() {
+    super.didChangeMetrics();
+    final bottomInset = WidgetsBinding.instance.window.viewInsets.bottom;
+    final isKeyboardOpen = bottomInset > 0;
+
+    if (isKeyboardOpen) {
+      Future.delayed(Duration(milliseconds: 300), () {
+        _scrollToBottom();
+      });
+    }
   }
 
   void _scrollToBottom() {
@@ -375,7 +397,7 @@ class _ChatScreenState extends State<ChatScreen> {
         ),
         bottomSheet: Obx(
           () => Padding(
-            padding: EdgeInsets.symmetric(horizontal: 0, vertical: 20),
+            padding: EdgeInsets.only(bottom: 20),
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
@@ -478,10 +500,18 @@ class _ChatScreenState extends State<ChatScreen> {
                       ),
                     )
                     : SendField(
+                      onFieldTap: () {
+                        log("1------------- Wait for. my keyboard ");
+                        Future.delayed(Duration(seconds: 2), () {
+                          log("2------------- Wait for. my keyboard ");
+                          _scrollToBottom();
+                        });
+                      },
                       controller: controller.textMessageController,
                       haveSendButton: true,
                       isLoading: controller.isLoading.value,
                       onAttachmentTap: () {
+                        _scrollToBottom();
                         Get.bottomSheet(_MoreContent());
                       },
                       onSendTap: () async {
@@ -498,12 +528,15 @@ class _ChatScreenState extends State<ChatScreen> {
                               type: MsgType.text_msg.name,
                               senderID: auth.currentUser?.uid ?? "",
                               senderName: user.fullName.toString(),
-                              senderProfileImage: dummyImg,
+                              // senderProfileImage: dummyImg,
+                              senderProfileImage: user.profileImage ?? '',
                               // user.profilePicture.toString() ?? dummyimage,
                               threadID: widget.chatHeadID,
                               newMessage:
                                   controller.textMessageController.text.trim(),
                             );
+
+                            log("My Sender. PImage :$dummyImg");
 
                             _scrollToBottom();
                           }
@@ -776,13 +809,21 @@ class ChatBubble extends StatelessWidget {
     return Stack(
       clipBehavior: Clip.none,
       children: [
-        CommonImageView(
-          height: 30,
-          width: 33,
-          url: url,
-          fit: BoxFit.cover,
-          radius: 100,
-        ),
+        (url.isEmpty || url == '')
+            ? CommonImageView(
+              height: 30,
+              width: 33,
+              imagePath: Assets.imagesPersonsProfileImage,
+              fit: BoxFit.cover,
+              radius: 100,
+            )
+            : CommonImageView(
+              height: 30,
+              width: 33,
+              url: url,
+              fit: BoxFit.cover,
+              radius: 100,
+            ),
         // Positioned(
         //   right: 0,
         //   bottom: 0,
@@ -819,6 +860,7 @@ class SendField extends StatelessWidget {
     this.haveSendButton = false,
     this.isLoading = false,
     this.onSendTap,
+    required this.onFieldTap,
   }) : super(key: key);
   final String? hintText;
   final TextEditingController? controller;
@@ -828,6 +870,7 @@ class SendField extends StatelessWidget {
   final VoidCallback? onEmojiTap, onAttachmentTap, onSendTap;
   final bool haveSendButton;
   final bool isLoading;
+  final VoidCallback onFieldTap;
 
   @override
   Widget build(BuildContext context) {
@@ -852,6 +895,7 @@ class SendField extends StatelessWidget {
                   SizedBox(width: w(context, 8)),
                   Expanded(
                     child: TextFormField(
+                      onTap: onFieldTap,
                       cursorColor: kBlackColor,
                       controller: controller,
                       // controller:

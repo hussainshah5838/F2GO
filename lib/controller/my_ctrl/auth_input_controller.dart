@@ -2,20 +2,18 @@ import 'dart:developer';
 import 'package:f2g/constants/firebase_const.dart';
 import 'package:f2g/controller/loading_animation.dart';
 import 'package:f2g/core/bindings/bindings.dart';
-import 'package:f2g/main.dart';
-import 'package:f2g/model/my_model/user_model.dart';
+import 'package:f2g/services/image_picker/image_picker.dart';
 import 'package:f2g/services/user/user_services.dart';
 import 'package:f2g/services/user_profile_setup/user_profile_setup_service.dart';
-import 'package:f2g/view/screens/Home/home_screen.dart';
 import 'package:f2g/view/screens/auth/login/login.dart';
 import 'package:f2g/view/screens/launch/complete_profile_onboarding/complete_profile_onboarding.dart';
 import 'package:f2g/view/screens/launch/my_loading_screen.dart';
-import 'package:f2g/view/screens/my_plans/my_plans.dart';
 import 'package:f2g/view/screens/textcontrollers/textcontrollers.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/widgets.dart';
 import 'package:get/get.dart';
+import 'package:google_mlkit_face_detection/google_mlkit_face_detection.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
 class AuthInputController extends GetxController {
@@ -45,8 +43,8 @@ class AuthInputController extends GetxController {
   FirebaseMessaging fcmToken = FirebaseMessaging.instance;
   var isrememberme = false.obs;
   var ispolicyagree = false.obs;
-  var isloginpasswordvisible = false.obs;
-  var issinguppasswordvisible = false.obs;
+  var isloginpasswordvisible = true.obs;
+  var issinguppasswordvisible = true.obs;
   var iscreatenewpasswordvisible = false.obs;
   var isconfirmnewpasswordvisible = false.obs;
 
@@ -169,26 +167,38 @@ class AuthInputController extends GetxController {
         password: password,
       );
 
-      UserService.instance.getCurrentUserInformation();
+      await UserService.instance.getCurrentUserInformation();
 
       String? id = UserService.instance.userModel.value.id;
 
       final uPS = userProfilleSetupSrvices.instance;
 
       if (id != null) {
-        uPS.checkIsUserRegistered(userId: id);
+        await uPS.checkIsUserRegistered(userId: id);
       }
 
+      hideLoadingDialog();
+
       if (uPS.isUserExist.value) {
-        log("User Exist Navigate to Home Screen");
-        hideLoadingDialog();
+        log("User Exist — Navigate to Home Screen");
+        // ✅ Existing user goes HOME
+        Get.offAll(() => MyLoadingScreen(), binding: PlanBindings());
       } else {
-        log("User Not Exist Navigate to Complete Profile Onboarding Screen");
-        hideLoadingDialog();
+        log("User Not Exist — Navigate to Complete Profile Onboarding");
+        // ✅ New user goes to ONBOARDING
+        Get.offAll(() => CompleteProfileOnboarding());
       }
-      uPS.isUserExist.value
-          ? Get.offAll(() => CompleteProfileOnboarding())
-          : Get.offAll(() => MyLoadingScreen(), binding: PlanBindings());
+
+      // if (uPS.isUserExist.value) {
+      //   log("User Exist Navigate to Home Screen");
+      //   hideLoadingDialog();
+      // } else {
+      //   log("User Not Exist Navigate to Complete Profile Onboarding Screen");
+      //   hideLoadingDialog();
+      // }
+      // uPS.isUserExist.value
+      //     ? Get.offAll(() => CompleteProfileOnboarding())
+      //     : Get.offAll(() => MyLoadingScreen(), binding: PlanBindings());
 
       // await userService.getCurrentUserInformation();
 
@@ -360,9 +370,10 @@ class AuthInputController extends GetxController {
       //   log("Document doesn't exist");
       // }
 
-      await UserService.instance.getCurrentUserInformation();
+      // await UserService.instance.getCurrentUserInformation();
+      // String? id = UserService.instance.userModel.value.id;
 
-      String? id = UserService.instance.userModel.value.id;
+      String? id = auth.currentUser?.uid;
 
       final uPS = userProfilleSetupSrvices.instance;
 
@@ -370,19 +381,15 @@ class AuthInputController extends GetxController {
         log("--------------------$id");
         await uPS.checkIsUserRegistered(userId: id);
       }
-
+      hideLoadingDialog();
       if (uPS.isUserExist.value) {
         log("User Exist Navigate to Home Screen");
+        await UserService.instance.getCurrentUserInformation();
         Get.offAll(() => MyLoadingScreen(), binding: PlanBindings());
-        hideLoadingDialog();
       } else {
         log("User Not Exist Navigate to Complete Profile Onboarding Screen");
         Get.offAll(() => CompleteProfileOnboarding());
-        hideLoadingDialog();
       }
-      // uPS.isUserExist.value
-      //     ? Get.offAll(() => CompleteProfileOnboarding())
-      //     : Get.offAll(() => MyLoadingScreen(), binding: PlanBindings());
     } catch (e) {
       hideLoadingDialog();
       log('An error occurred during Google sign-in: $e');
@@ -398,6 +405,35 @@ class AuthInputController extends GetxController {
       return true;
     } catch (e) {
       log("Error while saving user data into firestore ------- $e ");
+      return false;
+    }
+  }
+  // ---- ADD THIS FUNCTION INSIDE AuthInputController ----
+
+  final FaceDetector _faceDetector = FaceDetector(
+    options: FaceDetectorOptions(
+      minFaceSize: 0.15,
+      performanceMode: FaceDetectorMode.accurate,
+    ),
+  );
+
+  Future<bool> detectFaceInImage(String imagePath) async {
+    try {
+      final inputImage = InputImage.fromFilePath(imagePath);
+      final List<Face> faces = await _faceDetector.processImage(inputImage);
+
+      if (faces.isEmpty) {
+        profileImage.value = null;
+        ImagePickerService().selectedImage.value = null;
+        displayToast(msg: "Please upload your real image with a clear face.");
+        return false;
+      }
+
+      return true;
+    } catch (e) {
+      profileImage.value = null;
+      ImagePickerService().selectedImage.value = null;
+      displayToast(msg: "Please upload your real image with a clear face.");
       return false;
     }
   }

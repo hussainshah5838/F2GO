@@ -118,8 +118,8 @@ class LoginScreen extends StatelessWidget {
                                   authInputController
                                           .isloginpasswordvisible
                                           .value
-                                      ? Assets.imagesSolideye
-                                      : Assets.imagesSolideyedisabled,
+                                      ? Assets.imagesSolideyedisabled
+                                      : Assets.imagesSolideye,
                               controller:
                                   textControllers
                                       .signinpasswordController
