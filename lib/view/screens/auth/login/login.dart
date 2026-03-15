@@ -43,7 +43,7 @@ class LoginScreen extends StatelessWidget {
                   onTap: () {
                     Get.to(GetHelpScreen());
                   },
-                  text: "Get Help",
+                  text: "getHelp",
                   size: 16,
                   weight: FontWeight.w500,
                   color: kSecondaryColor,
@@ -65,7 +65,7 @@ class LoginScreen extends StatelessWidget {
                   ),
                   SizedBox(height: h(context, 24)),
                   CustomText(
-                    text: "Welcome Back!",
+                    text: "welcomeBack",
                     size: 28,
                     weight: FontWeight.w700,
                     lineHeight: h(context, 1),
@@ -74,7 +74,7 @@ class LoginScreen extends StatelessWidget {
                     paddingBottom: 8,
                   ),
                   CustomText(
-                    text: "Please enter the credentials to get started.",
+                    text: "loginSubtitle",
                     size: 14,
                     weight: FontWeight.w500,
                     lineHeight: h(context, 1),
@@ -104,7 +104,7 @@ class LoginScreen extends StatelessWidget {
                           Obx(
                             () => CustomTextfeildWidget(
                               index: 1,
-                              hintText: "Password",
+                              hintText: "password".tr,
                               obscureText:
                                   authInputController
                                       .isloginpasswordvisible
@@ -167,7 +167,7 @@ class LoginScreen extends StatelessWidget {
                                 onTap: () {
                                   Get.to(ForgotPasswordScreen());
                                 },
-                                text: "Forgot Password?",
+                                text: "forgotPassword",
                                 size: 16,
                                 weight: FontWeight.w500,
                                 fontFamily: AppFonts.HelveticaNowDisplay,
@@ -218,7 +218,7 @@ class LoginScreen extends StatelessWidget {
                                 ),
                                 SizedBox(width: w(context, 8)),
                                 CustomText(
-                                  text: "Remember me",
+                                  text: "rememberMe",
                                   size: 16,
                                   weight: FontWeight.w500,
                                   color: kBlackColor,
@@ -237,8 +237,7 @@ class LoginScreen extends StatelessWidget {
                                   // true;
                                   if (!authInputController.isEmailValid.value) {
                                     displayToast(
-                                      msg:
-                                          "Please fill in a valid email address",
+                                      msg: "${"pleaseValidEmail".tr}",
                                     );
                                     return;
                                   }
@@ -249,7 +248,7 @@ class LoginScreen extends StatelessWidget {
                                       .text
                                       .isEmpty) {
                                     displayToast(
-                                      msg: "Please fill in a valid password",
+                                      msg: "${"pleaseValidPassword".tr}",
                                     );
                                     return;
                                   }
@@ -273,7 +272,7 @@ class LoginScreen extends StatelessWidget {
                                   //     ? authInputController.validatePassword()
                                   //     : null;
                                 },
-                                text: "Continue",
+                                text: "continueButton",
                                 iscustomgradient: true,
                                 gradient:
                                     authInputController.areFieldsFilled.value
@@ -324,7 +323,7 @@ class LoginScreen extends StatelessWidget {
                                 ),
                                 SizedBox(width: w(context, 6.42)),
                                 CustomText(
-                                  text: "or sign in",
+                                  text: "orSignIn",
                                   size: 14,
                                   weight: FontWeight.w400,
                                   color: Color(0xff767676),
@@ -360,7 +359,7 @@ class LoginScreen extends StatelessWidget {
                           SizedBox(height: h(context, 20)),
                           RichText(
                             text: TextSpan(
-                              text: "Don’t have an Account? ",
+                              text: "${"dontHaveAccount".tr} ",
                               style: TextStyle(
                                 fontFamily: AppFonts.HelveticaNowDisplay,
                                 fontSize: f(context, 16),
@@ -369,7 +368,7 @@ class LoginScreen extends StatelessWidget {
                               ),
                               children: [
                                 TextSpan(
-                                  text: "Register",
+                                  text: "register".tr,
                                   style: TextStyle(
                                     fontFamily: AppFonts.HelveticaNowDisplay,
                                     fontSize: f(context, 16),

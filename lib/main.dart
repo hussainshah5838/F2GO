@@ -1,8 +1,10 @@
 import 'dart:async';
 
+import 'package:f2g/controller/language_controller.dart';
 import 'package:f2g/core/bindings/bindings.dart';
 import 'package:f2g/firebase_options.dart';
 import 'package:f2g/services/notification_service/notification_services.dart';
+import 'package:f2g/view/localization/app_translation.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
@@ -44,6 +46,7 @@ String dummyImg =
 class MyApp extends StatelessWidget {
   MyApp({super.key});
   static FirebaseAnalytics analytics = FirebaseAnalytics.instance;
+  final LanguageController langController = Get.put(LanguageController());
   @override
   Widget build(BuildContext context) {
     return GetMaterialApp(
@@ -57,6 +60,9 @@ class MyApp extends StatelessWidget {
       initialRoute: AppLinks.splash_screen,
       getPages: AppRoutes.pages,
       navigatorObservers: [FirebaseAnalyticsObserver(analytics: analytics)],
+      translations: AppTranslations(),
+      locale: langController.currentLang.value,
+      fallbackLocale: const Locale('en', 'US'),
       builder: (context, child) {
         final mediaQuery = MediaQuery.of(context);
         return MediaQuery(

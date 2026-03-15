@@ -264,7 +264,7 @@ class _DetailsScreenState extends State<DetailsScreen> {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 CustomText(
-                                  text: "Start Date & Time",
+                                  text: "startDateAndTime",
                                   size: 14,
                                   weight: FontWeight.w500,
                                   color: kBlackColor.withValues(alpha: 0.5),
@@ -287,7 +287,7 @@ class _DetailsScreenState extends State<DetailsScreen> {
                                 SizedBox(height: 12),
 
                                 CustomText(
-                                  text: "End Date & Time",
+                                  text: "endDateAndTime",
                                   size: 14,
                                   weight: FontWeight.w500,
                                   color: kBlackColor.withValues(alpha: 0.5),
@@ -310,7 +310,7 @@ class _DetailsScreenState extends State<DetailsScreen> {
                                 SizedBox(height: 12),
 
                                 CustomText(
-                                  text: "Participants",
+                                  text: "participants".tr,
                                   size: 14,
                                   weight: FontWeight.w500,
                                   color: kBlackColor.withValues(alpha: 0.5),
@@ -335,7 +335,7 @@ class _DetailsScreenState extends State<DetailsScreen> {
 
                                     return CustomText(
                                       text:
-                                          "${participants.length}/${model.maxMembers} members joined",
+                                          "${participants.length}/${model.maxMembers} ${"membersJoined".tr}",
                                       size: 14,
                                       weight: FontWeight.w500,
                                       color: kBlackColor,
@@ -690,7 +690,7 @@ class _DetailsScreenState extends State<DetailsScreen> {
 
                             // Checking if participantsIds is contains my ID then display group chat button
                             CustomText(
-                              text: "Open group chat",
+                              text: "openGroupChat",
                               size: 18,
                               paddingLeft: 6,
                               weight: FontWeight.w500,
@@ -707,7 +707,7 @@ class _DetailsScreenState extends State<DetailsScreen> {
 
             // PLAN BUTTON
             (model.planCreatorID == auth.currentUser?.uid)
-                ? DisableButton(text: "My Plan")
+                ? DisableButton(text: "${"my_plan".tr}")
                 : (model.status == PlanStatus.completed.name)
                 ? DisableButton()
                 : StreamBuilder<DocumentSnapshot>(
@@ -739,12 +739,10 @@ class _DetailsScreenState extends State<DetailsScreen> {
                     return (isPlanFull)
                         ? CustomButton(
                           onPressed: () {
-                            displayToast(
-                              msg: "The plan is full. You cannot join.",
-                            );
+                            displayToast(msg: "${"planFullMessage".tr}");
                           },
 
-                          text: "Plan Full",
+                          text: "planFull",
 
                           iscustomgradient: true,
                           gradient: const LinearGradient(
@@ -773,7 +771,10 @@ class _DetailsScreenState extends State<DetailsScreen> {
                             }
                           },
 
-                          text: isUserInList ? "Leave Plan" : "Join",
+                          text:
+                              isUserInList
+                                  ? "${"leavePlan".tr}"
+                                  : "${"join".tr}",
                           iscustomgradient: true,
                           gradient: const LinearGradient(
                             colors: [Color(0xff21E3D7), Color(0xffB5F985)],

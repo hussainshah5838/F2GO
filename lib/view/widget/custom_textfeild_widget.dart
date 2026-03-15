@@ -69,7 +69,7 @@ class CustomTextfeildWidget extends StatelessWidget {
                   color: errorBorder ? Color(0xffEA4335) : kBlackColor,
                 ),
                 decoration: InputDecoration(
-                  labelText: hintText ?? "Email address",
+                  labelText: hintText ?? "emailAddress".tr,
                   labelStyle: TextStyle(
                     fontFamily: AppFonts.HelveticaNowDisplay,
                     fontSize: f(
@@ -164,7 +164,7 @@ class CustomLabelTextFeild extends StatelessWidget {
           fontFamily: AppFonts.HelveticaNowDisplay,
         ),
         decoration: InputDecoration(
-          labelText: isLebal ? label : null,
+          labelText: isLebal ? label.tr : null,
           labelStyle: TextStyle(
             fontSize: f(context, 15),
             fontWeight: FontWeight.w500,
@@ -195,7 +195,7 @@ Widget buildPasswordField(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         CustomText(
-          text: label,
+          text: label.tr,
           size: 14,
           lineHeight: h(context, 0.5),
           color: kBlackColor.withValues(alpha: 0.5),

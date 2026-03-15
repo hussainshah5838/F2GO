@@ -1,8 +1,20 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!-- ✅ ADD THESE THREE LINES -->
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
+    <uses-permission android:name="android.permission.INTERNET"/>
+    
     <application
         android:label="f2g"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
+
+        <!-- ADDED LINE -->
+        <meta-data
+        android:name="com.google.android.geo.API_KEY"
+        android:value="AIzaSyAgEj7S4Yn27FgwJWbBPHxjBit8VDBY0w4"/>
+
         <activity
             android:name=".MainActivity"
             android:exported="true"

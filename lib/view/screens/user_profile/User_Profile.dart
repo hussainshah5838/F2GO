@@ -1,6 +1,7 @@
 import 'dart:developer';
 import 'package:f2g/constants/app_images.dart';
 import 'package:f2g/constants/loading_animation.dart';
+import 'package:f2g/controller/language_controller.dart';
 import 'package:f2g/controller/my_ctrl/auth_input_controller.dart';
 import 'package:f2g/controller/my_ctrl/editprofile_controller.dart';
 import 'package:f2g/core/common/global_instance.dart';
@@ -60,7 +61,7 @@ class UserProfileScreen extends StatelessWidget {
               SizedBox(height: h(context, 19.33)),
 
               CustomText(
-                text: "Delete Account?",
+                text: "deleteAccount",
                 size: 24,
                 weight: FontWeight.w700,
                 color: kBlackColor,
@@ -68,8 +69,9 @@ class UserProfileScreen extends StatelessWidget {
               ),
               SizedBox(height: h(context, 8)),
               CustomText(
-                text:
-                    "Are you sure you want to delete your\naccount. This will erase all your\ncurrent data.",
+                paddingLeft: 15,
+                paddingRight: 15,
+                text: "deleteAccountConfirmation",
                 size: 16,
                 color: ktextcolor,
                 fontFamily: AppFonts.HelveticaNowDisplay,
@@ -102,7 +104,7 @@ class UserProfileScreen extends StatelessWidget {
 
                     // Navigator.pop(context);
                   },
-                  text: "Yes, Delete",
+                  text: "yesDelete",
                   iscustomgradient: true,
                   gradient: const LinearGradient(
                     colors: [Color(0xff21E3D7), Color(0xffB5F985)],
@@ -162,7 +164,7 @@ class UserProfileScreen extends StatelessWidget {
                     SizedBox(width: w(context, 16)),
                     Expanded(
                       child: CustomText(
-                        text: "User Profile",
+                        text: "userProfile",
                         size: 20,
                         weight: FontWeight.w500,
                         color: kBlackColor,
@@ -171,144 +173,171 @@ class UserProfileScreen extends StatelessWidget {
                     ),
                   ],
                 ),
-                SizedBox(height: h(context, 20)),
 
-                Container(
-                  padding: symmetric(context, horizontal: 12, vertical: 14),
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(h(context, 12)),
-                    color: kTertiaryColor,
-                  ),
-                  child: Column(
-                    children: [
-                      Obx(() {
-                        final profileImage =
-                            userService.userModel.value.profileImage;
-                        return Row(
-                          children: [
-                            (profileImage != null && profileImage.isNotEmpty)
-                                ? InkWell(
-                                  onTap: () {
-                                    log("Worrk");
-                                    Get.to(
-                                      () => ViewProfileImage(
-                                        imageSource:
-                                            "${userService.userModel.value.profileImage}",
-                                      ),
-                                    );
-                                  },
-                                  child: CommonImageView(
-                                    url:
-                                        userService
-                                            .userModel
-                                            .value
-                                            .profileImage,
-                                    height: 35,
-                                    width: 40,
-                                    radius: 100,
-                                    fit: BoxFit.cover,
-                                  ),
-                                )
-                                : InkWell(
-                                  onTap: () {
-                                    log("Worrk");
-                                    Get.to(
-                                      () => ViewProfileImage(
-                                        imageSource: Assets.imagesProfilepic,
-                                      ),
-                                    );
-                                  },
-                                  child: CommonImageView(
-                                    imagePath: Assets.imagesPersonsProfileImage,
-                                    height: 35,
-                                    width: 40,
-                                    radius: 100,
-                                    fit: BoxFit.cover,
-                                  ),
-                                ),
+                Expanded(
+                  child: SingleChildScrollView(
+                    clipBehavior: Clip.none,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        SizedBox(height: h(context, 10)),
 
-                            SizedBox(width: w(context, 6)),
-                            Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  CustomText(
-                                    text:
-                                        userService.userModel.value.fullName ??
-                                        "",
-                                    size: 16,
-                                    weight: FontWeight.w500,
-                                    color: kBlackColor,
-                                    lineHeight: h(context, 1),
-                                    fontFamily: AppFonts.HelveticaNowDisplay,
-                                  ),
-                                  SizedBox(height: h(context, 6)),
-                                  CustomText(
-                                    text:
-                                        userService.userModel.value.email ?? "",
-                                    size: 14,
-                                    lineHeight: h(context, 1),
-                                    color: kBlackColor.withValues(alpha: 0.6),
-                                    fontFamily: AppFonts.HelveticaNowDisplay,
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ],
-                        );
-                      }),
-                      SizedBox(height: h(context, 16)),
-
-                      InkWell(
-                        onTap: () {
-                          Get.to(EditProfileScreen());
-                        },
-                        child: Container(
-                          height: h(context, 38),
-                          width: double.infinity,
-                          padding: symmetric(context, horizontal: 14),
-                          decoration: BoxDecoration(
-                            color: kSecondaryColor.withValues(alpha: 0.1),
-                            borderRadius: BorderRadius.circular(h(context, 12)),
+                        Container(
+                          padding: symmetric(
+                            context,
+                            horizontal: 12,
+                            vertical: 14,
                           ),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(h(context, 12)),
+                            color: kTertiaryColor,
+                          ),
+                          child: Column(
                             children: [
-                              CustomText(
-                                text: "Edit Profile",
-                                size: 14,
-                                weight: FontWeight.w500,
-                                color: kSecondaryColor,
-                                fontFamily: AppFonts.HelveticaNowDisplay,
-                                letterSpacing: w(context, -0.41),
-                              ),
-                              GestureDetector(
+                              Obx(() {
+                                final profileImage =
+                                    userService.userModel.value.profileImage;
+                                return Row(
+                                  children: [
+                                    (profileImage != null &&
+                                            profileImage.isNotEmpty)
+                                        ? InkWell(
+                                          onTap: () {
+                                            log("Worrk");
+                                            Get.to(
+                                              () => ViewProfileImage(
+                                                imageSource:
+                                                    "${userService.userModel.value.profileImage}",
+                                              ),
+                                            );
+                                          },
+                                          child: CommonImageView(
+                                            url:
+                                                userService
+                                                    .userModel
+                                                    .value
+                                                    .profileImage,
+                                            height: 35,
+                                            width: 40,
+                                            radius: 100,
+                                            fit: BoxFit.cover,
+                                          ),
+                                        )
+                                        : InkWell(
+                                          onTap: () {
+                                            log("Worrk");
+                                            Get.to(
+                                              () => ViewProfileImage(
+                                                imageSource:
+                                                    Assets.imagesProfilepic,
+                                              ),
+                                            );
+                                          },
+                                          child: CommonImageView(
+                                            imagePath:
+                                                Assets
+                                                    .imagesPersonsProfileImage,
+                                            height: 35,
+                                            width: 40,
+                                            radius: 100,
+                                            fit: BoxFit.cover,
+                                          ),
+                                        ),
+
+                                    SizedBox(width: w(context, 6)),
+                                    Expanded(
+                                      child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          CustomText(
+                                            text:
+                                                userService
+                                                    .userModel
+                                                    .value
+                                                    .fullName ??
+                                                "",
+                                            size: 16,
+                                            weight: FontWeight.w500,
+                                            color: kBlackColor,
+                                            lineHeight: h(context, 1),
+                                            fontFamily:
+                                                AppFonts.HelveticaNowDisplay,
+                                          ),
+                                          SizedBox(height: h(context, 6)),
+                                          CustomText(
+                                            text:
+                                                userService
+                                                    .userModel
+                                                    .value
+                                                    .email ??
+                                                "",
+                                            size: 14,
+                                            lineHeight: h(context, 1),
+                                            color: kBlackColor.withValues(
+                                              alpha: 0.6,
+                                            ),
+                                            fontFamily:
+                                                AppFonts.HelveticaNowDisplay,
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ],
+                                );
+                              }),
+                              SizedBox(height: h(context, 16)),
+
+                              InkWell(
                                 onTap: () {
-                                  Get.to(() => EditProfileScreen());
+                                  Get.to(EditProfileScreen());
                                 },
-                                child: CommonImageView(
-                                  imagePath: Assets.imagesVector,
-                                  height: 10,
-                                  width: 6,
-                                  color: kSecondaryColor,
+                                child: Container(
+                                  height: h(context, 38),
+                                  width: double.infinity,
+                                  padding: symmetric(context, horizontal: 14),
+                                  decoration: BoxDecoration(
+                                    color: kSecondaryColor.withValues(
+                                      alpha: 0.1,
+                                    ),
+                                    borderRadius: BorderRadius.circular(
+                                      h(context, 12),
+                                    ),
+                                  ),
+                                  child: Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      CustomText(
+                                        text: "editProfile",
+                                        size: 14,
+                                        weight: FontWeight.w500,
+                                        color: kSecondaryColor,
+                                        fontFamily:
+                                            AppFonts.HelveticaNowDisplay,
+                                        letterSpacing: w(context, -0.41),
+                                      ),
+                                      GestureDetector(
+                                        onTap: () {
+                                          Get.to(() => EditProfileScreen());
+                                        },
+                                        child: CommonImageView(
+                                          imagePath: Assets.imagesVector,
+                                          height: 10,
+                                          width: 6,
+                                          color: kSecondaryColor,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
                                 ),
                               ),
                             ],
                           ),
                         ),
-                      ),
-                    ],
-                  ),
-                ),
-
-                SizedBox(height: h(context, 16)),
-                Expanded(
-                  child: SingleChildScrollView(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
+                        SizedBox(height: h(context, 16)),
                         CustomText(
-                          text: "GENERAL SETTINGS",
+                          text: "generalSettings",
                           size: 12,
                           weight: FontWeight.w500,
                           color: ktextcolor,
@@ -319,7 +348,7 @@ class UserProfileScreen extends StatelessWidget {
                         _buildSettingTile(
                           context,
                           iconPath: Assets.imagesKey,
-                          title: "Change Password",
+                          title: "changePassword",
                           onTap: () {
                             Get.to(() => ChangePasswordScreen());
                           },
@@ -329,7 +358,7 @@ class UserProfileScreen extends StatelessWidget {
                         _buildSettingTile(
                           context,
                           iconPath: Assets.imagesMsCrown,
-                          title: "Manage Subscriptions",
+                          title: "manageSubscriptions",
                           onTap: () {
                             Get.to(() => SubscriptionPlanScreen());
                           },
@@ -341,7 +370,17 @@ class UserProfileScreen extends StatelessWidget {
                         SizedBox(height: h(context, 16)),
 
                         CustomText(
-                          text: "HELP & SUPPORT",
+                          text: "LANGUAGE",
+                          size: 12,
+                          weight: FontWeight.w500,
+                          color: ktextcolor,
+                          fontFamily: AppFonts.HelveticaNowDisplay,
+                        ),
+                        SizedBox(height: h(context, 8)),
+                        LanguageToggleButton(),
+                        SizedBox(height: h(context, 16)),
+                        CustomText(
+                          text: "helpAndSupport",
                           size: 12,
                           weight: FontWeight.w500,
                           color: ktextcolor,
@@ -352,7 +391,7 @@ class UserProfileScreen extends StatelessWidget {
                         _buildSettingTile(
                           context,
                           iconPath: Assets.imagesFeedback,
-                          title: "App Feedback",
+                          title: "appFeedback",
                           onTap: () {
                             Get.to(() => AppFeedbackScreen());
                           },
@@ -362,7 +401,7 @@ class UserProfileScreen extends StatelessWidget {
                         _buildSettingTile(
                           context,
                           iconPath: Assets.imagesPrivacy,
-                          title: "Privacy Policy",
+                          title: "privacyPolicy",
                           onTap: () {
                             Get.to(() => PrivacyPolicyScreen());
                           },
@@ -372,7 +411,7 @@ class UserProfileScreen extends StatelessWidget {
                         _buildSettingTile(
                           context,
                           iconPath: Assets.imagesLogout,
-                          title: "Logout",
+                          title: "logout",
                           onTap: () {
                             showLogoutSheet(context);
                           },
@@ -383,12 +422,13 @@ class UserProfileScreen extends StatelessWidget {
                           context,
                           iconPath: Assets.imagesDelete,
                           imagebg: Color(0xffEA4335).withValues(alpha: 0.1),
-                          title: "Delete Account",
+                          title: "deleteAccount",
                           textColor: Color(0xffEA4335),
                           onTap: () {
                             _show_deleteAccountSheet(context);
                           },
                         ),
+                        SizedBox(height: h(context, 20)),
                       ],
                     ),
                   ),
@@ -486,7 +526,7 @@ class UserProfileScreen extends StatelessWidget {
           ),
         ),
         title: CustomText(
-          text: "Enable Notifications",
+          text: "enableNotifications",
           size: 16,
           weight: FontWeight.w500,
           color: kBlackColor,
@@ -583,7 +623,7 @@ void showLogoutSheet(BuildContext context) {
             SizedBox(height: h(context, 19.33)),
 
             CustomText(
-              text: "Logout",
+              text: "logout",
               size: 24,
               weight: FontWeight.w700,
               color: kBlackColor,
@@ -591,7 +631,9 @@ void showLogoutSheet(BuildContext context) {
             ),
             SizedBox(height: h(context, 8)),
             CustomText(
-              text: "Are you sure you want to logout from\nthis app?",
+              paddingRight: 15,
+              paddingLeft: 15,
+              text: "logoutConfirmation",
               size: 16,
               color: ktextcolor,
               fontFamily: AppFonts.HelveticaNowDisplay,
@@ -606,7 +648,7 @@ void showLogoutSheet(BuildContext context) {
                   log("Works------");
                   // Navigator.pop(context);
                 },
-                text: "Yes, Logout",
+                text: "yesLogout",
                 iscustomgradient: true,
                 gradient: const LinearGradient(
                   colors: [Color(0xff21E3D7), Color(0xffB5F985)],
@@ -627,4 +669,107 @@ void showLogoutSheet(BuildContext context) {
       );
     },
   );
+}
+
+class LanguageToggleButton extends StatelessWidget {
+  const LanguageToggleButton({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    final LanguageController controller = Get.find<LanguageController>();
+
+    return Obx(() {
+      final bool isEnglish = controller.currentIndex.value == 0;
+
+      return GestureDetector(
+        onTap: () {
+          if (isEnglish) {
+            controller.changeLanguage('es', 'ES', 1);
+          } else {
+            controller.changeLanguage('en', 'US', 0);
+          }
+        },
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 300),
+          curve: Curves.easeInOut,
+          width: 160,
+          height: 44,
+          decoration: BoxDecoration(
+            color: const Color(0xFFF0F0F0),
+            borderRadius: BorderRadius.circular(100),
+            // boxShadow: [
+            //   BoxShadow(
+            //     color: Colors.black.withOpacity(0.1),
+            //     blurRadius: 8,
+            //     offset: const Offset(0, 2),
+            //   ),
+            // ],
+          ),
+          child: Stack(
+            children: [
+              // Sliding indicator
+              AnimatedAlign(
+                duration: const Duration(milliseconds: 300),
+                curve: Curves.easeInOut,
+                alignment:
+                    isEnglish
+                        ? Alignment
+                            .centerRight // EN selected → indicator on right
+                        : Alignment
+                            .centerLeft, // ES selected → indicator on left
+                child: Container(
+                  width: 80,
+                  height: 44,
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(100),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withOpacity(0.12),
+                        blurRadius: 6,
+                        offset: const Offset(0, 0),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+
+              // Labels Row
+              Row(
+                children: [
+                  // Spanish (ES) — always on LEFT
+                  Expanded(
+                    child: AnimatedDefaultTextStyle(
+                      duration: const Duration(milliseconds: 300),
+                      style: TextStyle(
+                        fontSize: 13,
+                        fontWeight:
+                            !isEnglish ? FontWeight.w700 : FontWeight.w400,
+                        color: !isEnglish ? Colors.black87 : Colors.black38,
+                      ),
+                      child: const Center(child: Text('🇪🇸  ES')),
+                    ),
+                  ),
+
+                  // English (EN) — always on RIGHT
+                  Expanded(
+                    child: AnimatedDefaultTextStyle(
+                      duration: const Duration(milliseconds: 300),
+                      style: TextStyle(
+                        fontSize: 13,
+                        fontWeight:
+                            isEnglish ? FontWeight.w700 : FontWeight.w400,
+                        color: isEnglish ? Colors.black87 : Colors.black38,
+                      ),
+                      child: const Center(child: Text('🇺🇸  EN')),
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
+      );
+    });
+  }
 }

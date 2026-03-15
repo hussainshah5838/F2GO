@@ -15,7 +15,6 @@ import 'package:f2g/view/screens/createplan/create_plan_and_map_screen.dart';
 import 'package:f2g/view/screens/favourite/favourites.dart';
 import 'package:f2g/view/screens/my_plans/my_plans.dart';
 import 'package:f2g/view/screens/notifcation/notification.dart';
-import 'package:f2g/view/screens/plans/plan_details.dart';
 import 'package:f2g/view/screens/plans/plans.dart';
 import 'package:f2g/view/screens/user_profile/User_Profile.dart';
 import 'package:f2g/view/screens/user_profile/view_profile_image.dart';
@@ -45,7 +44,7 @@ class _HomeScreenState extends State<HomeScreen> {
       image: Assets.imagesFootball,
       // text: "Football",
       // subtext: "Maria Fernanda",
-      text: "Culture and Leisure",
+      text: "cultureAndLeisure".tr,
       subtext: "",
       color: Color(0xffFAEDCB).withValues(alpha: 0.5),
       onTap: () {
@@ -61,7 +60,7 @@ class _HomeScreenState extends State<HomeScreen> {
       image: Assets.imagesMusic,
       // text: "Music",
       // subtext: "Jessa Irvine",
-      text: "Nature and Outdoors",
+      text: "natureAndOutdoors".tr,
       subtext: "",
       color: Color(0xffF2C6DF).withValues(alpha: 0.5),
       onTap: () {
@@ -75,7 +74,7 @@ class _HomeScreenState extends State<HomeScreen> {
     ),
     HomeOptionsContainer(
       image: Assets.imagesGames,
-      text: "Sports and Wellness",
+      text: "sportsAndWellness".tr,
       subtext: "",
       color: Color(0xffC9E4DF).withValues(alpha: 0.5),
       onTap: () {
@@ -91,7 +90,7 @@ class _HomeScreenState extends State<HomeScreen> {
       image: Assets.imagesComida,
       // text: "Comida",
       // subtext: "Ivan Taylor",
-      text: "Social and Lifestyle",
+      text: "socialAndLifestyle".tr,
       subtext: "",
       color: Color(0xffFAFFBF).withValues(alpha: 0.5),
       onTap: () {
@@ -107,7 +106,7 @@ class _HomeScreenState extends State<HomeScreen> {
       image: Assets.imagesGym,
       // text: "Gym Training",
       // subtext: "Ximena Valentine",
-      text: "Creativity and Learning",
+      text: "creativityAndLearning".tr,
       subtext: "",
       color: Color(0xffC5DEF2).withValues(alpha: 0.5),
       onTap: () {
@@ -123,7 +122,7 @@ class _HomeScreenState extends State<HomeScreen> {
       image: Assets.imagesPainting,
       // text: "Painting & Fun",
       // subtext: "Andrew Hike",
-      text: "Travel and Getaways",
+      text: "travelAndGetaways".tr,
       subtext: "",
       color: Color(0xffF8D9C4).withValues(alpha: 0.5),
       onTap: () {
@@ -140,7 +139,7 @@ class _HomeScreenState extends State<HomeScreen> {
       image: Assets.imagesGamingIcon,
       // text: "Painting & Fun",
       // subtext: "Andrew Hike",
-      text: "Gaming and Geek",
+      text: "gamingAndGeek".tr,
       subtext: "",
       color: Color(0xffF8D9C4).withValues(alpha: 0.5),
       onTap: () {
@@ -458,7 +457,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       sideOptions(
                         context,
                         Assets.imagesHome,
-                        "Home",
+                        "home".tr,
                         onTap: () {
                           menuController.isMenuOpen.value = false;
                         },
@@ -476,7 +475,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       sideOptions(
                         context,
                         Assets.imagesFavourite,
-                        "Favourites",
+                        "favorites",
                         onTap: () {
                           Get.to(
                             () => FavouritesScreen(),
@@ -517,7 +516,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       sideOptions(
                         context,
                         Assets.imagesPlans,
-                        "My Plans",
+                        "myPlans",
                         arenotification: false,
                         onTap: () {
                           WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -547,11 +546,11 @@ class _HomeScreenState extends State<HomeScreen> {
                         context,
                         Assets.imagesLocationicon,
                         haveLocationIcon: true,
-                        "Discover Plans",
+                        "discoverPlans",
                         onTap: () {
                           menuController.isMenuOpen.value = false;
                           Get.to(
-                            CreatePlanAndMapScreen(),
+                            () => CreatePlanAndMapScreen(),
                             binding: PlanBindings(),
                           );
                         },
@@ -571,7 +570,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       sideOptions(
                         context,
                         Assets.imagesNotification,
-                        "Notifications",
+                        "notifications",
                         arenotification: false,
                         onTap: () {
                           Get.to(
@@ -594,7 +593,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       sideOptions(
                         context,
                         Assets.imagesProfile,
-                        "User Profile",
+                        "userProfile",
                         onTap: () {
                           Get.to(
                             UserProfileScreen(),
@@ -616,7 +615,7 @@ class _HomeScreenState extends State<HomeScreen> {
                             ),
                             SizedBox(width: w(context, 6)),
                             CustomText(
-                              text: "Logout",
+                              text: "logout",
                               size: 16,
                               weight: FontWeight.w500,
                               color: kSecondaryColor,
@@ -742,6 +741,10 @@ class _HomeScreenState extends State<HomeScreen> {
         ),
       ),
     );
+  }
+
+  Future<void> _onRefresh() async {
+    await Future.delayed(const Duration(seconds: 2)); // simulate network call
   }
 
   Widget homeContent(BuildContext context) {
@@ -910,7 +913,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                           color: kBlackColor,
                                         ),
                                         decoration: InputDecoration(
-                                          hintText: "Search here...",
+                                          hintText: "searchHere".tr,
                                           hintStyle: TextStyle(
                                             fontSize: f(context, 14),
                                             fontWeight: FontWeight.w500,
@@ -1293,8 +1296,8 @@ class _HomeScreenState extends State<HomeScreen> {
                                         }
                                       },
                                       tabs: [
-                                        Tab(text: 'Active'),
-                                        Tab(text: 'Expired'),
+                                        Tab(text: 'active'.tr),
+                                        Tab(text: 'expired'.tr),
                                       ],
                                     ),
                                   ),
@@ -1316,7 +1319,301 @@ class _HomeScreenState extends State<HomeScreen> {
                                                 ),
                                               )
                                               : Obx(
-                                                () => SingleChildScrollView(
+                                                () => RefreshIndicator(
+                                                  onRefresh: () async {
+                                                    await _ctrl.fetchPlans(
+                                                      status:
+                                                          PlanStatus
+                                                              .active
+                                                              .name,
+                                                    );
+
+                                                    ///  active ----------------------
+                                                  },
+                                                  color:
+                                                      kSecondaryColor, // spinner color
+                                                  backgroundColor: Colors.white,
+                                                  child: SingleChildScrollView(
+                                                    physics:
+                                                        const AlwaysScrollableScrollPhysics(),
+                                                    child: Column(
+                                                      children: [
+                                                        SizedBox(
+                                                          height:
+                                                              440, // Fixed height to fit exactly 2 rows of cards (200 + 10 + 200 + 30 padding)
+                                                          child: Stack(
+                                                            children: [
+                                                              GridView.builder(
+                                                                shrinkWrap:
+                                                                    true,
+                                                                physics:
+                                                                    NeverScrollableScrollPhysics(),
+                                                                itemCount:
+                                                                    getCurrentPageItems()
+                                                                        .length,
+                                                                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                                                                  crossAxisCount:
+                                                                      2,
+                                                                  mainAxisSpacing:
+                                                                      20,
+                                                                  crossAxisSpacing:
+                                                                      10,
+                                                                  mainAxisExtent:
+                                                                      200,
+                                                                ),
+                                                                itemBuilder: (
+                                                                  context,
+                                                                  index,
+                                                                ) {
+                                                                  final item =
+                                                                      getCurrentPageItems()[index];
+                                                                  return InkWell(
+                                                                    onTap: () {
+                                                                      // Get.to(
+                                                                      //   () => PlansDetailScreen(),
+                                                                      //   arguments: {
+                                                                      //     'data': item,
+                                                                      //   },
+                                                                      // );
+                                                                    },
+                                                                    child: _buildActiveCompletedCard(
+                                                                      item,
+                                                                      context,
+                                                                      () {
+                                                                        _ctrl
+                                                                            .clearFocus();
+                                                                        Get.to(
+                                                                          () =>
+                                                                              DetailsScreen(),
+                                                                          arguments: {
+                                                                            'data':
+                                                                                item,
+                                                                          },
+                                                                        );
+                                                                        // Get.to(
+                                                                        //   () => PlansDetailScreen(),
+                                                                        //   arguments: {
+                                                                        //     'data': item,
+                                                                        //   },
+                                                                        // );
+                                                                      },
+                                                                    ),
+                                                                  );
+                                                                },
+                                                              ),
+
+                                                              // Previous Button - Fixed at vertical center
+                                                              if (canGoPrevious())
+                                                                Positioned(
+                                                                  left: 0,
+                                                                  top:
+                                                                      200, // Exact vertical center (440 / 2)
+                                                                  child: Transform.translate(
+                                                                    offset: Offset(
+                                                                      0,
+                                                                      -22.5,
+                                                                    ), // Center the button itself (45 / 2)
+                                                                    child: Material(
+                                                                      color:
+                                                                          Colors
+                                                                              .transparent,
+                                                                      child: InkWell(
+                                                                        onTap:
+                                                                            goToPreviousPage,
+                                                                        borderRadius:
+                                                                            BorderRadius.circular(
+                                                                              25,
+                                                                            ),
+                                                                        child: Container(
+                                                                          height:
+                                                                              45,
+                                                                          width:
+                                                                              45,
+                                                                          decoration: BoxDecoration(
+                                                                            gradient: LinearGradient(
+                                                                              colors: [
+                                                                                Color(
+                                                                                  0xff62D5C3,
+                                                                                ),
+                                                                                Color(
+                                                                                  0xffD7FAB7,
+                                                                                ),
+                                                                              ],
+                                                                              begin:
+                                                                                  Alignment.topLeft,
+                                                                              end:
+                                                                                  Alignment.bottomRight,
+                                                                            ),
+                                                                            shape:
+                                                                                BoxShape.circle,
+                                                                            boxShadow: [
+                                                                              BoxShadow(
+                                                                                color: kSecondaryColor.withOpacity(
+                                                                                  0.3,
+                                                                                ),
+                                                                                blurRadius:
+                                                                                    10,
+                                                                                offset: Offset(
+                                                                                  0,
+                                                                                  4,
+                                                                                ),
+                                                                              ),
+                                                                            ],
+                                                                          ),
+                                                                          child: Icon(
+                                                                            Icons.chevron_left,
+                                                                            color:
+                                                                                kWhiteColor,
+                                                                            size:
+                                                                                28,
+                                                                          ),
+                                                                        ),
+                                                                      ),
+                                                                    ),
+                                                                  ),
+                                                                ),
+
+                                                              // Next Button - Fixed at vertical center
+                                                              if (canGoNext())
+                                                                Positioned(
+                                                                  right: 0,
+                                                                  top:
+                                                                      200, // Exact vertical center (440 / 2)
+                                                                  child: Transform.translate(
+                                                                    offset: Offset(
+                                                                      0,
+                                                                      -22.5,
+                                                                    ), // Center the button itself (45 / 2)
+                                                                    child: Material(
+                                                                      color:
+                                                                          Colors
+                                                                              .transparent,
+                                                                      child: InkWell(
+                                                                        onTap:
+                                                                            goToNextPage,
+                                                                        borderRadius:
+                                                                            BorderRadius.circular(
+                                                                              25,
+                                                                            ),
+                                                                        child: Container(
+                                                                          height:
+                                                                              45,
+                                                                          width:
+                                                                              45,
+                                                                          decoration: BoxDecoration(
+                                                                            gradient: LinearGradient(
+                                                                              colors: [
+                                                                                Color(
+                                                                                  0xff62D5C3,
+                                                                                ),
+                                                                                Color(
+                                                                                  0xffD7FAB7,
+                                                                                ),
+                                                                              ],
+                                                                              begin:
+                                                                                  Alignment.topLeft,
+                                                                              end:
+                                                                                  Alignment.bottomRight,
+                                                                            ),
+                                                                            shape:
+                                                                                BoxShape.circle,
+                                                                            boxShadow: [
+                                                                              BoxShadow(
+                                                                                color: kSecondaryColor.withOpacity(
+                                                                                  0.3,
+                                                                                ),
+                                                                                blurRadius:
+                                                                                    10,
+                                                                                offset: Offset(
+                                                                                  0,
+                                                                                  4,
+                                                                                ),
+                                                                              ),
+                                                                            ],
+                                                                          ),
+                                                                          child: Icon(
+                                                                            Icons.chevron_right,
+                                                                            color:
+                                                                                kWhiteColor,
+                                                                            size:
+                                                                                28,
+                                                                          ),
+                                                                        ),
+                                                                      ),
+                                                                    ),
+                                                                  ),
+                                                                ),
+                                                            ],
+                                                          ),
+                                                        ),
+
+                                                        SizedBox(height: 70),
+                                                      ],
+                                                    ),
+                                                  ),
+                                                ),
+
+                                                //  GridView.builder(
+                                                //   shrinkWrap: true,
+                                                //   itemCount: _ctrl.plans.length,
+                                                //   gridDelegate:
+                                                //       SliverGridDelegateWithFixedCrossAxisCount(
+                                                //         crossAxisCount: 2,
+                                                //         mainAxisSpacing: 10,
+                                                //         crossAxisSpacing: 10,
+                                                //         mainAxisExtent: 180,
+                                                //       ),
+                                                //   itemBuilder: (
+                                                //     context,
+                                                //     index,
+                                                //   ) {
+                                                //     final item =
+                                                //         _ctrl.plans[index];
+                                                //     return InkWell(
+                                                //       onTap: () {
+                                                //         Get.to(
+                                                //           () =>
+                                                //               PlansDetailScreen(),
+                                                //           arguments: {
+                                                //             'data': item,
+                                                //           },
+                                                //         );
+                                                //       },
+                                                //       child:
+                                                //           _buildActiveCompletedCard(
+                                                //             item,
+                                                //             context,
+                                                //             () {},
+                                                //           ),
+                                                //     );
+                                                //   },
+                                                // ),
+                                              ),
+
+                                          // EXPIRED PLANS TAB
+                                          _ctrl.isLoading.value
+                                              ? Center(child: WaveLoading())
+                                              : _ctrl.expirePlans.isEmpty
+                                              ? Center(
+                                                child: CustomText(
+                                                  text: "No Plans Found!",
+                                                  color: kBlackColor,
+                                                  size: 13,
+                                                ),
+                                              )
+                                              : RefreshIndicator(
+                                                onRefresh: () async {
+                                                  await _ctrl
+                                                      .expiredFetchPlans();
+
+                                                  ///  active ----------------------
+                                                },
+                                                color:
+                                                    Colors.red, // spinner color
+                                                backgroundColor: Colors.white,
+                                                child: SingleChildScrollView(
+                                                  physics:
+                                                      const AlwaysScrollableScrollPhysics(),
                                                   child: Column(
                                                     children: [
                                                       SizedBox(
@@ -1329,7 +1626,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                                               physics:
                                                                   NeverScrollableScrollPhysics(),
                                                               itemCount:
-                                                                  getCurrentPageItems()
+                                                                  getExpireCurrentPageItems()
                                                                       .length,
                                                               gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                                                                 crossAxisCount:
@@ -1346,22 +1643,36 @@ class _HomeScreenState extends State<HomeScreen> {
                                                                 index,
                                                               ) {
                                                                 final item =
-                                                                    getCurrentPageItems()[index];
+                                                                    getExpireCurrentPageItems()[index];
                                                                 return InkWell(
                                                                   onTap: () {
+                                                                    _ctrl
+                                                                        .clearFocus();
                                                                     // Get.to(
                                                                     //   () => PlansDetailScreen(),
                                                                     //   arguments: {
                                                                     //     'data': item,
                                                                     //   },
                                                                     // );
+                                                                    Get.to(
+                                                                      () =>
+                                                                          DetailsScreen(),
+                                                                      arguments: {
+                                                                        'data':
+                                                                            item,
+                                                                      },
+                                                                    );
                                                                   },
                                                                   child: _buildActiveCompletedCard(
                                                                     item,
                                                                     context,
                                                                     () {
-                                                                      _ctrl
-                                                                          .clearFocus();
+                                                                      // Get.to(
+                                                                      //   () => PlansDetailScreen(),
+                                                                      //   arguments: {
+                                                                      //     'data': item,
+                                                                      //   },
+                                                                      // );
                                                                       Get.to(
                                                                         () =>
                                                                             DetailsScreen(),
@@ -1370,12 +1681,6 @@ class _HomeScreenState extends State<HomeScreen> {
                                                                               item,
                                                                         },
                                                                       );
-                                                                      // Get.to(
-                                                                      //   () => PlansDetailScreen(),
-                                                                      //   arguments: {
-                                                                      //     'data': item,
-                                                                      //   },
-                                                                      // );
                                                                     },
                                                                   ),
                                                                 );
@@ -1383,7 +1688,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                                             ),
 
                                                             // Previous Button - Fixed at vertical center
-                                                            if (canGoPrevious())
+                                                            if (canExpireGoPrevious())
                                                               Positioned(
                                                                 left: 0,
                                                                 top:
@@ -1399,7 +1704,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                                                             .transparent,
                                                                     child: InkWell(
                                                                       onTap:
-                                                                          goToPreviousPage,
+                                                                          goToExpirePreviousPage,
                                                                       borderRadius:
                                                                           BorderRadius.circular(
                                                                             25,
@@ -1455,7 +1760,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                                               ),
 
                                                             // Next Button - Fixed at vertical center
-                                                            if (canGoNext())
+                                                            if (canExpireGoNext())
                                                               Positioned(
                                                                 right: 0,
                                                                 top:
@@ -1471,7 +1776,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                                                             .transparent,
                                                                     child: InkWell(
                                                                       onTap:
-                                                                          goToNextPage,
+                                                                          goToExpireNextPage,
                                                                       borderRadius:
                                                                           BorderRadius.circular(
                                                                             25,
@@ -1532,278 +1837,6 @@ class _HomeScreenState extends State<HomeScreen> {
                                                       SizedBox(height: 70),
                                                     ],
                                                   ),
-                                                ),
-
-                                                //  GridView.builder(
-                                                //   shrinkWrap: true,
-                                                //   itemCount: _ctrl.plans.length,
-                                                //   gridDelegate:
-                                                //       SliverGridDelegateWithFixedCrossAxisCount(
-                                                //         crossAxisCount: 2,
-                                                //         mainAxisSpacing: 10,
-                                                //         crossAxisSpacing: 10,
-                                                //         mainAxisExtent: 180,
-                                                //       ),
-                                                //   itemBuilder: (
-                                                //     context,
-                                                //     index,
-                                                //   ) {
-                                                //     final item =
-                                                //         _ctrl.plans[index];
-                                                //     return InkWell(
-                                                //       onTap: () {
-                                                //         Get.to(
-                                                //           () =>
-                                                //               PlansDetailScreen(),
-                                                //           arguments: {
-                                                //             'data': item,
-                                                //           },
-                                                //         );
-                                                //       },
-                                                //       child:
-                                                //           _buildActiveCompletedCard(
-                                                //             item,
-                                                //             context,
-                                                //             () {},
-                                                //           ),
-                                                //     );
-                                                //   },
-                                                // ),
-                                              ),
-
-                                          // EXPIRED PLANS TAB
-                                          _ctrl.isLoading.value
-                                              ? Center(child: WaveLoading())
-                                              : _ctrl.expirePlans.isEmpty
-                                              ? Center(
-                                                child: CustomText(
-                                                  text: "No Plans Found!",
-                                                  color: kBlackColor,
-                                                  size: 13,
-                                                ),
-                                              )
-                                              : SingleChildScrollView(
-                                                child: Column(
-                                                  children: [
-                                                    SizedBox(
-                                                      height:
-                                                          440, // Fixed height to fit exactly 2 rows of cards (200 + 10 + 200 + 30 padding)
-                                                      child: Stack(
-                                                        children: [
-                                                          GridView.builder(
-                                                            shrinkWrap: true,
-                                                            physics:
-                                                                NeverScrollableScrollPhysics(),
-                                                            itemCount:
-                                                                getExpireCurrentPageItems()
-                                                                    .length,
-                                                            gridDelegate:
-                                                                SliverGridDelegateWithFixedCrossAxisCount(
-                                                                  crossAxisCount:
-                                                                      2,
-                                                                  mainAxisSpacing:
-                                                                      20,
-                                                                  crossAxisSpacing:
-                                                                      10,
-                                                                  mainAxisExtent:
-                                                                      200,
-                                                                ),
-                                                            itemBuilder: (
-                                                              context,
-                                                              index,
-                                                            ) {
-                                                              final item =
-                                                                  getExpireCurrentPageItems()[index];
-                                                              return InkWell(
-                                                                onTap: () {
-                                                                  _ctrl
-                                                                      .clearFocus();
-                                                                  // Get.to(
-                                                                  //   () => PlansDetailScreen(),
-                                                                  //   arguments: {
-                                                                  //     'data': item,
-                                                                  //   },
-                                                                  // );
-                                                                  Get.to(
-                                                                    () =>
-                                                                        DetailsScreen(),
-                                                                    arguments: {
-                                                                      'data':
-                                                                          item,
-                                                                    },
-                                                                  );
-                                                                },
-                                                                child: _buildActiveCompletedCard(
-                                                                  item,
-                                                                  context,
-                                                                  () {
-                                                                    // Get.to(
-                                                                    //   () => PlansDetailScreen(),
-                                                                    //   arguments: {
-                                                                    //     'data': item,
-                                                                    //   },
-                                                                    // );
-                                                                    Get.to(
-                                                                      () =>
-                                                                          DetailsScreen(),
-                                                                      arguments: {
-                                                                        'data':
-                                                                            item,
-                                                                      },
-                                                                    );
-                                                                  },
-                                                                ),
-                                                              );
-                                                            },
-                                                          ),
-
-                                                          // Previous Button - Fixed at vertical center
-                                                          if (canExpireGoPrevious())
-                                                            Positioned(
-                                                              left: 0,
-                                                              top:
-                                                                  200, // Exact vertical center (440 / 2)
-                                                              child: Transform.translate(
-                                                                offset: Offset(
-                                                                  0,
-                                                                  -22.5,
-                                                                ), // Center the button itself (45 / 2)
-                                                                child: Material(
-                                                                  color:
-                                                                      Colors
-                                                                          .transparent,
-                                                                  child: InkWell(
-                                                                    onTap:
-                                                                        goToExpirePreviousPage,
-                                                                    borderRadius:
-                                                                        BorderRadius.circular(
-                                                                          25,
-                                                                        ),
-                                                                    child: Container(
-                                                                      height:
-                                                                          45,
-                                                                      width: 45,
-                                                                      decoration: BoxDecoration(
-                                                                        gradient: LinearGradient(
-                                                                          colors: [
-                                                                            Color(
-                                                                              0xff62D5C3,
-                                                                            ),
-                                                                            Color(
-                                                                              0xffD7FAB7,
-                                                                            ),
-                                                                          ],
-                                                                          begin:
-                                                                              Alignment.topLeft,
-                                                                          end:
-                                                                              Alignment.bottomRight,
-                                                                        ),
-                                                                        shape:
-                                                                            BoxShape.circle,
-                                                                        boxShadow: [
-                                                                          BoxShadow(
-                                                                            color: kSecondaryColor.withOpacity(
-                                                                              0.3,
-                                                                            ),
-                                                                            blurRadius:
-                                                                                10,
-                                                                            offset: Offset(
-                                                                              0,
-                                                                              4,
-                                                                            ),
-                                                                          ),
-                                                                        ],
-                                                                      ),
-                                                                      child: Icon(
-                                                                        Icons
-                                                                            .chevron_left,
-                                                                        color:
-                                                                            kWhiteColor,
-                                                                        size:
-                                                                            28,
-                                                                      ),
-                                                                    ),
-                                                                  ),
-                                                                ),
-                                                              ),
-                                                            ),
-
-                                                          // Next Button - Fixed at vertical center
-                                                          if (canExpireGoNext())
-                                                            Positioned(
-                                                              right: 0,
-                                                              top:
-                                                                  200, // Exact vertical center (440 / 2)
-                                                              child: Transform.translate(
-                                                                offset: Offset(
-                                                                  0,
-                                                                  -22.5,
-                                                                ), // Center the button itself (45 / 2)
-                                                                child: Material(
-                                                                  color:
-                                                                      Colors
-                                                                          .transparent,
-                                                                  child: InkWell(
-                                                                    onTap:
-                                                                        goToExpireNextPage,
-                                                                    borderRadius:
-                                                                        BorderRadius.circular(
-                                                                          25,
-                                                                        ),
-                                                                    child: Container(
-                                                                      height:
-                                                                          45,
-                                                                      width: 45,
-                                                                      decoration: BoxDecoration(
-                                                                        gradient: LinearGradient(
-                                                                          colors: [
-                                                                            Color(
-                                                                              0xff62D5C3,
-                                                                            ),
-                                                                            Color(
-                                                                              0xffD7FAB7,
-                                                                            ),
-                                                                          ],
-                                                                          begin:
-                                                                              Alignment.topLeft,
-                                                                          end:
-                                                                              Alignment.bottomRight,
-                                                                        ),
-                                                                        shape:
-                                                                            BoxShape.circle,
-                                                                        boxShadow: [
-                                                                          BoxShadow(
-                                                                            color: kSecondaryColor.withOpacity(
-                                                                              0.3,
-                                                                            ),
-                                                                            blurRadius:
-                                                                                10,
-                                                                            offset: Offset(
-                                                                              0,
-                                                                              4,
-                                                                            ),
-                                                                          ),
-                                                                        ],
-                                                                      ),
-                                                                      child: Icon(
-                                                                        Icons
-                                                                            .chevron_right,
-                                                                        color:
-                                                                            kWhiteColor,
-                                                                        size:
-                                                                            28,
-                                                                      ),
-                                                                    ),
-                                                                  ),
-                                                                ),
-                                                              ),
-                                                            ),
-                                                        ],
-                                                      ),
-                                                    ),
-
-                                                    SizedBox(height: 70),
-                                                  ],
                                                 ),
                                               ),
 
@@ -1867,6 +1900,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         //                     crossAxisSpacing: w(context, 8),
                         //                     mainAxisSpacing: h(context, 8),
                         //                     mainAxisExtent: h(context, 170),
+                        //                   ),
                         //                   ),
                         //               itemCount: filteredOptions.length,
                         //               itemBuilder: (context, index) {
@@ -2039,7 +2073,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                   // binding: PlanBindings(),
                                 );
                               },
-                              text: "Create new Plan",
+                              text: "createNewPlan",
                               iscustomgradient: true,
                               gradient: LinearGradient(
                                 colors: [Color(0xff62D5C3), Color(0xffB5F985)],

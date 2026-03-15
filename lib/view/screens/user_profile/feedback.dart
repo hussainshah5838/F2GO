@@ -75,7 +75,7 @@ class AppFeedbackScreen extends StatelessWidget {
                       SizedBox(width: w(context, 15)),
                       Expanded(
                         child: CustomText(
-                          text: "App Feedback",
+                          text: "appFeedback",
                           size: 16,
                           weight: FontWeight.w500,
                           color: kBlackColor,
@@ -87,7 +87,7 @@ class AppFeedbackScreen extends StatelessWidget {
                   SizedBox(height: h(context, 20)),
                   buildPasswordField(
                     context,
-                    label: "Full name",
+                    label: "fullNameLabel",
                     controller: nameCtrl,
                     // controller: controllers.feedbackNameController.value,
                   ),
@@ -137,7 +137,7 @@ class AppFeedbackScreen extends StatelessWidget {
                   Spacer(),
                   CustomButton(
                     onPressed: _submitFeedback,
-                    text: "Submit",
+                    text: "submit",
                     iscustomgradient: true,
                     gradient: const LinearGradient(
                       colors: [Color(0xff21E3D7), Color(0xffB5F985)],

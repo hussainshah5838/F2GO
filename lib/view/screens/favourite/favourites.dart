@@ -59,7 +59,7 @@ class _FavouritesScreenState extends State<FavouritesScreen> {
                       ),
                       SizedBox(width: w(context, 15)),
                       CustomText(
-                        text: "Favourites",
+                        text: "favorites",
                         size: 20,
                         weight: FontWeight.w500,
                         color: kBlackColor,

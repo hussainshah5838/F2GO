@@ -65,7 +65,7 @@ class _MyPlansScreenState extends State<MyPlansScreen> {
                           ),
                           SizedBox(width: w(context, 15)),
                           CustomText(
-                            text: "My Plans",
+                            text: "myPlans",
                             size: 20,
                             weight: FontWeight.w500,
                             color: kBlackColor,
@@ -143,7 +143,7 @@ class _MyPlansScreenState extends State<MyPlansScreen> {
                             CustomText(
                               paddingBottom: 8,
                               paddingRight: 10,
-                              text: "My Plans",
+                              text: "myPlans",
                               color: kBlackColor,
                               size: 13,
                             ),
@@ -199,7 +199,7 @@ class _MyPlansScreenState extends State<MyPlansScreen> {
                               paddingBottom: 8,
                               paddingTop: _ctrl.myPlans.isEmpty ? 0 : 15,
                               paddingRight: 10,
-                              text: "Joined Plans",
+                              text: "joinedPlans",
                               color: kBlackColor,
                               size: 13,
                             ),
@@ -360,7 +360,7 @@ class _MyPlansScreenState extends State<MyPlansScreen> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     CustomText(
-                      text: "Date & Time",
+                      text: "dateAndTime",
                       size: 12,
                       weight: FontWeight.w500,
                       color: kBlackColor.withValues(alpha: 0.5),

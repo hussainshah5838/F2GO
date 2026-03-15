@@ -73,7 +73,7 @@ class _PlansScreenState extends State<PlansScreen> {
                         ),
                         SizedBox(width: w(context, 15)),
                         CustomText(
-                          text: "Plans",
+                          text: "plans",
                           size: 20,
                           weight: FontWeight.w500,
                           color: kBlackColor,
@@ -141,7 +141,7 @@ class _PlansScreenState extends State<PlansScreen> {
                             }
                           }
                         },
-                        tabs: [Tab(text: 'Active'), Tab(text: 'Expired')],
+                        tabs: [Tab(text: 'active'.tr), Tab(text: 'expired'.tr)],
                       ),
                     ),
                     SizedBox(height: h(context, 20)),

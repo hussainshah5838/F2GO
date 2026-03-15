@@ -45,7 +45,7 @@ class RegisterScreen extends StatelessWidget {
                   onTap: () {
                     Get.to(GetHelpScreen());
                   },
-                  text: "Get Help",
+                  text: "getHelp",
                   size: 16,
                   weight: FontWeight.w500,
                   color: kSecondaryColor,
@@ -208,7 +208,7 @@ class RegisterScreen extends StatelessWidget {
                                     ),
                                     children: [
                                       TextSpan(
-                                        text: "Privacy Policy",
+                                        text: "privacyPolicy".tr,
                                         style: TextStyle(
                                           fontFamily:
                                               AppFonts.HelveticaNowDisplay,
@@ -300,7 +300,7 @@ class RegisterScreen extends StatelessWidget {
                                     );
                                   }
                                 },
-                                text: "Continue",
+                                text: "continueButton",
                                 iscustomgradient: true,
                                 gradient:
                                     authInputController
@@ -355,7 +355,7 @@ class RegisterScreen extends StatelessWidget {
                                 ),
                                 SizedBox(width: w(context, 6.42)),
                                 CustomText(
-                                  text: "or sign in",
+                                  text: "orSignIn",
                                   size: 14,
                                   weight: FontWeight.w400,
                                   color: Color(0xff767676),

@@ -464,7 +464,7 @@ class FilterBottomSheet extends StatelessWidget {
             ),
             SizedBox(height: h(context, 21)),
             CustomText(
-              text: "Apply Filters",
+              text: "applyFilters",
               size: 20,
               weight: FontWeight.w700,
               fontFamily: AppFonts.HelveticaNowDisplay,
@@ -474,7 +474,7 @@ class FilterBottomSheet extends StatelessWidget {
 
             /// ----- SELECT PEOPLE -----
             CustomText(
-              text: "Select People",
+              text: "selectPeople",
               size: 14,
               weight: FontWeight.w500,
               color: kBlackColor,
@@ -569,7 +569,7 @@ class FilterBottomSheet extends StatelessWidget {
 
             /// ----- SELECT AGE -----
             CustomText(
-              text: "Select Age",
+              text: "selectAge",
               size: 14,
               weight: FontWeight.w500,
               color: kBlackColor,
@@ -684,7 +684,7 @@ class FilterBottomSheet extends StatelessWidget {
 
             /// ----- SELECT DISTANCE -----
             CustomText(
-              text: "Select Distance",
+              text: "selectDistance",
               size: 14,
               paddingBottom: 8,
               weight: FontWeight.w500,
@@ -799,7 +799,7 @@ class FilterBottomSheet extends StatelessWidget {
             // -------------------------------------------------
             Obx(
               () => CustomDropdownField(
-                label: "Category",
+                label: "${"category".tr}",
                 selectedValue: controller.selectedCategory.value,
                 onChanged: (value) {
                   controller.selectedCategory.value = value;
@@ -826,7 +826,7 @@ class FilterBottomSheet extends StatelessWidget {
                       controller.distanceRange.value = const RangeValues(1, 5);
                       controller.selectedCategory.value = null;
                     },
-                    text: "Reset",
+                    text: "reset".tr,
                     size: 18,
                     weight: FontWeight.w500,
                     fontFamily: AppFonts.Satoshi,
@@ -852,7 +852,7 @@ class FilterBottomSheet extends StatelessWidget {
                         binding: PlanBindings(),
                       );
                     },
-                    text: "Apply Filters",
+                    text: "applyFilters",
                     iscustomgradient: true,
                     size: 18,
                     weight: FontWeight.w500,

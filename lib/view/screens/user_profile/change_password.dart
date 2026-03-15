@@ -56,7 +56,7 @@ class ChangePasswordScreen extends StatelessWidget {
                       SizedBox(width: w(context, 16)),
                       Expanded(
                         child: CustomText(
-                          text: "Change Password",
+                          text: "changePassword",
                           size: 16,
                           weight: FontWeight.w500,
                           color: kBlackColor,
@@ -69,7 +69,7 @@ class ChangePasswordScreen extends StatelessWidget {
                   SizedBox(height: h(context, 20)),
                   buildPasswordField(
                     context,
-                    label: "Current Password",
+                    label: "currentPassword",
                     controller: ctrl.currentPasswordController,
                     //     controllers.changeCurrentpasswordController.value,
                   ),
@@ -82,7 +82,7 @@ class ChangePasswordScreen extends StatelessWidget {
                   SizedBox(height: h(context, 12)),
                   buildPasswordField(
                     context,
-                    label: "New Password",
+                    label: "newPassword",
                     controller: ctrl.newPasswordController,
                     // controller: controllers.changeNewPasswordController.value,
                   ),
@@ -90,7 +90,7 @@ class ChangePasswordScreen extends StatelessWidget {
 
                   buildPasswordField(
                     context,
-                    label: "Confirm new password",
+                    label: "confirmNewPassword",
                     controller: ctrl.confirmPasswordController,
                     // controller:
                     //     controllers.changeConfirmNewPasswordController.value,
@@ -98,7 +98,7 @@ class ChangePasswordScreen extends StatelessWidget {
                   Spacer(),
                   CustomButton(
                     // onPressed: _updatePassword,
-                    text: "Update",
+                    text: "update",
                     iscustomgradient: true,
                     gradient: const LinearGradient(
                       colors: [Color(0xff21E3D7), Color(0xffB5F985)],
@@ -131,6 +131,11 @@ class ChangePasswordScreen extends StatelessWidget {
                         displayToast(msg: "Both password not matched");
                         return;
                       }
+                      ctrl.changePassword(
+                        oldPassword: ctrl.currentPasswordController.text,
+                        newPassword: ctrl.nameController.text,
+                        confirmPassword: ctrl.confirmPasswordController.text,
+                      );
                     },
                   ),
                   SizedBox(height: h(context, 18)),

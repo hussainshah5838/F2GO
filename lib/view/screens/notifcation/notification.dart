@@ -45,7 +45,7 @@ class NotificationScreen extends StatelessWidget {
                       ),
                       SizedBox(width: w(context, 15)),
                       CustomText(
-                        text: "Notifications",
+                        text: "notifications",
                         size: 20,
                         weight: FontWeight.w500,
                         color: kBlackColor,

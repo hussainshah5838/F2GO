@@ -38,7 +38,7 @@ class PrivacyPolicyScreen extends StatelessWidget {
                       ),
                       SizedBox(width: w(context, 15)),
                       CustomText(
-                        text: "Privacy Policy",
+                        text: "privacyPolicy",
                         size: 16,
                         weight: FontWeight.w500,
                         fontFamily: AppFonts.HelveticaNowDisplay,

@@ -72,7 +72,7 @@ class _MyLoadingScreenState extends State<MyLoadingScreen>
                 const SizedBox(height: 24),
                 // Text
                 CustomText(
-                  text: "Finding your next plan...",
+                  text: "findingNextPlan",
                   color: kBlackColor,
                   size: 18,
                   weight: FontWeight.bold,

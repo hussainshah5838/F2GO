@@ -59,7 +59,7 @@ class EditProfileScreen extends StatelessWidget {
                       SizedBox(width: w(context, 15)),
                       Expanded(
                         child: CustomText(
-                          text: "Edit Profile",
+                          text: "editProfile",
                           size: 16,
                           weight: FontWeight.w500,
                           color: kBlackColor,
@@ -124,7 +124,7 @@ class EditProfileScreen extends StatelessWidget {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               CustomText(
-                                text: "Upload Profile Photo",
+                                text: "uploadProfilePhoto",
                                 size: 16,
                                 lineHeight: h(context, 1),
                                 paddingBottom: 6,
@@ -133,7 +133,7 @@ class EditProfileScreen extends StatelessWidget {
                                 fontFamily: AppFonts.HelveticaNowDisplay,
                               ),
                               CustomText(
-                                text: "File size (100mb max)",
+                                text: "fileSizeMax",
                                 size: 12,
                                 lineHeight: h(context, 1),
                                 color: kBlackColor.withValues(alpha: 0.6),
@@ -172,7 +172,7 @@ class EditProfileScreen extends StatelessWidget {
                               mainAxisSize: MainAxisSize.min,
                               children: [
                                 CustomText(
-                                  text: "Upload",
+                                  text: "upload",
                                   size: 12,
                                   weight: FontWeight.w500,
                                   color: kSecondaryColor,
@@ -201,7 +201,7 @@ class EditProfileScreen extends StatelessWidget {
                   ),
                   SizedBox(height: h(context, 16)),
                   CustomText(
-                    text: "PERSONAL INFORMATION",
+                    text: "personalInformationSection",
                     size: 12,
                     weight: FontWeight.w500,
                     color: ktextcolor,
@@ -210,7 +210,7 @@ class EditProfileScreen extends StatelessWidget {
                   SizedBox(height: h(context, 14)),
                   buildPasswordField(
                     context,
-                    label: "Full name",
+                    label: "fullNameLabel",
                     controller: controller.nameController,
                   ),
 
@@ -233,7 +233,7 @@ class EditProfileScreen extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         CustomText(
-                          text: "Biography",
+                          text: "biography",
                           size: 14,
                           lineHeight: h(context, 0.5),
                           color: kBlackColor.withValues(alpha: 0.5),
@@ -271,7 +271,7 @@ class EditProfileScreen extends StatelessWidget {
             mainAxisSize: MainAxisSize.min,
             children: [
               CustomButton(
-                text: "Update",
+                text: "update",
                 iscustomgradient: true,
                 gradient: const LinearGradient(
                   colors: [Color(0xff21E3D7), Color(0xffB5F985)],

@@ -113,7 +113,7 @@ class _CreateNewPlanScreenState extends State<CreateNewPlanScreen> {
                       SizedBox(width: w(context, 15)),
                       Expanded(
                         child: CustomText(
-                          text: "Create new plan",
+                          text: "createNewPlan",
                           size: 16,
                           weight: FontWeight.w500,
                           color: kBlackColor,
@@ -176,7 +176,7 @@ class _CreateNewPlanScreenState extends State<CreateNewPlanScreen> {
                                         CrossAxisAlignment.start,
                                     children: [
                                       CustomText(
-                                        text: "Upload Plan Photo",
+                                        text: "uploadPlanPhoto",
                                         size: 16,
                                         lineHeight: h(context, 1),
                                         paddingBottom: 6,
@@ -186,7 +186,7 @@ class _CreateNewPlanScreenState extends State<CreateNewPlanScreen> {
                                             AppFonts.HelveticaNowDisplay,
                                       ),
                                       CustomText(
-                                        text: "File size (100mb max)",
+                                        text: "fileSizeMax",
                                         size: 12,
                                         weight: FontWeight.w500,
                                         lineHeight: h(context, 1),
@@ -232,7 +232,7 @@ class _CreateNewPlanScreenState extends State<CreateNewPlanScreen> {
                                       mainAxisSize: MainAxisSize.min,
                                       children: [
                                         CustomText(
-                                          text: "Upload",
+                                          text: "upload",
                                           size: 12,
                                           weight: FontWeight.w500,
                                           color: kSecondaryColor,
@@ -261,7 +261,7 @@ class _CreateNewPlanScreenState extends State<CreateNewPlanScreen> {
                           ),
                           SizedBox(height: h(context, 8)),
                           CustomLabelTextFeild(
-                            label: "Plan Title",
+                            label: "planTitle".tr,
                             controller: _ctrl.titleController,
                           ),
                           SizedBox(height: h(context, 8)),
@@ -270,7 +270,7 @@ class _CreateNewPlanScreenState extends State<CreateNewPlanScreen> {
                               children: [
                                 Expanded(
                                   child: CustomLabelTextFeild(
-                                    label: "Start Date",
+                                    label: "${"startDate".tr}",
                                     readOnly: true,
                                     controller: TextEditingController(
                                       text:
@@ -283,7 +283,7 @@ class _CreateNewPlanScreenState extends State<CreateNewPlanScreen> {
                                     onTap: () {
                                       Get.bottomSheet(
                                         _DateTimePicker(
-                                          title: "Start Date",
+                                          title: "${"startDate".tr}",
                                           mode: CupertinoDatePickerMode.date,
                                           onDateTimeChanged: (v) {
                                             _startDate = v;
@@ -304,7 +304,7 @@ class _CreateNewPlanScreenState extends State<CreateNewPlanScreen> {
                                 SizedBox(width: w(context, 8)),
                                 Expanded(
                                   child: CustomLabelTextFeild(
-                                    label: "Start Time",
+                                    label: "${"startTime".tr}",
                                     readOnly: true,
                                     controller: TextEditingController(
                                       text:
@@ -318,7 +318,7 @@ class _CreateNewPlanScreenState extends State<CreateNewPlanScreen> {
                                     onTap: () {
                                       Get.bottomSheet(
                                         DateTimePicker(
-                                          title: "Start Time",
+                                          title: "${"startTime".tr}",
                                           mode: CupertinoDatePickerMode.time,
                                           onDateTimeChanged: (v) {
                                             _startTime = v;
@@ -347,7 +347,7 @@ class _CreateNewPlanScreenState extends State<CreateNewPlanScreen> {
                               children: [
                                 Expanded(
                                   child: CustomLabelTextFeild(
-                                    label: "End Date",
+                                    label: "${"endDate".tr}",
                                     readOnly: true,
                                     controller: TextEditingController(
                                       text:
@@ -361,7 +361,7 @@ class _CreateNewPlanScreenState extends State<CreateNewPlanScreen> {
                                     onTap: () {
                                       Get.bottomSheet(
                                         _DateTimePicker(
-                                          title: "End Date",
+                                          title: "${"endDate".tr}",
                                           mode: CupertinoDatePickerMode.date,
                                           onDateTimeChanged: (v) {
                                             _endDate = v;
@@ -382,7 +382,7 @@ class _CreateNewPlanScreenState extends State<CreateNewPlanScreen> {
                                 SizedBox(width: w(context, 8)),
                                 Expanded(
                                   child: CustomLabelTextFeild(
-                                    label: "End Time",
+                                    label: "${"endTime".tr}",
                                     readOnly: true,
                                     controller: TextEditingController(
                                       text:
@@ -396,7 +396,7 @@ class _CreateNewPlanScreenState extends State<CreateNewPlanScreen> {
                                     onTap: () {
                                       Get.bottomSheet(
                                         DateTimePicker(
-                                          title: "End Time",
+                                          title: "${"endTime".tr}",
                                           mode: CupertinoDatePickerMode.time,
                                           onDateTimeChanged: (v) {
                                             _endTime = v;
@@ -424,7 +424,7 @@ class _CreateNewPlanScreenState extends State<CreateNewPlanScreen> {
                                 (_ctrl.maxMemberValue.value != null)
                                     ? true
                                     : false,
-                            label: "Maximum Members Allowed",
+                            label: "maximumMembersAllowed".tr,
                             controller: TextEditingController(
                               text: _ctrl.maxMemberValue.value,
                             ),
@@ -432,7 +432,7 @@ class _CreateNewPlanScreenState extends State<CreateNewPlanScreen> {
                             onTap: () {
                               Get.bottomSheet(
                                 NumberSelector(
-                                  title: "Maximum Members Allowed",
+                                  title: "maximumMembersAllowed".tr,
 
                                   onNumberSelected: (v) {
                                     _maximumMembersAllowed = v;
@@ -493,26 +493,26 @@ class _CreateNewPlanScreenState extends State<CreateNewPlanScreen> {
                                 CustomText(
                                   paddingLeft: 5,
                                   paddingRight: 15,
-                                  text: "Age",
+                                  text: "Age".tr,
                                   color: kBlackColor,
                                 ),
                                 Expanded(
                                   child: CustomLabelTextFeild(
                                     keyboardType: TextInputType.number,
-                                    label: "Min",
+                                    label: "ageMin".tr,
                                     controller: _ctrl.ageFromController,
                                   ),
                                 ),
                                 CustomText(
                                   paddingLeft: 15,
                                   paddingRight: 15,
-                                  text: "To",
+                                  text: "to".tr,
                                   color: kBlackColor,
                                 ),
                                 Expanded(
                                   child: CustomLabelTextFeild(
                                     keyboardType: TextInputType.number,
-                                    label: "Max",
+                                    label: "ageMax".tr,
 
                                     controller: _ctrl.ageToController,
                                     inputFormatters: [
@@ -525,7 +525,7 @@ class _CreateNewPlanScreenState extends State<CreateNewPlanScreen> {
                           ),
                           SizedBox(height: h(context, 8)),
                           CustomLabelTextFeild(
-                            label: "Location",
+                            label: "location".tr,
                             controller: _ctrl.locationController,
                             onChanged: (v) {
                               _scrollToBottom();
@@ -664,7 +664,7 @@ class _CreateNewPlanScreenState extends State<CreateNewPlanScreen> {
                           // ),
                           Obx(
                             () => CustomDropdownField(
-                              label: "Category",
+                              label: "category".tr,
                               selectedValue: _ctrl.selectedCategory.value,
                               onChanged: (value) {
                                 _ctrl.selectedCategory.value = value;
@@ -677,7 +677,7 @@ class _CreateNewPlanScreenState extends State<CreateNewPlanScreen> {
 
                           SizedBox(height: h(context, 8)),
                           CustomLabelTextFeild(
-                            label: "Description",
+                            label: "description".tr,
                             controller: _ctrl.descriptionController,
                             height: 139,
                             isheight: true,
@@ -689,34 +689,36 @@ class _CreateNewPlanScreenState extends State<CreateNewPlanScreen> {
                               // Get.offAll(HomeScreen());
 
                               if (_ctrl.eventSelectedImage == null) {
-                                displayToast(msg: "Please add event image.");
+                                displayToast(
+                                  msg: "${"pleaseAddEventImage".tr}",
+                                );
                                 return;
                               }
 
                               if (_ctrl.titleController.text.isEmpty) {
-                                displayToast(msg: "Please add a title.");
+                                displayToast(msg: "${"pleaseAddTitle".tr}");
                                 return;
                               }
                               if (_ctrl.startDate.value == null) {
-                                displayToast(msg: "Please add a start date.");
+                                displayToast(msg: "${"pleaseAddStartDate".tr}");
                                 return;
                               }
                               if (_ctrl.startTime.value == null) {
-                                displayToast(msg: "Please add a start time.");
+                                displayToast(msg: "${"pleaseAddStartTime".tr}");
                                 return;
                               }
                               if (_ctrl.endDate.value == null) {
-                                displayToast(msg: "Please add a end date.");
+                                displayToast(msg: "${"pleaseAddEndDate".tr}");
                                 return;
                               }
                               if (_ctrl.endTime.value == null) {
-                                displayToast(msg: "Please add a end time.");
+                                displayToast(msg: "${"pleaseAddEndTime".tr}");
                                 return;
                               }
 
                               if (_ctrl.maxMemberValue.value == null) {
                                 displayToast(
-                                  msg: "Please select a maximum members.",
+                                  msg: "${"pleaseSelectMaxMembers".tr}",
                                 );
                                 return;
                               }
@@ -727,7 +729,7 @@ class _CreateNewPlanScreenState extends State<CreateNewPlanScreen> {
                               // }
 
                               if (_ctrl.ageFromController.text.isEmpty) {
-                                displayToast(msg: "Please select minimum age.");
+                                displayToast(msg: "${"pleaseSelectMinAge".tr}");
                                 return;
                               }
                               // ---------------- Min Age -------------
@@ -736,13 +738,13 @@ class _CreateNewPlanScreenState extends State<CreateNewPlanScreen> {
                               _ctrl.minAgeChecker = int.parse(ageValue);
                               if (_ctrl.minAgeChecker <= 17) {
                                 displayToast(
-                                  msg: "Please correct minimum age to be 18.",
+                                  msg: "${"pleaseCorrectMinAge".tr}",
                                 );
                                 return;
                               }
 
                               if (_ctrl.ageToController.text.isEmpty) {
-                                displayToast(msg: "Please select maximum age.");
+                                displayToast(msg: "${"pleaseSelectMaxAge".tr}");
                                 return;
                               }
 
@@ -759,30 +761,32 @@ class _CreateNewPlanScreenState extends State<CreateNewPlanScreen> {
                                   int.tryParse(maxAgeValue) ?? 0;
                               if (_ctrl.maxAgeChecker <= 18) {
                                 displayToast(
-                                  msg:
-                                      "Please correct maximum age to be greater than 18.",
+                                  msg: "${"pleaseCorrectMaxAge".tr}",
                                 );
                                 return;
                               }
 
                               if (_ctrl.maxAgeChecker < _ctrl.minAgeChecker) {
                                 displayToast(
-                                  msg:
-                                      "Maximum age must be greater than minimum age.",
+                                  msg: "${"maxAgeGreaterThanMin".tr}",
                                 );
                                 return;
                               }
 
                               if (_ctrl.locationController.text.isEmpty) {
-                                displayToast(msg: "Please add a location.");
+                                displayToast(msg: "${"pleaseAddLocation".tr}");
                                 return;
                               }
                               if (_ctrl.selectedCategory.value == null) {
-                                displayToast(msg: "Please select a category.");
+                                displayToast(
+                                  msg: "${"pleaseSelectCategory".tr}",
+                                );
                                 return;
                               }
                               if (_ctrl.descriptionController.text.isEmpty) {
-                                displayToast(msg: "Please add a description.");
+                                displayToast(
+                                  msg: "${"pleaseAddDescription".tr}",
+                                );
                                 return;
                               }
                               // if (_ctrl.maxMemberController.text.isEmpty) {
@@ -794,7 +798,7 @@ class _CreateNewPlanScreenState extends State<CreateNewPlanScreen> {
                                 eventImage: _ctrl.eventSelectedImage,
                               );
                             },
-                            text: "Create Plan",
+                            text: "createPlan",
                             iscustomgradient: true,
                             gradient: const LinearGradient(
                               colors: [Color(0xff21E3D7), Color(0xffB5F985)],
