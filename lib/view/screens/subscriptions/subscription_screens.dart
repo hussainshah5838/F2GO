@@ -131,6 +131,10 @@ class _SubscriptionPlanScreenState extends State<SubscriptionPlanScreen> {
                   ),
                   SizedBox(height: h(context, 20)),
                   _selectedPlan == SubscriptionPlan.premium
+                      ? _buildFeatureRow(context, "Ad-free experience")
+                      : SizedBox.shrink(),
+                  SizedBox(height: h(context, 10)),
+                  _selectedPlan == SubscriptionPlan.premium
                       ? _buildFeatureRow(context, "Unlimited plan creation")
                       : _buildFeatureRow(context, "Limit of 2 plans per week"),
                   SizedBox(height: h(context, 10)),

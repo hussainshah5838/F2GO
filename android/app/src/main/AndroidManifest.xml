@@ -8,12 +8,17 @@
     <application
         android:label="f2g"
         android:name="${applicationName}"
-        android:icon="@mipmap/ic_launcher">
+        android:icon="@mipmap/launcher_icon">
 
-        <!-- ADDED LINE -->
+        <!-- Google Maps API -->
         <meta-data
         android:name="com.google.android.geo.API_KEY"
         android:value="AIzaSyAgEj7S4Yn27FgwJWbBPHxjBit8VDBY0w4"/>
+
+          <!-- ✅ AdMob Application ID -->
+        <meta-data
+        android:name="com.google.android.gms.ads.APPLICATION_ID"
+        android:value="ca-app-pub-3940256099942544~3347511713"/>
 
         <activity
             android:name=".MainActivity"

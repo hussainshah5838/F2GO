@@ -9,6 +9,7 @@ import 'package:f2g/core/common/global_instance.dart';
 import 'package:f2g/core/enums/categories_status.dart';
 import 'package:f2g/core/enums/plan_status.dart';
 import 'package:f2g/model/my_model/plan_model.dart';
+import 'package:f2g/services/admob/admob_service.dart';
 import 'package:f2g/view/screens/Home/details.dart';
 import 'package:f2g/view/screens/createplan/create_new_plan.dart';
 import 'package:f2g/view/screens/createplan/create_plan_and_map_screen.dart';
@@ -350,6 +351,8 @@ class _HomeScreenState extends State<HomeScreen> {
   int getFilterTotalPages() {
     return (_ctrl.filterPlans.length / _ctrl.itemsPerPage.value).ceil();
   }
+
+  final adService = AdMobService.to;
 
   @override
   Widget build(BuildContext context) {
@@ -2066,12 +2069,20 @@ class _HomeScreenState extends State<HomeScreen> {
                             child: CustomButton(
                               onPressed: () {
                                 _ctrl.clearFocus();
-                                // Get.to(CreatePlanScreen());
-                                // Get.to(CreatePlanScreen());
-                                Get.to(
-                                  () => CreateNewPlanScreen(),
-                                  // binding: PlanBindings(),
+
+                                AdMobService.to.showInterstitialAd(
+                                  onComplete: () {
+                                    Get.to(
+                                      () => CreateNewPlanScreen(),
+                                      // binding: PlanBindings(),
+                                    );
+                                  },
                                 );
+
+                                // Get.to(
+                                //   () => CreateNewPlanScreen(),
+                                //   // binding: PlanBindings(),
+                                // );
                               },
                               text: "createNewPlan",
                               iscustomgradient: true,
@@ -2095,6 +2106,11 @@ class _HomeScreenState extends State<HomeScreen> {
                       ),
                     ),
           ),
+          bottomNavigationBar: Obx(() {
+            return adService.isBannerLoaded.value
+                ? adService.getBannerAdWidget()
+                : const SizedBox();
+          }),
         ),
       ),
     );

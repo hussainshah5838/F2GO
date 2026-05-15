@@ -197,4 +197,5 @@ Map<String, String> esES = {
   "Age": "Edad",
   "reset": "Restablecer",
   "my_plan": "Mi Plan",
+  "age_limit": "Límite de edad",
 };

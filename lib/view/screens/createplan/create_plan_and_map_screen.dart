@@ -738,24 +738,65 @@ class _CreatePlanAndMapScreenState extends State<CreatePlanAndMapScreen> {
   }
 
   /// Get user current location safely
+  // Future<void> _getCurrentLocation() async {
+  //   LocationPermission permission;
+  //   bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
+  //   if (!serviceEnabled) {
+  //     await Geolocator.openLocationSettings();
+  //     return;
+  //   }
+
+  //   permission = await Geolocator.checkPermission();
+  //   if (permission == LocationPermission.denied) {
+  //     permission = await Geolocator.requestPermission();
+  //     if (permission == LocationPermission.denied) return;
+  //   }
+  //   if (permission == LocationPermission.deniedForever) return;
+
+  //   Position position = await Geolocator.getCurrentPosition(
+  //     desiredAccuracy: LocationAccuracy.high,
+  //   );
+  //   currentPosition = LatLng(position.latitude, position.longitude);
+  // }
   Future<void> _getCurrentLocation() async {
     LocationPermission permission;
-    bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
-    if (!serviceEnabled) {
+
+    /// Keep asking until location service is enabled
+    while (!await Geolocator.isLocationServiceEnabled()) {
       await Geolocator.openLocationSettings();
-      return;
+
+      // Small delay so user can return from settings
+      await Future.delayed(const Duration(seconds: 2));
     }
 
+    /// Check permission
     permission = await Geolocator.checkPermission();
-    if (permission == LocationPermission.denied) {
-      permission = await Geolocator.requestPermission();
-      if (permission == LocationPermission.denied) return;
-    }
-    if (permission == LocationPermission.deniedForever) return;
 
+    /// Keep asking until permission is granted
+    while (permission == LocationPermission.denied) {
+      permission = await Geolocator.requestPermission();
+
+      if (permission == LocationPermission.denied) {
+        // User denied again → ask again
+        await Future.delayed(const Duration(seconds: 1));
+      }
+    }
+
+    /// If permanently denied
+    while (permission == LocationPermission.deniedForever) {
+      await Geolocator.openAppSettings();
+
+      // Wait for user to come back
+      await Future.delayed(const Duration(seconds: 2));
+
+      permission = await Geolocator.checkPermission();
+    }
+
+    /// Get current location
     Position position = await Geolocator.getCurrentPosition(
       desiredAccuracy: LocationAccuracy.high,
     );
+
     currentPosition = LatLng(position.latitude, position.longitude);
   }
 

@@ -191,4 +191,5 @@ Map<String, String> enUS = {
   "Age": "Age",
   "reset": "Reset",
   "my_plan": "My Plan",
+  "age_limit": "Age Limit",
 };

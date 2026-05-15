@@ -291,10 +291,10 @@ class EditProfileScreen extends StatelessWidget {
                     displayToast(msg: "Name can't be empty");
                     return;
                   }
-                  if (controller.biographyController.text.isEmpty) {
-                    displayToast(msg: "Biography can't be empty");
-                    return;
-                  }
+                  // if (controller.biographyController.text.isEmpty) {
+                  //   displayToast(msg: "Biography can't be empty");
+                  //   return;
+                  // }
 
                   controller.updateUserInfo(
                     name: controller.nameController.text.trim(),

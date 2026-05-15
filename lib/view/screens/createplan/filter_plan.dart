@@ -287,25 +287,467 @@
 //   }
 // }
 
-// ---------- FIlter Correct Plans -----------------
+// // ---------- FIlter Correct Plans -----------------
 
-import 'dart:async';
-import 'dart:developer';
+// import 'dart:async';
+// import 'dart:developer';
+// import 'package:f2g/constants/app_colors.dart';
+// import 'package:f2g/constants/loading_animation.dart';
+// import 'package:f2g/controller/my_ctrl/plan_controller.dart';
+// import 'package:f2g/model/my_model/plan_model.dart';
+// import 'package:f2g/view/screens/Home/details.dart';
+// import 'package:f2g/view/screens/Home/filter_bottomshett.dart';
+// import 'package:f2g/view/screens/plans/plan_details.dart';
+// import 'package:f2g/view/widget/Custom_text_widget.dart';
+// import 'package:f2g/view/widget/common_image_view_widget.dart';
+// import 'package:flutter/material.dart';
+// import 'package:geocoding/geocoding.dart';
+// import 'package:geolocator/geolocator.dart';
+// import 'package:get/get.dart';
+// import 'package:google_maps_flutter/google_maps_flutter.dart';
+// import '../../../constants/app_fonts.dart';
+
+// class FilterScreenPage extends StatefulWidget {
+//   String? categoryFilter;
+//   FilterScreenPage({super.key, this.categoryFilter});
+
+//   @override
+//   State<FilterScreenPage> createState() => _FilterScreenPageState();
+// }
+
+// class _FilterScreenPageState extends State<FilterScreenPage> {
+//   final PlanController planController = Get.find<PlanController>();
+//   final FilterController filterController = Get.find<FilterController>();
+
+//   late GoogleMapController mapController;
+//   Set<Marker> markers = {};
+//   Set<Circle> circles = {}; // ✅ Added Circle Set
+//   LatLng? currentPosition;
+//   bool isLoading = true;
+
+//   @override
+//   void initState() {
+//     super.initState();
+//     // planController.fetchPlans();
+//     log("List Length ::: ${planController.plans.length}");
+//     _initializeMap();
+//   }
+
+//   Future<void> _initializeMap() async {
+//     await _getCurrentLocation();
+//     await _applyFilters(); // ✅ unified filter+marker loading
+//     setState(() => isLoading = false);
+//   }
+
+//   // Get user current location
+//   Future<void> _getCurrentLocation() async {
+//     LocationPermission permission;
+//     bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
+//     if (!serviceEnabled) {
+//       await Geolocator.openLocationSettings();
+//       return;
+//     }
+
+//     permission = await Geolocator.checkPermission();
+//     if (permission == LocationPermission.denied) {
+//       permission = await Geolocator.requestPermission();
+//       if (permission == LocationPermission.denied) return;
+//     }
+//     if (permission == LocationPermission.deniedForever) return;
+
+//     Position position = await Geolocator.getCurrentPosition(
+//       desiredAccuracy: LocationAccuracy.high,
+//     );
+//     currentPosition = LatLng(position.latitude, position.longitude);
+//   }
+
+//   // Calculate distance in KM between two LatLngs
+//   double _calculateDistance(LatLng start, LatLng end) {
+//     return Geolocator.distanceBetween(
+//           start.latitude,
+//           start.longitude,
+//           end.latitude,
+//           end.longitude,
+//         ) /
+//         1000; // Convert to KM
+//   }
+
+//   // Future<void> _applyFilters({
+//   //   bool useAge = true,
+//   //   bool usePeople = true,
+//   //   bool useDistance = true,
+//   // }) async {
+//   //   if (currentPosition == null) return;
+
+//   //   final ageRange = filterController.ageRange.value;
+//   //   final peopleRange = filterController.peopleRange.value;
+//   //   final distanceRange = filterController.distanceRange.value;
+
+//   //   Set<Marker> newMarkers = {};
+//   //   Set<Circle> newCircles = {};
+
+//   //   for (var event in planController.plans) {
+//   //     try {
+//   //       if (event.location == null) continue;
+
+//   //       // Convert address to coordinates
+//   //       List<Location> locations = await locationFromAddress(event.location!);
+//   //       if (locations.isEmpty) continue;
+
+//   //       final eventPos = LatLng(
+//   //         locations.first.latitude,
+//   //         locations.first.longitude,
+//   //       );
+//   //       final distance = _calculateDistance(currentPosition!, eventPos);
+
+//   //       // ------------------------------
+//   //       // ✅ Parse age and people safely
+//   //       // ------------------------------
+//   //       final defaultAgeStart = 18;
+//   //       final defaultAgeEnd = 22;
+//   //       final defaultPeopleEnd = 40;
+
+//   //       // Parse event age like "18-25"
+//   //       int eventAgeStart = defaultAgeStart;
+//   //       int eventAgeEnd = defaultAgeEnd;
+
+//   //       if (event.age != null && event.age!.contains('-')) {
+//   //         final parts = event.age!.split('-');
+//   //         if (parts.length == 2) {
+//   //           eventAgeStart = int.tryParse(parts[0].trim()) ?? defaultAgeStart;
+//   //           eventAgeEnd = int.tryParse(parts[1].trim()) ?? defaultAgeEnd;
+//   //         }
+//   //       }
+
+//   //       // Parse event people (e.g. "30")
+//   //       int eventPeople =
+//   //           int.tryParse(event.maxMembers?.toString() ?? '') ??
+//   //           defaultPeopleEnd;
+
+//   //       // ---------------------------------
+//   //       // ✅ Apply filters (corrected)
+//   //       // ---------------------------------
+//   //       // Age: overlap logic
+//   //       final withinAge =
+//   //           !useAge ||
+//   //           (eventAgeEnd >= ageRange.start && eventAgeStart <= ageRange.end);
+
+//   //       // People: 0 to maxParticipants
+//   //       final withinPeople = !usePeople || (eventPeople <= peopleRange.end);
+
+//   //       // Distance: simple check
+//   //       final withinDistance = !useDistance || distance <= distanceRange.end;
+
+//   //       // -------------------------------
+//   //       // ✅ Add marker if passes filters
+//   //       // -------------------------------
+//   //       if (withinAge && withinPeople && withinDistance) {
+//   //         newMarkers.add(
+//   //           Marker(
+//   //             markerId: MarkerId(event.id ?? event.title ?? ''),
+//   //             position: eventPos,
+//   //             infoWindow: InfoWindow(title: event.title),
+//   //             onTap: () => _showEventPopup(event),
+//   //           ),
+//   //         );
+//   //       }
+//   //     } catch (e) {
+//   //       debugPrint("Error filtering location: $e");
+//   //     }
+//   //   }
+
+//   //   // ✅ Draw distance circle if distance filter is used
+//   //   if (useDistance) {
+//   //     newCircles.add(
+//   //       Circle(
+//   //         circleId: const CircleId("search_radius"),
+//   //         center: currentPosition!,
+//   //         radius: distanceRange.end * 1000,
+//   //         fillColor: kSecondaryColor.withValues(alpha: 0.15),
+//   //         strokeColor: kSecondaryColor,
+//   //         strokeWidth: 2,
+//   //       ),
+//   //     );
+//   //   }
+
+//   //   setState(() {
+//   //     markers = newMarkers;
+//   //     circles = newCircles;
+//   //   });
+//   // }
+
+//   Future<void> _applyFilters({
+//     bool useAge = false,
+//     bool usePeople = false,
+//     bool useDistance = true,
+//     // String? selectedCategory, // ✅ new optional filter
+//   }) async {
+//     if (currentPosition == null) return;
+
+//     final ageRange = filterController.ageRange.value;
+//     final peopleRange = filterController.peopleRange.value;
+//     final distanceRange = filterController.distanceRange.value;
+
+//     Set<Marker> newMarkers = {};
+//     Set<Circle> newCircles = {};
+
+//     for (var event in planController.plans) {
+//       try {
+//         if (event.location == null) continue;
+
+//         // Convert address to coordinates
+//         List<Location> locations = await locationFromAddress(event.location!);
+//         if (locations.isEmpty) continue;
+
+//         final eventPos = LatLng(
+//           locations.first.latitude,
+//           locations.first.longitude,
+//         );
+//         final distance = _calculateDistance(currentPosition!, eventPos);
+
+//         // ------------------------------
+//         // ✅ Parse age and people safely
+//         // ------------------------------
+//         final defaultAgeStart = 18;
+//         final defaultAgeEnd = 22;
+//         final defaultPeopleEnd = 40;
+
+//         // Parse event age like "18-25"
+//         int eventAgeStart = defaultAgeStart;
+//         int eventAgeEnd = defaultAgeEnd;
+
+//         if (event.age != null && event.age!.contains('-')) {
+//           final parts = event.age!.split('-');
+//           if (parts.length == 2) {
+//             eventAgeStart = int.tryParse(parts[0].trim()) ?? defaultAgeStart;
+//             eventAgeEnd = int.tryParse(parts[1].trim()) ?? defaultAgeEnd;
+//           }
+//         }
+
+//         // Parse event people (e.g. "30")
+//         int eventPeople =
+//             int.tryParse(event.maxMembers?.toString() ?? '') ??
+//             defaultPeopleEnd;
+
+//         // ---------------------------------
+//         // ✅ Apply filters (corrected)
+//         // ---------------------------------
+//         final withinAge =
+//             !useAge ||
+//             (eventAgeEnd >= ageRange.start && eventAgeStart <= ageRange.end);
+
+//         final withinPeople = !usePeople || (eventPeople <= peopleRange.end);
+
+//         final withinDistance = !useDistance || distance <= distanceRange.end;
+
+//         // ✅ New category filter
+//         final withinCategory =
+//             widget.categoryFilter == null ||
+//             widget.categoryFilter!.isEmpty ||
+//             (event.category?.toLowerCase().trim() ==
+//                 widget.categoryFilter?.toLowerCase().trim());
+
+//         // -------------------------------
+//         // ✅ Add marker if passes filters
+//         // -------------------------------
+//         if (withinAge && withinPeople && withinDistance && withinCategory) {
+//           newMarkers.add(
+//             Marker(
+//               markerId: MarkerId(event.id ?? event.title ?? ''),
+//               position: eventPos,
+//               infoWindow: InfoWindow(title: event.title),
+//               onTap: () => _showEventPopup(event),
+//             ),
+//           );
+//         }
+//       } catch (e) {
+//         debugPrint("Error filtering location: $e");
+//       }
+//     }
+
+//     // ✅ Draw distance circle if distance filter is used
+//     if (useDistance) {
+//       newCircles.add(
+//         Circle(
+//           circleId: const CircleId("search_radius"),
+//           center: currentPosition!,
+//           radius: distanceRange.end * 1000,
+//           fillColor: kSecondaryColor.withValues(alpha: 0.15),
+//           strokeColor: kSecondaryColor,
+//           strokeWidth: 2,
+//         ),
+//       );
+//     }
+
+//     setState(() {
+//       markers = newMarkers;
+//       circles = newCircles;
+//     });
+//   }
+
+//   // Show event details popup
+//   void _showEventPopup(PlanModel model) {
+//     showModalBottomSheet(
+//       context: context,
+//       backgroundColor: kWhiteColor,
+//       shape: const RoundedRectangleBorder(
+//         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+//       ),
+//       builder:
+//           (_) => Padding(
+//             padding: const EdgeInsets.all(16),
+//             child: Column(
+//               mainAxisSize: MainAxisSize.min,
+//               children: [
+//                 Container(
+//                   width: 60,
+//                   height: 4,
+//                   decoration: BoxDecoration(
+//                     color: Colors.grey[300],
+//                     borderRadius: BorderRadius.circular(50),
+//                   ),
+//                 ),
+//                 const SizedBox(height: 20),
+//                 Row(
+//                   crossAxisAlignment: CrossAxisAlignment.start,
+//                   children: [
+//                     ClipRRect(
+//                       borderRadius: BorderRadius.circular(10),
+//                       child: CommonImageView(
+//                         url: model.planPhoto,
+//                         height: 80,
+//                         width: 120,
+//                         fit: BoxFit.cover,
+//                       ),
+//                     ),
+//                     const SizedBox(width: 16),
+//                     Expanded(
+//                       child: Column(
+//                         crossAxisAlignment: CrossAxisAlignment.start,
+//                         children: [
+//                           CustomText(
+//                             text: model.title ?? "No Title",
+//                             size: 18,
+//                             weight: FontWeight.w600,
+//                             color: kBlackColor,
+//                             fontFamily: AppFonts.HelveticaNowDisplay,
+//                           ),
+//                           CustomText(
+//                             paddingTop: 5,
+//                             text: model.description ?? "No Description",
+//                             size: 14,
+//                             weight: FontWeight.w400,
+//                             color: kBlackColor,
+//                             fontFamily: AppFonts.HelveticaNowDisplay,
+//                           ),
+//                         ],
+//                       ),
+//                     ),
+//                   ],
+//                 ),
+//                 const SizedBox(height: 20),
+//                 ElevatedButton(
+//                   style: ElevatedButton.styleFrom(
+//                     backgroundColor: kSecondaryColor,
+//                     shape: RoundedRectangleBorder(
+//                       borderRadius: BorderRadius.circular(10),
+//                     ),
+//                     minimumSize: const Size(double.infinity, 45),
+//                   ),
+//                   onPressed: () {
+//                     Get.back();
+//                     // Get.to(
+//                     //   () => PlansDetailScreen(),
+//                     //   arguments: {"data": model},
+//                     // );
+//                     Get.to(() => DetailsScreen(), arguments: {'data': model});
+//                   },
+//                   child: const Text(
+//                     "View Details",
+//                     style: TextStyle(color: Colors.white),
+//                   ),
+//                 ),
+//                 const SizedBox(height: 10),
+//               ],
+//             ),
+//           ),
+//     );
+//   }
+
+//   // Center camera to my location
+//   Future<void> _goToMyLocation() async {
+//     if (currentPosition != null) {
+//       mapController.animateCamera(
+//         CameraUpdate.newLatLngZoom(currentPosition!, 12),
+//       );
+//       await _applyFilters(); // ✅ Reapply filters & redraw circle when pressed
+//     }
+//   }
+
+//   @override
+//   Widget build(BuildContext context) {
+//     if (isLoading) {
+//       return Scaffold(body: Center(child: WaveLoading()));
+//     }
+
+//     return Scaffold(
+//       backgroundColor: kWhiteColor,
+//       appBar: AppBar(
+//         backgroundColor: kWhiteColor,
+//         title: CustomText(
+//           text: "Filter Plans",
+//           size: 16,
+//           weight: FontWeight.w500,
+//           color: kBlackColor,
+//           fontFamily: AppFonts.HelveticaNowDisplay,
+//         ),
+//         iconTheme: const IconThemeData(color: Colors.black),
+//         elevation: 0,
+//       ),
+//       body: GoogleMap(
+//         myLocationEnabled: true,
+//         myLocationButtonEnabled: false,
+//         zoomControlsEnabled: false,
+//         onMapCreated: (controller) {
+//           mapController = controller;
+//           if (currentPosition != null) {
+//             mapController.animateCamera(
+//               CameraUpdate.newLatLngZoom(currentPosition!, 10),
+//             );
+//           }
+//         },
+//         initialCameraPosition: CameraPosition(
+//           target: currentPosition ?? const LatLng(33.6844, 73.0479),
+//           zoom: 6.5,
+//         ),
+//         markers: markers,
+//         circles: circles,
+//       ),
+//       floatingActionButton: FloatingActionButton(
+//         backgroundColor: kSecondaryColor,
+//         onPressed: _goToMyLocation,
+//         child: const Icon(Icons.my_location, color: Colors.white),
+//       ),
+//     );
+//   }
+// }
+
+////  -------------- CORRECT RADIUS CALCULATIONS ----------------------
+//// -------------------------------------------------------------------
+import 'dart:math';
 import 'package:f2g/constants/app_colors.dart';
 import 'package:f2g/constants/loading_animation.dart';
 import 'package:f2g/controller/my_ctrl/plan_controller.dart';
 import 'package:f2g/model/my_model/plan_model.dart';
 import 'package:f2g/view/screens/Home/details.dart';
 import 'package:f2g/view/screens/Home/filter_bottomshett.dart';
-import 'package:f2g/view/screens/plans/plan_details.dart';
 import 'package:f2g/view/widget/Custom_text_widget.dart';
-import 'package:f2g/view/widget/common_image_view_widget.dart';
+import 'package:f2g/constants/app_fonts.dart';
 import 'package:flutter/material.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:get/get.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import '../../../constants/app_fonts.dart';
 
 class FilterScreenPage extends StatefulWidget {
   String? categoryFilter;
@@ -319,173 +761,76 @@ class _FilterScreenPageState extends State<FilterScreenPage> {
   final PlanController planController = Get.find<PlanController>();
   final FilterController filterController = Get.find<FilterController>();
 
-  late GoogleMapController mapController;
+  GoogleMapController? mapController;
+
   Set<Marker> markers = {};
-  Set<Circle> circles = {}; // ✅ Added Circle Set
+  Set<Circle> circles = {};
+
   LatLng? currentPosition;
   bool isLoading = true;
 
   @override
   void initState() {
     super.initState();
-    // planController.fetchPlans();
-    log("List Length ::: ${planController.plans.length}");
-    _initializeMap();
+    _init();
   }
 
-  Future<void> _initializeMap() async {
+  Future<void> _init() async {
     await _getCurrentLocation();
-    await _applyFilters(); // ✅ unified filter+marker loading
     setState(() => isLoading = false);
   }
 
-  // Get user current location
   Future<void> _getCurrentLocation() async {
-    LocationPermission permission;
     bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
-    if (!serviceEnabled) {
-      await Geolocator.openLocationSettings();
-      return;
-    }
+    if (!serviceEnabled) return;
 
-    permission = await Geolocator.checkPermission();
+    LocationPermission permission = await Geolocator.checkPermission();
     if (permission == LocationPermission.denied) {
       permission = await Geolocator.requestPermission();
       if (permission == LocationPermission.denied) return;
     }
-    if (permission == LocationPermission.deniedForever) return;
 
-    Position position = await Geolocator.getCurrentPosition(
+    Position pos = await Geolocator.getCurrentPosition(
       desiredAccuracy: LocationAccuracy.high,
     );
-    currentPosition = LatLng(position.latitude, position.longitude);
+
+    currentPosition = LatLng(pos.latitude, pos.longitude);
   }
 
-  // Calculate distance in KM between two LatLngs
-  double _calculateDistance(LatLng start, LatLng end) {
+  double _distance(LatLng a, LatLng b) {
     return Geolocator.distanceBetween(
-          start.latitude,
-          start.longitude,
-          end.latitude,
-          end.longitude,
+          a.latitude,
+          a.longitude,
+          b.latitude,
+          b.longitude,
         ) /
-        1000; // Convert to KM
+        1000;
   }
 
-  // Future<void> _applyFilters({
-  //   bool useAge = true,
-  //   bool usePeople = true,
-  //   bool useDistance = true,
-  // }) async {
-  //   if (currentPosition == null) return;
+  /// 🎯 FIXED CAMERA (makes radius visually correct)
+  void _fitRadius(double radiusKm) {
+    if (currentPosition == null || mapController == null) return;
 
-  //   final ageRange = filterController.ageRange.value;
-  //   final peopleRange = filterController.peopleRange.value;
-  //   final distanceRange = filterController.distanceRange.value;
+    double lat = currentPosition!.latitude;
+    double lng = currentPosition!.longitude;
 
-  //   Set<Marker> newMarkers = {};
-  //   Set<Circle> newCircles = {};
+    double latDelta = radiusKm / 111.0;
+    double lngDelta = radiusKm / (111.0 * cos(lat * pi / 180));
 
-  //   for (var event in planController.plans) {
-  //     try {
-  //       if (event.location == null) continue;
+    mapController!.animateCamera(
+      CameraUpdate.newLatLngBounds(
+        LatLngBounds(
+          southwest: LatLng(lat - latDelta, lng - lngDelta),
+          northeast: LatLng(lat + latDelta, lng + lngDelta),
+        ),
+        50,
+      ),
+    );
+  }
 
-  //       // Convert address to coordinates
-  //       List<Location> locations = await locationFromAddress(event.location!);
-  //       if (locations.isEmpty) continue;
-
-  //       final eventPos = LatLng(
-  //         locations.first.latitude,
-  //         locations.first.longitude,
-  //       );
-  //       final distance = _calculateDistance(currentPosition!, eventPos);
-
-  //       // ------------------------------
-  //       // ✅ Parse age and people safely
-  //       // ------------------------------
-  //       final defaultAgeStart = 18;
-  //       final defaultAgeEnd = 22;
-  //       final defaultPeopleEnd = 40;
-
-  //       // Parse event age like "18-25"
-  //       int eventAgeStart = defaultAgeStart;
-  //       int eventAgeEnd = defaultAgeEnd;
-
-  //       if (event.age != null && event.age!.contains('-')) {
-  //         final parts = event.age!.split('-');
-  //         if (parts.length == 2) {
-  //           eventAgeStart = int.tryParse(parts[0].trim()) ?? defaultAgeStart;
-  //           eventAgeEnd = int.tryParse(parts[1].trim()) ?? defaultAgeEnd;
-  //         }
-  //       }
-
-  //       // Parse event people (e.g. "30")
-  //       int eventPeople =
-  //           int.tryParse(event.maxMembers?.toString() ?? '') ??
-  //           defaultPeopleEnd;
-
-  //       // ---------------------------------
-  //       // ✅ Apply filters (corrected)
-  //       // ---------------------------------
-  //       // Age: overlap logic
-  //       final withinAge =
-  //           !useAge ||
-  //           (eventAgeEnd >= ageRange.start && eventAgeStart <= ageRange.end);
-
-  //       // People: 0 to maxParticipants
-  //       final withinPeople = !usePeople || (eventPeople <= peopleRange.end);
-
-  //       // Distance: simple check
-  //       final withinDistance = !useDistance || distance <= distanceRange.end;
-
-  //       // -------------------------------
-  //       // ✅ Add marker if passes filters
-  //       // -------------------------------
-  //       if (withinAge && withinPeople && withinDistance) {
-  //         newMarkers.add(
-  //           Marker(
-  //             markerId: MarkerId(event.id ?? event.title ?? ''),
-  //             position: eventPos,
-  //             infoWindow: InfoWindow(title: event.title),
-  //             onTap: () => _showEventPopup(event),
-  //           ),
-  //         );
-  //       }
-  //     } catch (e) {
-  //       debugPrint("Error filtering location: $e");
-  //     }
-  //   }
-
-  //   // ✅ Draw distance circle if distance filter is used
-  //   if (useDistance) {
-  //     newCircles.add(
-  //       Circle(
-  //         circleId: const CircleId("search_radius"),
-  //         center: currentPosition!,
-  //         radius: distanceRange.end * 1000,
-  //         fillColor: kSecondaryColor.withValues(alpha: 0.15),
-  //         strokeColor: kSecondaryColor,
-  //         strokeWidth: 2,
-  //       ),
-  //     );
-  //   }
-
-  //   setState(() {
-  //     markers = newMarkers;
-  //     circles = newCircles;
-  //   });
-  // }
-
-  Future<void> _applyFilters({
-    bool useAge = false,
-    bool usePeople = false,
-    bool useDistance = true,
-    // String? selectedCategory, // ✅ new optional filter
-  }) async {
+  Future<void> _applyFilters() async {
     if (currentPosition == null) return;
 
-    final ageRange = filterController.ageRange.value;
-    final peopleRange = filterController.peopleRange.value;
     final distanceRange = filterController.distanceRange.value;
 
     Set<Marker> newMarkers = {};
@@ -495,193 +840,60 @@ class _FilterScreenPageState extends State<FilterScreenPage> {
       try {
         if (event.location == null) continue;
 
-        // Convert address to coordinates
-        List<Location> locations = await locationFromAddress(event.location!);
-        if (locations.isEmpty) continue;
+        List<Location> locs = await locationFromAddress(event.location!);
+        if (locs.isEmpty) continue;
 
-        final eventPos = LatLng(
-          locations.first.latitude,
-          locations.first.longitude,
-        );
-        final distance = _calculateDistance(currentPosition!, eventPos);
+        final pos = LatLng(locs.first.latitude, locs.first.longitude);
+        final dist = _distance(currentPosition!, pos);
 
-        // ------------------------------
-        // ✅ Parse age and people safely
-        // ------------------------------
-        final defaultAgeStart = 18;
-        final defaultAgeEnd = 22;
-        final defaultPeopleEnd = 40;
-
-        // Parse event age like "18-25"
-        int eventAgeStart = defaultAgeStart;
-        int eventAgeEnd = defaultAgeEnd;
-
-        if (event.age != null && event.age!.contains('-')) {
-          final parts = event.age!.split('-');
-          if (parts.length == 2) {
-            eventAgeStart = int.tryParse(parts[0].trim()) ?? defaultAgeStart;
-            eventAgeEnd = int.tryParse(parts[1].trim()) ?? defaultAgeEnd;
-          }
-        }
-
-        // Parse event people (e.g. "30")
-        int eventPeople =
-            int.tryParse(event.maxMembers?.toString() ?? '') ??
-            defaultPeopleEnd;
-
-        // ---------------------------------
-        // ✅ Apply filters (corrected)
-        // ---------------------------------
-        final withinAge =
-            !useAge ||
-            (eventAgeEnd >= ageRange.start && eventAgeStart <= ageRange.end);
-
-        final withinPeople = !usePeople || (eventPeople <= peopleRange.end);
-
-        final withinDistance = !useDistance || distance <= distanceRange.end;
-
-        // ✅ New category filter
-        final withinCategory =
-            widget.categoryFilter == null ||
-            widget.categoryFilter!.isEmpty ||
-            (event.category?.toLowerCase().trim() ==
-                widget.categoryFilter?.toLowerCase().trim());
-
-        // -------------------------------
-        // ✅ Add marker if passes filters
-        // -------------------------------
-        if (withinAge && withinPeople && withinDistance && withinCategory) {
+        if (dist <= distanceRange.end) {
           newMarkers.add(
             Marker(
               markerId: MarkerId(event.id ?? event.title ?? ''),
-              position: eventPos,
+              position: pos,
               infoWindow: InfoWindow(title: event.title),
-              onTap: () => _showEventPopup(event),
+              onTap: () => _showPopup(event),
             ),
           );
         }
       } catch (e) {
-        debugPrint("Error filtering location: $e");
+        debugPrint("Filter error: $e");
       }
     }
 
-    // ✅ Draw distance circle if distance filter is used
-    if (useDistance) {
-      newCircles.add(
-        Circle(
-          circleId: const CircleId("search_radius"),
-          center: currentPosition!,
-          radius: distanceRange.end * 1000,
-          fillColor: kSecondaryColor.withValues(alpha: 0.15),
-          strokeColor: kSecondaryColor,
-          strokeWidth: 2,
-        ),
-      );
-    }
+    newCircles.add(
+      Circle(
+        circleId: const CircleId("radius"),
+        center: currentPosition!,
+        radius: distanceRange.end * 1000,
+        fillColor: kSecondaryColor.withOpacity(0.15),
+        strokeColor: kSecondaryColor,
+        strokeWidth: 2,
+      ),
+    );
 
     setState(() {
       markers = newMarkers;
       circles = newCircles;
     });
+
+    Future.delayed(const Duration(milliseconds: 300), () {
+      _fitRadius(distanceRange.end);
+    });
   }
 
-  // Show event details popup
-  void _showEventPopup(PlanModel model) {
-    showModalBottomSheet(
-      context: context,
-      backgroundColor: kWhiteColor,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-      ),
-      builder:
-          (_) => Padding(
-            padding: const EdgeInsets.all(16),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Container(
-                  width: 60,
-                  height: 4,
-                  decoration: BoxDecoration(
-                    color: Colors.grey[300],
-                    borderRadius: BorderRadius.circular(50),
-                  ),
-                ),
-                const SizedBox(height: 20),
-                Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    ClipRRect(
-                      borderRadius: BorderRadius.circular(10),
-                      child: CommonImageView(
-                        url: model.planPhoto,
-                        height: 80,
-                        width: 120,
-                        fit: BoxFit.cover,
-                      ),
-                    ),
-                    const SizedBox(width: 16),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          CustomText(
-                            text: model.title ?? "No Title",
-                            size: 18,
-                            weight: FontWeight.w600,
-                            color: kBlackColor,
-                            fontFamily: AppFonts.HelveticaNowDisplay,
-                          ),
-                          CustomText(
-                            paddingTop: 5,
-                            text: model.description ?? "No Description",
-                            size: 14,
-                            weight: FontWeight.w400,
-                            color: kBlackColor,
-                            fontFamily: AppFonts.HelveticaNowDisplay,
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 20),
-                ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: kSecondaryColor,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                    minimumSize: const Size(double.infinity, 45),
-                  ),
-                  onPressed: () {
-                    Get.back();
-                    // Get.to(
-                    //   () => PlansDetailScreen(),
-                    //   arguments: {"data": model},
-                    // );
-                    Get.to(() => DetailsScreen(), arguments: {'data': model});
-                  },
-                  child: const Text(
-                    "View Details",
-                    style: TextStyle(color: Colors.white),
-                  ),
-                ),
-                const SizedBox(height: 10),
-              ],
-            ),
-          ),
-    );
+  void _showPopup(PlanModel model) {
+    Get.to(() => DetailsScreen(), arguments: {'data': model});
   }
 
-  // Center camera to my location
   Future<void> _goToMyLocation() async {
-    if (currentPosition != null) {
-      mapController.animateCamera(
-        CameraUpdate.newLatLngZoom(currentPosition!, 12),
-      );
-      await _applyFilters(); // ✅ Reapply filters & redraw circle when pressed
-    }
+    if (currentPosition == null || mapController == null) return;
+
+    mapController!.animateCamera(
+      CameraUpdate.newLatLngZoom(currentPosition!, 12),
+    );
+
+    await _applyFilters();
   }
 
   @override
@@ -692,6 +904,8 @@ class _FilterScreenPageState extends State<FilterScreenPage> {
 
     return Scaffold(
       backgroundColor: kWhiteColor,
+
+      // 🔥 YOUR APPBAR RESTORED EXACTLY
       appBar: AppBar(
         backgroundColor: kWhiteColor,
         title: CustomText(
@@ -704,25 +918,29 @@ class _FilterScreenPageState extends State<FilterScreenPage> {
         iconTheme: const IconThemeData(color: Colors.black),
         elevation: 0,
       ),
+
       body: GoogleMap(
         myLocationEnabled: true,
         myLocationButtonEnabled: false,
         zoomControlsEnabled: false,
-        onMapCreated: (controller) {
+
+        onMapCreated: (controller) async {
           mapController = controller;
+
           if (currentPosition != null) {
-            mapController.animateCamera(
-              CameraUpdate.newLatLngZoom(currentPosition!, 10),
-            );
+            await _applyFilters();
           }
         },
+
         initialCameraPosition: CameraPosition(
           target: currentPosition ?? const LatLng(33.6844, 73.0479),
-          zoom: 6.5,
+          zoom: 12,
         ),
+
         markers: markers,
         circles: circles,
       ),
+
       floatingActionButton: FloatingActionButton(
         backgroundColor: kSecondaryColor,
         onPressed: _goToMyLocation,

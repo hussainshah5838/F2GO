@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:f2g/controller/language_controller.dart';
 import 'package:f2g/core/bindings/bindings.dart';
 import 'package:f2g/firebase_options.dart';
+import 'package:f2g/services/admob/admob_service.dart';
 import 'package:f2g/services/notification_service/notification_services.dart';
 import 'package:f2g/view/localization/app_translation.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
@@ -18,6 +19,7 @@ void main() {
   runZonedGuarded(
     () async {
       WidgetsFlutterBinding.ensureInitialized();
+      await Get.putAsync(() => AdMobService().init());
       await Firebase.initializeApp(
         options: DefaultFirebaseOptions.currentPlatform,
       );
