@@ -681,6 +681,426 @@
 //   }
 // }
 
+////// --------------- ------------------------ ----------------------
+////// --------------- CODE WWITH DEAFULT MARER ----------------------
+////// --------------- ------------------------ ----------------------
+
+// import 'dart:async';
+// import 'dart:developer';
+// import 'package:f2g/constants/app_colors.dart';
+// import 'package:f2g/constants/app_fonts.dart';
+// import 'package:f2g/constants/loading_animation.dart';
+// import 'package:f2g/controller/my_ctrl/plan_controller.dart';
+// import 'package:f2g/core/enums/plan_status.dart';
+// import 'package:f2g/model/my_model/plan_model.dart';
+// import 'package:f2g/view/screens/Home/details.dart';
+// import 'package:f2g/view/screens/createplan/create_new_plan.dart';
+// import 'package:f2g/view/screens/launch/my_loading_screen_two.dart';
+// import 'package:f2g/view/widget/Custom_text_widget.dart';
+// import 'package:flutter/material.dart';
+// import 'package:geocoding/geocoding.dart';
+// import 'package:geolocator/geolocator.dart';
+// import 'package:get/get.dart';
+// import 'package:google_maps_flutter/google_maps_flutter.dart';
+// import '../../../constants/app_images.dart';
+// import '../../../constants/app_styling.dart';
+// import '../../widget/common_image_view_widget.dart';
+
+// class CreatePlanAndMapScreen extends StatefulWidget {
+//   const CreatePlanAndMapScreen({super.key});
+
+//   @override
+//   State<CreatePlanAndMapScreen> createState() => _CreatePlanAndMapScreenState();
+// }
+
+// class _CreatePlanAndMapScreenState extends State<CreatePlanAndMapScreen> {
+//   final PlanController controller = Get.put(PlanController());
+//   late GoogleMapController mapController;
+
+//   final Set<Marker> markers = {};
+//   LatLng? currentPosition;
+//   bool isLoading = true;
+
+//   @override
+//   void initState() {
+//     super.initState();
+
+//     /// ✅ Delay fetching data and UI updates until after first build
+//     WidgetsBinding.instance.addPostFrameCallback((_) async {
+//       await controller.fetchPlans();
+//       await _initializeMap();
+//     });
+//   }
+
+//   /// Initialize map (get location + markers)
+//   Future<void> _initializeMap() async {
+//     await _getCurrentLocation();
+//     await _setEventMarkers();
+//     if (mounted) {
+//       setState(() => isLoading = false);
+//     }
+//   }
+
+//   /// Get user current location safely
+//   // Future<void> _getCurrentLocation() async {
+//   //   LocationPermission permission;
+//   //   bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
+//   //   if (!serviceEnabled) {
+//   //     await Geolocator.openLocationSettings();
+//   //     return;
+//   //   }
+
+//   //   permission = await Geolocator.checkPermission();
+//   //   if (permission == LocationPermission.denied) {
+//   //     permission = await Geolocator.requestPermission();
+//   //     if (permission == LocationPermission.denied) return;
+//   //   }
+//   //   if (permission == LocationPermission.deniedForever) return;
+
+//   //   Position position = await Geolocator.getCurrentPosition(
+//   //     desiredAccuracy: LocationAccuracy.high,
+//   //   );
+//   //   currentPosition = LatLng(position.latitude, position.longitude);
+//   // }
+//   Future<void> _getCurrentLocation() async {
+//     LocationPermission permission;
+
+//     /// Keep asking until location service is enabled
+//     while (!await Geolocator.isLocationServiceEnabled()) {
+//       await Geolocator.openLocationSettings();
+
+//       // Small delay so user can return from settings
+//       await Future.delayed(const Duration(seconds: 2));
+//     }
+
+//     /// Check permission
+//     permission = await Geolocator.checkPermission();
+
+//     /// Keep asking until permission is granted
+//     while (permission == LocationPermission.denied) {
+//       permission = await Geolocator.requestPermission();
+
+//       if (permission == LocationPermission.denied) {
+//         // User denied again → ask again
+//         await Future.delayed(const Duration(seconds: 1));
+//       }
+//     }
+
+//     /// If permanently denied
+//     while (permission == LocationPermission.deniedForever) {
+//       await Geolocator.openAppSettings();
+
+//       // Wait for user to come back
+//       await Future.delayed(const Duration(seconds: 2));
+
+//       permission = await Geolocator.checkPermission();
+//     }
+
+//     /// Get current location
+//     Position position = await Geolocator.getCurrentPosition(
+//       desiredAccuracy: LocationAccuracy.high,
+//     );
+
+//     currentPosition = LatLng(position.latitude, position.longitude);
+//   }
+
+//   /// Add markers from fetched plans
+//   Future<void> _setEventMarkers() async {
+//     for (var event in controller.plans) {
+//       try {
+//         if (event.location == null || event.location!.isEmpty) continue;
+
+//         /// ✅ Filter: Only show active events on map
+//         if (event.status?.toLowerCase() != PlanStatus.active.name) continue;
+
+//         List<Location> locations = await locationFromAddress(event.location!);
+//         if (locations.isNotEmpty) {
+//           final loc = locations.first;
+
+//           /// ✅ Only rebuild if widget still mounted
+//           if (!mounted) return;
+//           setState(() {
+//             markers.add(
+//               Marker(
+//                 markerId: MarkerId(event.location!),
+//                 position: LatLng(loc.latitude, loc.longitude),
+//                 infoWindow: InfoWindow(title: event.title),
+//                 onTap: () => _showEventPopup(event),
+//               ),
+//             );
+//           });
+//         }
+//       } catch (e) {
+//         debugPrint("Error finding location for ${event.location}: $e");
+//       }
+//     }
+//   }
+
+//   /// Move camera to current location
+//   Future<void> _goToMyLocation() async {
+//     if (currentPosition != null) {
+//       mapController.animateCamera(
+//         CameraUpdate.newLatLngZoom(currentPosition!, 12),
+//       );
+//     } else {
+//       Get.snackbar("Location", "Unable to get current location");
+//     }
+//   }
+
+//   /// Bottom sheet popup when marker tapped
+//   void _showEventPopup(PlanModel model) {
+//     showModalBottomSheet(
+//       context: context,
+//       backgroundColor: kWhiteColor,
+//       shape: const RoundedRectangleBorder(
+//         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+//       ),
+//       builder:
+//           (_) => Padding(
+//             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
+//             child: Column(
+//               mainAxisSize: MainAxisSize.min,
+//               children: [
+//                 Container(
+//                   width: 60,
+//                   height: 4,
+//                   decoration: BoxDecoration(
+//                     color: kBlackColor.withValues(alpha: 0.2),
+//                     borderRadius: BorderRadius.circular(100),
+//                   ),
+//                 ),
+//                 const SizedBox(height: 20),
+
+//                 Row(
+//                   crossAxisAlignment: CrossAxisAlignment.start,
+//                   children: [
+//                     ClipRRect(
+//                       borderRadius: BorderRadius.circular(10),
+//                       child: CommonImageView(
+//                         url: model.planPhoto,
+//                         height: 80,
+//                         width: 120,
+//                         fit: BoxFit.cover,
+//                       ),
+//                     ),
+//                     const SizedBox(width: 16),
+//                     Expanded(
+//                       child: Column(
+//                         crossAxisAlignment: CrossAxisAlignment.start,
+//                         mainAxisSize: MainAxisSize.min,
+//                         children: [
+//                           CustomText(
+//                             text: model.title ?? "No Title",
+//                             size: 18,
+//                             weight: FontWeight.w600,
+//                             color: kBlackColor,
+//                             fontFamily: AppFonts.HelveticaNowDisplay,
+//                           ),
+//                           CustomText(
+//                             paddingTop: 5,
+//                             text: model.description ?? "No Description",
+//                             size: 14,
+//                             weight: FontWeight.w400,
+//                             color: kBlackColor,
+//                             fontFamily: AppFonts.HelveticaNowDisplay,
+//                           ),
+//                         ],
+//                       ),
+//                     ),
+//                   ],
+//                 ),
+
+//                 const SizedBox(height: 20),
+
+//                 Row(
+//                   children: [
+//                     InkWell(
+//                       onTap: () => Get.back(),
+//                       child: Container(
+//                         height: 40,
+//                         width: 117,
+//                         decoration: BoxDecoration(
+//                           color: Colors.red.withOpacity(0.3),
+//                           border: Border.all(color: Colors.red),
+//                           borderRadius: BorderRadius.circular(10),
+//                         ),
+//                         child: Center(
+//                           child: CustomText(
+//                             text: "Close",
+//                             size: 14,
+//                             weight: FontWeight.w600,
+//                             color: kBlackColor,
+//                             fontFamily: AppFonts.HelveticaNowDisplay,
+//                             textAlign: TextAlign.center,
+//                           ),
+//                         ),
+//                       ),
+//                     ),
+//                     const SizedBox(width: 10),
+
+//                     Expanded(
+//                       child: InkWell(
+//                         onTap: () {
+//                           Get.close(1);
+//                           // Get.to(
+//                           //   () => PlansDetailScreen(),
+//                           //   arguments: {"data": model},
+//                           // );
+//                           Get.to(
+//                             () => DetailsScreen(),
+//                             arguments: {'data': model},
+//                           );
+//                         },
+//                         child: Container(
+//                           height: 40,
+//                           decoration: BoxDecoration(
+//                             color: kWhiteColor,
+//                             border: Border.all(color: kSecondaryColor),
+//                             borderRadius: BorderRadius.circular(10),
+//                           ),
+//                           child: Center(
+//                             child: CustomText(
+//                               text: "View Details",
+//                               size: 14,
+//                               weight: FontWeight.w600,
+//                               color: kBlackColor,
+//                               fontFamily: AppFonts.HelveticaNowDisplay,
+//                               textAlign: TextAlign.center,
+//                             ),
+//                           ),
+//                         ),
+//                       ),
+//                     ),
+//                   ],
+//                 ),
+//                 const SizedBox(height: 30),
+//               ],
+//             ),
+//           ),
+//     );
+//   }
+
+//   @override
+//   Widget build(BuildContext context) {
+//     if (isLoading) {
+//       return WillPopScope(
+//         onWillPop: () async {
+//           controller.plans.value = [];
+//           Get.to(() => MyLoadingScreen2());
+
+//           log("1 ----------- > I am Back");
+//           return true;
+//         },
+//         child: Scaffold(body: Center(child: WaveLoading())),
+//       );
+//     }
+
+//     return WillPopScope(
+//       onWillPop: () async {
+//         controller.plans.value = [];
+//         Get.to(() => MyLoadingScreen2());
+
+//         log("1 ----------- > I am Back");
+//         return true;
+//       },
+//       child: Scaffold(
+//         backgroundColor: kWhiteColor,
+//         body: Stack(
+//           children: [
+//             GoogleMap(
+//               myLocationEnabled: true,
+//               myLocationButtonEnabled: false,
+//               zoomControlsEnabled: false,
+//               onMapCreated: (controller) {
+//                 mapController = controller;
+//                 if (currentPosition != null) {
+//                   mapController.animateCamera(
+//                     CameraUpdate.newLatLngZoom(currentPosition!, 10),
+//                   );
+//                 }
+//               },
+//               initialCameraPosition: CameraPosition(
+//                 target:
+//                     currentPosition ??
+//                     const LatLng(33.6844, 73.0479), // Default Islamabad
+//                 zoom: 6.5,
+//               ),
+//               markers: markers,
+//             ),
+//             _buildHeader(context),
+//           ],
+//         ),
+//         floatingActionButton: FloatingActionButton(
+//           backgroundColor: kSecondaryColor,
+//           onPressed: _goToMyLocation,
+//           child: const Icon(Icons.my_location, color: Colors.white),
+//         ),
+//       ),
+//     );
+//   }
+
+//   /// Custom header bar
+//   Widget _buildHeader(BuildContext context) {
+//     return Container(
+//       height: h(context, 100),
+//       width: w(context, double.maxFinite),
+//       decoration: const BoxDecoration(color: kWhiteColor),
+//       child: SafeArea(
+//         bottom: false,
+//         child: Column(
+//           children: [
+//             SizedBox(height: h(context, 10)),
+//             Padding(
+//               padding: symmetric(context, horizontal: 20),
+//               child: Row(
+//                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
+//                 children: [
+//                   InkWell(
+//                     onTap: () {
+//                       controller.plans.value = [];
+//                       Get.to(() => MyLoadingScreen2());
+//                     },
+//                     child: CommonImageView(
+//                       imagePath: Assets.imagesGreybackicon,
+//                       height: 48,
+//                       width: 48,
+//                       fit: BoxFit.contain,
+//                     ),
+//                   ),
+//                   SizedBox(width: w(context, 15)),
+//                   Expanded(
+//                     child: CustomText(
+//                       text: "Discover Plans",
+//                       size: 16,
+//                       weight: FontWeight.w500,
+//                       color: kBlackColor,
+//                       fontFamily: AppFonts.HelveticaNowDisplay,
+//                     ),
+//                   ),
+//                   CustomText(
+//                     text: "Create Plan",
+//                     size: 16,
+//                     weight: FontWeight.w500,
+//                     fontFamily: AppFonts.HelveticaNowDisplay,
+//                     color: kSecondaryColor,
+//                     onTap: () {
+//                       Get.to(() => CreateNewPlanScreen());
+//                     },
+//                   ),
+//                 ],
+//               ),
+//             ),
+//           ],
+//         ),
+//       ),
+//     );
+//   }
+// }
+
+////// --------------- ------------------------ ----------------------
+////// --------------- CODE WWITH New MARER ----------------------
+////// --------------- ------------------------ ----------------------
+
 import 'dart:async';
 import 'dart:developer';
 import 'package:f2g/constants/app_colors.dart';
@@ -694,6 +1114,7 @@ import 'package:f2g/view/screens/createplan/create_new_plan.dart';
 import 'package:f2g/view/screens/launch/my_loading_screen_two.dart';
 import 'package:f2g/view/widget/Custom_text_widget.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:get/get.dart';
@@ -716,6 +1137,7 @@ class _CreatePlanAndMapScreenState extends State<CreatePlanAndMapScreen> {
   final Set<Marker> markers = {};
   LatLng? currentPosition;
   bool isLoading = true;
+  BitmapDescriptor? _customMarkerIcon;
 
   @override
   void initState() {
@@ -723,9 +1145,22 @@ class _CreatePlanAndMapScreenState extends State<CreatePlanAndMapScreen> {
 
     /// ✅ Delay fetching data and UI updates until after first build
     WidgetsBinding.instance.addPostFrameCallback((_) async {
+      await _loadCustomMarkerIcon();
       await controller.fetchPlans();
       await _initializeMap();
     });
+  }
+
+  /// Load custom marker icon from assets
+  Future<void> _loadCustomMarkerIcon() async {
+    try {
+      final ByteData data = await rootBundle.load(Assets.imagesMapMarkerIcon);
+      final Uint8List bytes = data.buffer.asUint8List();
+      _customMarkerIcon = BitmapDescriptor.fromBytes(bytes);
+    } catch (e) {
+      debugPrint("Custom marker icon failed to load: $e");
+      _customMarkerIcon = BitmapDescriptor.defaultMarker;
+    }
   }
 
   /// Initialize map (get location + markers)
@@ -738,26 +1173,6 @@ class _CreatePlanAndMapScreenState extends State<CreatePlanAndMapScreen> {
   }
 
   /// Get user current location safely
-  // Future<void> _getCurrentLocation() async {
-  //   LocationPermission permission;
-  //   bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
-  //   if (!serviceEnabled) {
-  //     await Geolocator.openLocationSettings();
-  //     return;
-  //   }
-
-  //   permission = await Geolocator.checkPermission();
-  //   if (permission == LocationPermission.denied) {
-  //     permission = await Geolocator.requestPermission();
-  //     if (permission == LocationPermission.denied) return;
-  //   }
-  //   if (permission == LocationPermission.deniedForever) return;
-
-  //   Position position = await Geolocator.getCurrentPosition(
-  //     desiredAccuracy: LocationAccuracy.high,
-  //   );
-  //   currentPosition = LatLng(position.latitude, position.longitude);
-  // }
   Future<void> _getCurrentLocation() async {
     LocationPermission permission;
 
@@ -820,6 +1235,7 @@ class _CreatePlanAndMapScreenState extends State<CreatePlanAndMapScreen> {
               Marker(
                 markerId: MarkerId(event.location!),
                 position: LatLng(loc.latitude, loc.longitude),
+                icon: _customMarkerIcon ?? BitmapDescriptor.defaultMarker,
                 infoWindow: InfoWindow(title: event.title),
                 onTap: () => _showEventPopup(event),
               ),
@@ -938,10 +1354,6 @@ class _CreatePlanAndMapScreenState extends State<CreatePlanAndMapScreen> {
                       child: InkWell(
                         onTap: () {
                           Get.close(1);
-                          // Get.to(
-                          //   () => PlansDetailScreen(),
-                          //   arguments: {"data": model},
-                          // );
                           Get.to(
                             () => DetailsScreen(),
                             arguments: {'data': model},

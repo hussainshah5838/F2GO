@@ -166,6 +166,10 @@ class Assets {
   /// assets/images/map.png
   static const String imagesMap = "assets/images/map.png";
 
+  /// Assets for imagesMapMarkerIcon
+  /// assets/images/map_marker_icon.png
+  static const String imagesMapMarkerIcon = "assets/images/map_marker_icon.png";
+
   /// Assets for imagesMenu
   /// assets/images/menu.png
   static const String imagesMenu = "assets/images/menu.png";

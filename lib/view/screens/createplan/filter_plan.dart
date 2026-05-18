@@ -732,7 +732,226 @@
 //   }
 // }
 
-////  -------------- CORRECT RADIUS CALCULATIONS ----------------------
+// //// ------------------------------------------------------------------------------------
+// //// --------------- CORRECT RADIUS CALCULATIONS & With OLD Marker ----------------------
+// //// ------------------------------------------------------------------------------------
+
+// import 'dart:math';
+// import 'package:f2g/constants/app_colors.dart';
+// import 'package:f2g/constants/loading_animation.dart';
+// import 'package:f2g/controller/my_ctrl/plan_controller.dart';
+// import 'package:f2g/model/my_model/plan_model.dart';
+// import 'package:f2g/view/screens/Home/details.dart';
+// import 'package:f2g/view/screens/Home/filter_bottomshett.dart';
+// import 'package:f2g/view/widget/Custom_text_widget.dart';
+// import 'package:f2g/constants/app_fonts.dart';
+// import 'package:flutter/material.dart';
+// import 'package:geocoding/geocoding.dart';
+// import 'package:geolocator/geolocator.dart';
+// import 'package:get/get.dart';
+// import 'package:google_maps_flutter/google_maps_flutter.dart';
+
+// class FilterScreenPage extends StatefulWidget {
+//   String? categoryFilter;
+//   FilterScreenPage({super.key, this.categoryFilter});
+
+//   @override
+//   State<FilterScreenPage> createState() => _FilterScreenPageState();
+// }
+
+// class _FilterScreenPageState extends State<FilterScreenPage> {
+//   final PlanController planController = Get.find<PlanController>();
+//   final FilterController filterController = Get.find<FilterController>();
+
+//   GoogleMapController? mapController;
+
+//   Set<Marker> markers = {};
+//   Set<Circle> circles = {};
+
+//   LatLng? currentPosition;
+//   bool isLoading = true;
+
+//   @override
+//   void initState() {
+//     super.initState();
+//     _init();
+//   }
+
+//   Future<void> _init() async {
+//     await _getCurrentLocation();
+//     setState(() => isLoading = false);
+//   }
+
+//   Future<void> _getCurrentLocation() async {
+//     bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
+//     if (!serviceEnabled) return;
+
+//     LocationPermission permission = await Geolocator.checkPermission();
+//     if (permission == LocationPermission.denied) {
+//       permission = await Geolocator.requestPermission();
+//       if (permission == LocationPermission.denied) return;
+//     }
+
+//     Position pos = await Geolocator.getCurrentPosition(
+//       desiredAccuracy: LocationAccuracy.high,
+//     );
+
+//     currentPosition = LatLng(pos.latitude, pos.longitude);
+//   }
+
+//   double _distance(LatLng a, LatLng b) {
+//     return Geolocator.distanceBetween(
+//           a.latitude,
+//           a.longitude,
+//           b.latitude,
+//           b.longitude,
+//         ) /
+//         1000;
+//   }
+
+//   /// 🎯 FIXED CAMERA (makes radius visually correct)
+//   void _fitRadius(double radiusKm) {
+//     if (currentPosition == null || mapController == null) return;
+
+//     double lat = currentPosition!.latitude;
+//     double lng = currentPosition!.longitude;
+
+//     double latDelta = radiusKm / 111.0;
+//     double lngDelta = radiusKm / (111.0 * cos(lat * pi / 180));
+
+//     mapController!.animateCamera(
+//       CameraUpdate.newLatLngBounds(
+//         LatLngBounds(
+//           southwest: LatLng(lat - latDelta, lng - lngDelta),
+//           northeast: LatLng(lat + latDelta, lng + lngDelta),
+//         ),
+//         50,
+//       ),
+//     );
+//   }
+
+//   Future<void> _applyFilters() async {
+//     if (currentPosition == null) return;
+
+//     final distanceRange = filterController.distanceRange.value;
+
+//     Set<Marker> newMarkers = {};
+//     Set<Circle> newCircles = {};
+
+//     for (var event in planController.plans) {
+//       try {
+//         if (event.location == null) continue;
+
+//         List<Location> locs = await locationFromAddress(event.location!);
+//         if (locs.isEmpty) continue;
+
+//         final pos = LatLng(locs.first.latitude, locs.first.longitude);
+//         final dist = _distance(currentPosition!, pos);
+
+//         if (dist <= distanceRange.end) {
+//           newMarkers.add(
+//             Marker(
+//               markerId: MarkerId(event.id ?? event.title ?? ''),
+//               position: pos,
+//               infoWindow: InfoWindow(title: event.title),
+//               onTap: () => _showPopup(event),
+//             ),
+//           );
+//         }
+//       } catch (e) {
+//         debugPrint("Filter error: $e");
+//       }
+//     }
+
+//     newCircles.add(
+//       Circle(
+//         circleId: const CircleId("radius"),
+//         center: currentPosition!,
+//         radius: distanceRange.end * 1000,
+//         fillColor: kSecondaryColor.withOpacity(0.15),
+//         strokeColor: kSecondaryColor,
+//         strokeWidth: 2,
+//       ),
+//     );
+
+//     setState(() {
+//       markers = newMarkers;
+//       circles = newCircles;
+//     });
+
+//     Future.delayed(const Duration(milliseconds: 300), () {
+//       _fitRadius(distanceRange.end);
+//     });
+//   }
+
+//   void _showPopup(PlanModel model) {
+//     Get.to(() => DetailsScreen(), arguments: {'data': model});
+//   }
+
+//   Future<void> _goToMyLocation() async {
+//     if (currentPosition == null || mapController == null) return;
+
+//     mapController!.animateCamera(
+//       CameraUpdate.newLatLngZoom(currentPosition!, 12),
+//     );
+
+//     await _applyFilters();
+//   }
+
+//   @override
+//   Widget build(BuildContext context) {
+//     if (isLoading) {
+//       return Scaffold(body: Center(child: WaveLoading()));
+//     }
+
+//     return Scaffold(
+//       backgroundColor: kWhiteColor,
+
+//       // 🔥 YOUR APPBAR RESTORED EXACTLY
+//       appBar: AppBar(
+//         backgroundColor: kWhiteColor,
+//         title: CustomText(
+//           text: "Filter Plans",
+//           size: 16,
+//           weight: FontWeight.w500,
+//           color: kBlackColor,
+//           fontFamily: AppFonts.HelveticaNowDisplay,
+//         ),
+//         iconTheme: const IconThemeData(color: Colors.black),
+//         elevation: 0,
+//       ),
+
+//       body: GoogleMap(
+//         myLocationEnabled: true,
+//         myLocationButtonEnabled: false,
+//         zoomControlsEnabled: false,
+
+//         onMapCreated: (controller) async {
+//           mapController = controller;
+
+//           if (currentPosition != null) {
+//             await _applyFilters();
+//           }
+//         },
+
+//         initialCameraPosition: CameraPosition(
+//           target: currentPosition ?? const LatLng(33.6844, 73.0479),
+//           zoom: 12,
+//         ),
+
+//         markers: markers,
+//         circles: circles,
+//       ),
+
+//       floatingActionButton: FloatingActionButton(
+//         backgroundColor: kSecondaryColor,
+//         onPressed: _goToMyLocation,
+//         child: const Icon(Icons.my_location, color: Colors.white),
+//       ),
+//     );
+//   }
+// }
+////  -------------- CORRECT RADIUS CALCULATIONS & With OLD Marker ----------------------
 //// -------------------------------------------------------------------
 import 'dart:math';
 import 'package:f2g/constants/app_colors.dart';
@@ -744,6 +963,7 @@ import 'package:f2g/view/screens/Home/filter_bottomshett.dart';
 import 'package:f2g/view/widget/Custom_text_widget.dart';
 import 'package:f2g/constants/app_fonts.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:get/get.dart';
@@ -768,6 +988,7 @@ class _FilterScreenPageState extends State<FilterScreenPage> {
 
   LatLng? currentPosition;
   bool isLoading = true;
+  BitmapDescriptor? _customMarkerIcon;
 
   @override
   void initState() {
@@ -776,8 +997,23 @@ class _FilterScreenPageState extends State<FilterScreenPage> {
   }
 
   Future<void> _init() async {
+    await _loadCustomMarkerIcon();
     await _getCurrentLocation();
     setState(() => isLoading = false);
+  }
+
+  /// Load custom marker icon from assets
+  Future<void> _loadCustomMarkerIcon() async {
+    try {
+      final ByteData data = await rootBundle.load(
+        'assets/images/map_marker_icon.png',
+      );
+      final Uint8List bytes = data.buffer.asUint8List();
+      _customMarkerIcon = BitmapDescriptor.fromBytes(bytes);
+    } catch (e) {
+      debugPrint("Custom marker icon failed to load: $e");
+      _customMarkerIcon = BitmapDescriptor.defaultMarker;
+    }
   }
 
   Future<void> _getCurrentLocation() async {
@@ -851,6 +1087,7 @@ class _FilterScreenPageState extends State<FilterScreenPage> {
             Marker(
               markerId: MarkerId(event.id ?? event.title ?? ''),
               position: pos,
+              icon: _customMarkerIcon ?? BitmapDescriptor.defaultMarker,
               infoWindow: InfoWindow(title: event.title),
               onTap: () => _showPopup(event),
             ),
